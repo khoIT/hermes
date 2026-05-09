@@ -1,0 +1,1595 @@
+[
+  {
+    "name": "account_age_days",
+    "displayName": "Account Age (Days)",
+    "type": "int",
+    "latencyTier": "<1d",
+    "substrate": "B",
+    "domain": "identity-lifecycle",
+    "games": [
+      "cfm",
+      "pt",
+      "nth",
+      "tf",
+      "cos",
+      "ptg"
+    ],
+    "owner": "gds-lifecycle",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-account-age-days",
+    "usedBySegments": 4,
+    "usedByCampaigns": 3
+  },
+  {
+    "name": "account_first_login_ts",
+    "displayName": "Account First Login (Timestamp)",
+    "type": "timestamp",
+    "latencyTier": "<1d",
+    "substrate": "B",
+    "domain": "identity-lifecycle",
+    "games": [
+      "cfm",
+      "pt",
+      "nth",
+      "tf",
+      "cos",
+      "ptg"
+    ],
+    "owner": "gds-lifecycle",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-account-first-login-ts",
+    "usedBySegments": 1,
+    "usedByCampaigns": 2
+  },
+  {
+    "name": "account_first_login_mmdd",
+    "displayName": "Account First Login (MM-DD)",
+    "type": "string",
+    "latencyTier": "<1d",
+    "substrate": "B",
+    "domain": "identity-lifecycle",
+    "games": [
+      "cfm",
+      "pt",
+      "nth",
+      "tf",
+      "cos",
+      "ptg"
+    ],
+    "owner": "gds-lifecycle",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-account-first-login-mmdd",
+    "usedBySegments": 1,
+    "usedByCampaigns": 1
+  },
+  {
+    "name": "days_since_install",
+    "displayName": "Days Since Install",
+    "type": "int",
+    "latencyTier": "<1d",
+    "substrate": "B",
+    "domain": "identity-lifecycle",
+    "games": [
+      "cfm",
+      "pt",
+      "nth",
+      "tf",
+      "cos",
+      "ptg"
+    ],
+    "owner": "gds-lifecycle",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-days-since-install",
+    "usedBySegments": 2,
+    "usedByCampaigns": 1
+  },
+  {
+    "name": "lifetime_login_count",
+    "displayName": "Lifetime Login Count",
+    "type": "int",
+    "latencyTier": "<1d",
+    "substrate": "B",
+    "domain": "identity-lifecycle",
+    "games": [
+      "cfm",
+      "pt",
+      "nth",
+      "tf",
+      "cos",
+      "ptg"
+    ],
+    "owner": "gds-lifecycle",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-lifetime-login-count",
+    "usedBySegments": 3,
+    "usedByCampaigns": 2
+  },
+  {
+    "name": "last_login_days_ago",
+    "displayName": "Last Login (Days Ago)",
+    "type": "int",
+    "latencyTier": "<1d",
+    "substrate": "B",
+    "domain": "identity-lifecycle",
+    "games": [
+      "cfm",
+      "pt",
+      "nth",
+      "tf",
+      "cos",
+      "ptg"
+    ],
+    "owner": "gds-lifecycle",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-last-login-days-ago",
+    "usedBySegments": 5,
+    "usedByCampaigns": 4
+  },
+  {
+    "name": "player_lifecycle_stage",
+    "displayName": "Player Lifecycle Stage",
+    "type": "enum",
+    "latencyTier": "<1d",
+    "substrate": "B",
+    "domain": "identity-lifecycle",
+    "games": [
+      "cfm",
+      "pt",
+      "nth",
+      "tf",
+      "cos",
+      "ptg"
+    ],
+    "owner": "gds-lifecycle",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-player-lifecycle-stage",
+    "usedBySegments": 6,
+    "usedByCampaigns": 5
+  },
+  {
+    "name": "is_new_user_d7",
+    "displayName": "Is New User (D7)",
+    "type": "bool",
+    "latencyTier": "<1d",
+    "substrate": "B",
+    "domain": "identity-lifecycle",
+    "games": [
+      "cfm",
+      "pt",
+      "nth",
+      "tf",
+      "cos",
+      "ptg"
+    ],
+    "owner": "gds-lifecycle",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-is-new-user-d7",
+    "usedBySegments": 3,
+    "usedByCampaigns": 2
+  },
+  {
+    "name": "is_returning_after_lapse",
+    "displayName": "Is Returning After Lapse",
+    "type": "bool",
+    "latencyTier": "<1d",
+    "substrate": "B",
+    "domain": "identity-lifecycle",
+    "games": [
+      "cfm",
+      "pt",
+      "nth",
+      "tf",
+      "cos",
+      "ptg"
+    ],
+    "owner": "gds-lifecycle",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-is-returning-after-lapse",
+    "usedBySegments": 2,
+    "usedByCampaigns": 2
+  },
+  {
+    "name": "region_code",
+    "displayName": "Region Code",
+    "type": "enum",
+    "latencyTier": "<1d",
+    "substrate": "B",
+    "domain": "identity-lifecycle",
+    "games": [
+      "cfm",
+      "pt",
+      "nth",
+      "tf",
+      "cos",
+      "ptg"
+    ],
+    "owner": "gds-lifecycle",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-region-code",
+    "usedBySegments": 4,
+    "usedByCampaigns": 3
+  },
+  {
+    "name": "character_gender",
+    "displayName": "Character Gender",
+    "type": "enum",
+    "latencyTier": "<1d",
+    "substrate": "B",
+    "domain": "identity-lifecycle",
+    "games": [
+      "nth",
+      "tf",
+      "pt"
+    ],
+    "owner": "gds-nth",
+    "status": "active",
+    "addedAt": "2025-02-14",
+    "sparklineKey": "spk-character-gender",
+    "usedBySegments": 1,
+    "usedByCampaigns": 1
+  },
+  {
+    "name": "is_paying_user_lifetime",
+    "displayName": "Is Paying User (Lifetime)",
+    "type": "bool",
+    "latencyTier": "<1h",
+    "substrate": "B",
+    "domain": "monetization",
+    "games": [
+      "cfm",
+      "pt",
+      "nth",
+      "tf",
+      "cos",
+      "ptg"
+    ],
+    "owner": "gds-monetization",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-is-paying-user-lifetime",
+    "usedBySegments": 8,
+    "usedByCampaigns": 6
+  },
+  {
+    "name": "lifetime_purchase_count",
+    "displayName": "Lifetime Purchase Count",
+    "type": "int",
+    "latencyTier": "<1h",
+    "substrate": "B",
+    "domain": "monetization",
+    "games": [
+      "cfm",
+      "pt",
+      "nth",
+      "tf",
+      "cos",
+      "ptg"
+    ],
+    "owner": "gds-monetization",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-lifetime-purchase-count",
+    "usedBySegments": 4,
+    "usedByCampaigns": 3
+  },
+  {
+    "name": "lifetime_revenue_local",
+    "displayName": "Lifetime Revenue (Local Currency)",
+    "type": "numeric",
+    "latencyTier": "<1h",
+    "substrate": "B",
+    "domain": "monetization",
+    "games": [
+      "cfm",
+      "pt",
+      "nth",
+      "tf",
+      "cos",
+      "ptg"
+    ],
+    "owner": "gds-monetization",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-lifetime-revenue-local",
+    "usedBySegments": 3,
+    "usedByCampaigns": 2
+  },
+  {
+    "name": "last_purchase_days_ago",
+    "displayName": "Last Purchase (Days Ago)",
+    "type": "int",
+    "latencyTier": "<1h",
+    "substrate": "B",
+    "domain": "monetization",
+    "games": [
+      "cfm",
+      "pt",
+      "nth",
+      "tf",
+      "cos",
+      "ptg"
+    ],
+    "owner": "gds-monetization",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-last-purchase-days-ago",
+    "usedBySegments": 5,
+    "usedByCampaigns": 3
+  },
+  {
+    "name": "spend_tier_lifetime",
+    "displayName": "Spend Tier (Lifetime)",
+    "type": "enum",
+    "latencyTier": "<1d",
+    "substrate": "B",
+    "domain": "monetization",
+    "games": [
+      "cfm",
+      "pt",
+      "nth",
+      "tf",
+      "cos",
+      "ptg"
+    ],
+    "owner": "gds-monetization",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-spend-tier-lifetime",
+    "usedBySegments": 7,
+    "usedByCampaigns": 5
+  },
+  {
+    "name": "vip_status",
+    "displayName": "VIP Status",
+    "type": "enum",
+    "latencyTier": "<1h",
+    "substrate": "B",
+    "domain": "monetization",
+    "games": [
+      "cfm",
+      "pt",
+      "nth",
+      "tf",
+      "cos",
+      "ptg"
+    ],
+    "owner": "gds-monetization",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-vip-status",
+    "usedBySegments": 4,
+    "usedByCampaigns": 4
+  },
+  {
+    "name": "pass_owned_current",
+    "displayName": "Pass Owned (Current Season)",
+    "type": "bool",
+    "latencyTier": "<1h",
+    "substrate": "B",
+    "domain": "monetization",
+    "games": [
+      "cfm",
+      "pt",
+      "nth",
+      "tf",
+      "cos",
+      "ptg"
+    ],
+    "owner": "gds-monetization",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-pass-owned-current",
+    "usedBySegments": 3,
+    "usedByCampaigns": 4
+  },
+  {
+    "name": "pass_progress_current",
+    "displayName": "Pass Progress (Current Season)",
+    "type": "int",
+    "latencyTier": "<1h",
+    "substrate": "B",
+    "domain": "monetization",
+    "games": [
+      "cfm",
+      "pt",
+      "nth",
+      "tf",
+      "cos",
+      "ptg"
+    ],
+    "owner": "gds-monetization",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-pass-progress-current",
+    "usedBySegments": 2,
+    "usedByCampaigns": 3
+  },
+  {
+    "name": "annual_contribution_tier",
+    "displayName": "Annual Contribution Tier",
+    "type": "int",
+    "latencyTier": "<1d",
+    "substrate": "B",
+    "domain": "monetization",
+    "games": [
+      "nth",
+      "tf"
+    ],
+    "owner": "gds-monetization",
+    "status": "active",
+    "addedAt": "2025-01-15",
+    "sparklineKey": "spk-annual-contribution-tier",
+    "usedBySegments": 2,
+    "usedByCampaigns": 1
+  },
+  {
+    "name": "avg_purchase_amount_30d",
+    "displayName": "Avg Purchase Amount (30d)",
+    "type": "numeric",
+    "latencyTier": "<1d",
+    "substrate": "B",
+    "domain": "monetization",
+    "games": [
+      "cfm",
+      "pt",
+      "nth",
+      "tf",
+      "cos",
+      "ptg"
+    ],
+    "owner": "gds-monetization",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-avg-purchase-amount-30d",
+    "usedBySegments": 2,
+    "usedByCampaigns": 1
+  },
+  {
+    "name": "purchase_count_30d",
+    "displayName": "Purchase Count (30d)",
+    "type": "int",
+    "latencyTier": "<1d",
+    "substrate": "B",
+    "domain": "monetization",
+    "games": [
+      "cfm",
+      "pt",
+      "nth",
+      "tf",
+      "cos",
+      "ptg"
+    ],
+    "owner": "gds-monetization",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-purchase-count-30d",
+    "usedBySegments": 3,
+    "usedByCampaigns": 2
+  },
+  {
+    "name": "purchase_count_7d",
+    "displayName": "Purchase Count (7d)",
+    "type": "int",
+    "latencyTier": "<1d",
+    "substrate": "B",
+    "domain": "monetization",
+    "games": [
+      "cfm",
+      "pt",
+      "nth",
+      "tf",
+      "cos",
+      "ptg"
+    ],
+    "owner": "gds-monetization",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-purchase-count-7d",
+    "usedBySegments": 2,
+    "usedByCampaigns": 2
+  },
+  {
+    "name": "gem_balance_current",
+    "displayName": "Gem Balance (Current)",
+    "type": "int",
+    "latencyTier": "<1h",
+    "substrate": "B",
+    "domain": "currency",
+    "games": [
+      "cfm",
+      "pt",
+      "ptg"
+    ],
+    "owner": "gds-monetization",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-gem-balance-current",
+    "usedBySegments": 3,
+    "usedByCampaigns": 2
+  },
+  {
+    "name": "cf_coin_balance_current",
+    "displayName": "CF Coin Balance (Current)",
+    "type": "int",
+    "latencyTier": "<1h",
+    "substrate": "B",
+    "domain": "currency",
+    "games": [
+      "cfm"
+    ],
+    "owner": "gds-cfm",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-cf-coin-balance-current",
+    "usedBySegments": 2,
+    "usedByCampaigns": 2
+  },
+  {
+    "name": "premium_currency_balance",
+    "displayName": "Premium Currency Balance",
+    "type": "int",
+    "latencyTier": "<1h",
+    "substrate": "B",
+    "domain": "currency",
+    "games": [
+      "pt",
+      "nth",
+      "tf",
+      "cos",
+      "ptg"
+    ],
+    "owner": "gds-monetization",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-premium-currency-balance",
+    "usedBySegments": 2,
+    "usedByCampaigns": 2
+  },
+  {
+    "name": "session_count_30d",
+    "displayName": "Session Count (30d)",
+    "type": "int",
+    "latencyTier": "<1d",
+    "substrate": "B",
+    "domain": "engagement",
+    "games": [
+      "cfm",
+      "pt",
+      "nth",
+      "tf",
+      "cos",
+      "ptg"
+    ],
+    "owner": "gds-engagement",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-session-count-30d",
+    "usedBySegments": 4,
+    "usedByCampaigns": 3
+  },
+  {
+    "name": "session_count_7d",
+    "displayName": "Session Count (7d)",
+    "type": "int",
+    "latencyTier": "<1d",
+    "substrate": "B",
+    "domain": "engagement",
+    "games": [
+      "cfm",
+      "pt",
+      "nth",
+      "tf",
+      "cos",
+      "ptg"
+    ],
+    "owner": "gds-engagement",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-session-count-7d",
+    "usedBySegments": 3,
+    "usedByCampaigns": 3
+  },
+  {
+    "name": "session_count_1d",
+    "displayName": "Session Count (Today)",
+    "type": "int",
+    "latencyTier": "<1h",
+    "substrate": "B",
+    "domain": "engagement",
+    "games": [
+      "cfm",
+      "pt",
+      "nth",
+      "tf",
+      "cos",
+      "ptg"
+    ],
+    "owner": "gds-engagement",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-session-count-1d",
+    "usedBySegments": 2,
+    "usedByCampaigns": 2
+  },
+  {
+    "name": "avg_session_duration_30d",
+    "displayName": "Avg Session Duration (30d)",
+    "type": "numeric",
+    "latencyTier": "<1d",
+    "substrate": "B",
+    "domain": "engagement",
+    "games": [
+      "cfm",
+      "pt",
+      "nth",
+      "tf",
+      "cos",
+      "ptg"
+    ],
+    "owner": "gds-engagement",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-avg-session-duration-30d",
+    "usedBySegments": 2,
+    "usedByCampaigns": 1
+  },
+  {
+    "name": "daily_login_streak_current",
+    "displayName": "Daily Login Streak (Current)",
+    "type": "int",
+    "latencyTier": "<1d",
+    "substrate": "B",
+    "domain": "engagement",
+    "games": [
+      "cfm",
+      "pt",
+      "nth",
+      "tf",
+      "cos",
+      "ptg"
+    ],
+    "owner": "gds-engagement",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-daily-login-streak-current",
+    "usedBySegments": 3,
+    "usedByCampaigns": 2
+  },
+  {
+    "name": "daily_login_streak_max",
+    "displayName": "Daily Login Streak (Max Ever)",
+    "type": "int",
+    "latencyTier": "<1d",
+    "substrate": "B",
+    "domain": "engagement",
+    "games": [
+      "cfm",
+      "pt",
+      "nth",
+      "tf",
+      "cos",
+      "ptg"
+    ],
+    "owner": "gds-engagement",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-daily-login-streak-max",
+    "usedBySegments": 2,
+    "usedByCampaigns": 1
+  },
+  {
+    "name": "mission_completion_rate_30d",
+    "displayName": "Mission Completion Rate (30d)",
+    "type": "numeric",
+    "latencyTier": "<1d",
+    "substrate": "B",
+    "domain": "engagement",
+    "games": [
+      "cfm",
+      "nth",
+      "tf",
+      "ptg"
+    ],
+    "owner": "gds-engagement",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-mission-completion-rate-30d",
+    "usedBySegments": 2,
+    "usedByCampaigns": 1
+  },
+  {
+    "name": "mission_completion_count_7d",
+    "displayName": "Mission Completion Count (7d)",
+    "type": "int",
+    "latencyTier": "<1d",
+    "substrate": "B",
+    "domain": "engagement",
+    "games": [
+      "cfm",
+      "nth",
+      "tf",
+      "ptg"
+    ],
+    "owner": "gds-engagement",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-mission-completion-count-7d",
+    "usedBySegments": 1,
+    "usedByCampaigns": 1
+  },
+  {
+    "name": "chapter_progress_max",
+    "displayName": "Chapter Progress (Max)",
+    "type": "int",
+    "latencyTier": "<1d",
+    "substrate": "B",
+    "domain": "engagement",
+    "games": [
+      "nth",
+      "tf"
+    ],
+    "owner": "gds-tf",
+    "status": "active",
+    "addedAt": "2025-02-01",
+    "sparklineKey": "spk-chapter-progress-max",
+    "usedBySegments": 2,
+    "usedByCampaigns": 2
+  },
+  {
+    "name": "ranked_match_count_lifetime",
+    "displayName": "Ranked Match Count (Lifetime)",
+    "type": "int",
+    "latencyTier": "<1h",
+    "substrate": "B",
+    "domain": "gameplay-cfm",
+    "games": [
+      "cfm"
+    ],
+    "owner": "gds-cfm",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-ranked-match-count-lifetime",
+    "usedBySegments": 4,
+    "usedByCampaigns": 3
+  },
+  {
+    "name": "ranked_match_count_30d",
+    "displayName": "Ranked Match Count (30d)",
+    "type": "int",
+    "latencyTier": "<1d",
+    "substrate": "B",
+    "domain": "gameplay-cfm",
+    "games": [
+      "cfm"
+    ],
+    "owner": "gds-cfm",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-ranked-match-count-30d",
+    "usedBySegments": 5,
+    "usedByCampaigns": 4
+  },
+  {
+    "name": "ranked_win_rate_30d",
+    "displayName": "Ranked Win Rate (30d)",
+    "type": "numeric",
+    "latencyTier": "<1d",
+    "substrate": "B",
+    "domain": "gameplay-cfm",
+    "games": [
+      "cfm"
+    ],
+    "owner": "gds-cfm",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-ranked-win-rate-30d",
+    "usedBySegments": 3,
+    "usedByCampaigns": 2
+  },
+  {
+    "name": "ranked_win_rate_7d",
+    "displayName": "Ranked Win Rate (7d)",
+    "type": "numeric",
+    "latencyTier": "<1d",
+    "substrate": "B",
+    "domain": "gameplay-cfm",
+    "games": [
+      "cfm"
+    ],
+    "owner": "gds-cfm",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-ranked-win-rate-7d",
+    "usedBySegments": 2,
+    "usedByCampaigns": 2
+  },
+  {
+    "name": "mmr_current",
+    "displayName": "MMR (Current)",
+    "type": "int",
+    "latencyTier": "<1h",
+    "substrate": "B",
+    "domain": "gameplay-cfm",
+    "games": [
+      "cfm"
+    ],
+    "owner": "gds-cfm",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-mmr-current",
+    "usedBySegments": 4,
+    "usedByCampaigns": 3
+  },
+  {
+    "name": "mmr_drift_7d",
+    "displayName": "MMR Drift (7d)",
+    "type": "int",
+    "latencyTier": "<1d",
+    "substrate": "B",
+    "domain": "gameplay-cfm",
+    "games": [
+      "cfm"
+    ],
+    "owner": "gds-cfm",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-mmr-drift-7d",
+    "usedBySegments": 3,
+    "usedByCampaigns": 3,
+    "definition": {
+      "exprLang": "@features.mmr_current - @features.mmr_7d_ago",
+      "dbtSql": "SELECT uid, mmr_current - mmr_7d_ago AS mmr_drift_7d FROM {{ ref(\"fct_player_mmr_daily\") }} WHERE date = current_date"
+    }
+  },
+  {
+    "name": "rank_points_current",
+    "displayName": "Rank Points (Current)",
+    "type": "int",
+    "latencyTier": "<1h",
+    "substrate": "B",
+    "domain": "gameplay-cfm",
+    "games": [
+      "cfm"
+    ],
+    "owner": "gds-cfm",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-rank-points-current",
+    "usedBySegments": 3,
+    "usedByCampaigns": 2
+  },
+  {
+    "name": "rank_tier_current",
+    "displayName": "Rank Tier (Current)",
+    "type": "int",
+    "latencyTier": "<1h",
+    "substrate": "B",
+    "domain": "gameplay-cfm",
+    "games": [
+      "cfm"
+    ],
+    "owner": "gds-cfm",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-rank-tier-current",
+    "usedBySegments": 3,
+    "usedByCampaigns": 2
+  },
+  {
+    "name": "demotion_threshold_distance",
+    "displayName": "Demotion Threshold Distance",
+    "type": "int",
+    "latencyTier": "<1h",
+    "substrate": "B",
+    "domain": "gameplay-cfm",
+    "games": [
+      "cfm"
+    ],
+    "owner": "gds-cfm",
+    "status": "active",
+    "addedAt": "2025-02-01",
+    "sparklineKey": "spk-demotion-threshold-distance",
+    "usedBySegments": 2,
+    "usedByCampaigns": 1,
+    "definition": {
+      "exprLang": "@features.rank_points_current - @features.tier_min",
+      "dbtSql": "SELECT uid, rank_points_current - tier_floor_points AS demotion_threshold_distance FROM {{ ref(\"fct_player_rank_snapshot\") }} WHERE date = current_date"
+    }
+  },
+  {
+    "name": "is_in_demotion_zone",
+    "displayName": "Is In Demotion Zone",
+    "type": "bool",
+    "latencyTier": "<1h",
+    "substrate": "B",
+    "domain": "gameplay-cfm",
+    "games": [
+      "cfm"
+    ],
+    "owner": "gds-cfm",
+    "status": "active",
+    "addedAt": "2025-02-01",
+    "sparklineKey": "spk-is-in-demotion-zone",
+    "usedBySegments": 2,
+    "usedByCampaigns": 1,
+    "definition": {
+      "exprLang": "@features.demotion_threshold_distance <= 10",
+      "dbtSql": "SELECT uid, (demotion_threshold_distance <= 10) AS is_in_demotion_zone FROM {{ ref(\"fct_player_rank_snapshot\") }} WHERE date = current_date"
+    }
+  },
+  {
+    "name": "consecutive_ranked_losses_streak",
+    "displayName": "Consecutive Ranked Losses Streak",
+    "type": "int",
+    "latencyTier": "<1s",
+    "substrate": "A",
+    "domain": "stateful-streaks",
+    "games": [
+      "cfm"
+    ],
+    "owner": "gds-cfm",
+    "status": "active",
+    "dualTier": true,
+    "addedAt": "2025-03-01",
+    "sparklineKey": "spk-consecutive-ranked-losses-streak",
+    "usedBySegments": 3,
+    "usedByCampaigns": 2,
+    "definition": {
+      "exprLang": "# Substrate A — TEE online state evaluation at event_match_end\nWHEN event_match_end.outcome = \"lose\"\n  THEN @state.consecutive_ranked_losses_streak + 1\nWHEN event_match_end.outcome = \"win\"\n  THEN 0\nELSE @state.consecutive_ranked_losses_streak",
+      "dbtSql": "-- Substrate B — Hatchet/Trino warm tier refresh every <1h\n-- Counts consecutive ranked losses from ranked match history,\n-- resetting to 0 on any win. CDC-synced from TEE state store.\nWITH ranked_matches AS (\n  SELECT\n    uid,\n    match_ts,\n    outcome,\n    ROW_NUMBER() OVER (PARTITION BY uid ORDER BY match_ts DESC) AS rn\n  FROM {{ ref(\"fct_cfm_ranked_match_results\") }}\n  WHERE match_mode = 'ranked'\n),\nloss_runs AS (\n  SELECT\n    uid,\n    match_ts,\n    outcome,\n    rn,\n    SUM(CASE WHEN outcome = 'win' THEN 1 ELSE 0 END)\n      OVER (PARTITION BY uid ORDER BY rn) AS win_reset_group\n  FROM ranked_matches\n)\nSELECT\n  uid,\n  COUNT(*) AS consecutive_ranked_losses_streak\nFROM loss_runs\nWHERE outcome = 'lose'\n  AND win_reset_group = (\n    SELECT MIN(win_reset_group)\n    FROM loss_runs lr2\n    WHERE lr2.uid = loss_runs.uid\n  )\nGROUP BY uid"
+    }
+  },
+  {
+    "name": "consecutive_ranked_wins_streak",
+    "displayName": "Consecutive Ranked Wins Streak",
+    "type": "int",
+    "latencyTier": "<1s",
+    "substrate": "A",
+    "domain": "stateful-streaks",
+    "games": [
+      "cfm"
+    ],
+    "owner": "gds-cfm",
+    "status": "active",
+    "dualTier": true,
+    "addedAt": "2025-03-01",
+    "sparklineKey": "spk-consecutive-ranked-wins-streak",
+    "usedBySegments": 1,
+    "usedByCampaigns": 1,
+    "definition": {
+      "exprLang": "# Substrate A — TEE online state evaluation at event_match_end\nWHEN event_match_end.outcome = \"win\"\n  THEN @state.consecutive_ranked_wins_streak + 1\nWHEN event_match_end.outcome = \"lose\"\n  THEN 0\nELSE @state.consecutive_ranked_wins_streak",
+      "dbtSql": "-- Substrate B — inverse of consecutive_ranked_losses_streak\nWITH ranked_matches AS (\n  SELECT uid, match_ts, outcome,\n    ROW_NUMBER() OVER (PARTITION BY uid ORDER BY match_ts DESC) AS rn\n  FROM {{ ref(\"fct_cfm_ranked_match_results\") }}\n  WHERE match_mode = 'ranked'\n),\nwin_runs AS (\n  SELECT uid, match_ts, outcome, rn,\n    SUM(CASE WHEN outcome = 'lose' THEN 1 ELSE 0 END)\n      OVER (PARTITION BY uid ORDER BY rn) AS loss_reset_group\n  FROM ranked_matches\n)\nSELECT uid, COUNT(*) AS consecutive_ranked_wins_streak\nFROM win_runs\nWHERE outcome = 'win'\n  AND loss_reset_group = (\n    SELECT MIN(loss_reset_group) FROM win_runs wr2 WHERE wr2.uid = win_runs.uid\n  )\nGROUP BY uid"
+    }
+  },
+  {
+    "name": "weapon_owned_lifetime",
+    "displayName": "Weapons Owned (Lifetime)",
+    "type": "array<string>",
+    "latencyTier": "<1d",
+    "substrate": "B",
+    "domain": "inventory",
+    "games": [
+      "cfm"
+    ],
+    "owner": "gds-cfm",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-weapon-owned-lifetime",
+    "usedBySegments": 3,
+    "usedByCampaigns": 2
+  },
+  {
+    "name": "weapon_count_owned",
+    "displayName": "Weapon Count Owned",
+    "type": "int",
+    "latencyTier": "<1d",
+    "substrate": "B",
+    "domain": "inventory",
+    "games": [
+      "cfm"
+    ],
+    "owner": "gds-cfm",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-weapon-count-owned",
+    "usedBySegments": 2,
+    "usedByCampaigns": 1
+  },
+  {
+    "name": "housing_items_owned",
+    "displayName": "Housing Items Owned",
+    "type": "array<string>",
+    "latencyTier": "<1d",
+    "substrate": "B",
+    "domain": "inventory",
+    "games": [
+      "pt",
+      "ptg"
+    ],
+    "owner": "gds-nth",
+    "status": "active",
+    "addedAt": "2025-02-14",
+    "sparklineKey": "spk-housing-items-owned",
+    "usedBySegments": 1,
+    "usedByCampaigns": 1
+  },
+  {
+    "name": "char_skins_owned",
+    "displayName": "Character Skins Owned",
+    "type": "array<string>",
+    "latencyTier": "<1d",
+    "substrate": "B",
+    "domain": "inventory",
+    "games": [
+      "cfm",
+      "pt",
+      "nth",
+      "tf",
+      "cos"
+    ],
+    "owner": "gds-monetization",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-char-skins-owned",
+    "usedBySegments": 2,
+    "usedByCampaigns": 2
+  },
+  {
+    "name": "specific_pack_owned",
+    "displayName": "Specific Pack Owned (Per-SKU)",
+    "type": "bool",
+    "latencyTier": "<1h",
+    "substrate": "B",
+    "domain": "inventory",
+    "games": [
+      "cfm",
+      "pt",
+      "nth",
+      "tf",
+      "cos",
+      "ptg"
+    ],
+    "owner": "gds-monetization",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-specific-pack-owned",
+    "usedBySegments": 2,
+    "usedByCampaigns": 3
+  },
+  {
+    "name": "promoted_weapon_list",
+    "displayName": "Promoted Weapon List",
+    "type": "array<string>",
+    "latencyTier": "<1h",
+    "substrate": "B",
+    "domain": "promotion-config",
+    "games": [
+      "cfm"
+    ],
+    "owner": "gds-cfm",
+    "status": "active",
+    "addedAt": "2025-02-01",
+    "sparklineKey": "spk-promoted-weapon-list",
+    "usedBySegments": 1,
+    "usedByCampaigns": 2
+  },
+  {
+    "name": "promoted_item_active_count",
+    "displayName": "Promoted Item Active Count",
+    "type": "int",
+    "latencyTier": "<1h",
+    "substrate": "B",
+    "domain": "promotion-config",
+    "games": [
+      "cfm",
+      "pt",
+      "nth",
+      "tf",
+      "cos",
+      "ptg"
+    ],
+    "owner": "gds-cfm",
+    "status": "active",
+    "addedAt": "2025-02-01",
+    "sparklineKey": "spk-promoted-item-active-count",
+    "usedBySegments": 1,
+    "usedByCampaigns": 2
+  },
+  {
+    "name": "weapon_promotion_active_count",
+    "displayName": "Weapon Promotion Active Count",
+    "type": "int",
+    "latencyTier": "<1h",
+    "substrate": "B",
+    "domain": "promotion-config",
+    "games": [
+      "cfm"
+    ],
+    "owner": "gds-cfm",
+    "status": "active",
+    "addedAt": "2025-02-01",
+    "sparklineKey": "spk-weapon-promotion-active-count",
+    "usedBySegments": 1,
+    "usedByCampaigns": 1
+  },
+  {
+    "name": "guild_id",
+    "displayName": "Guild ID",
+    "type": "string",
+    "latencyTier": "<1d",
+    "substrate": "B",
+    "domain": "social-playstyle",
+    "games": [
+      "nth",
+      "tf",
+      "ptg"
+    ],
+    "owner": "gds-social",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-guild-id",
+    "usedBySegments": 2,
+    "usedByCampaigns": 1
+  },
+  {
+    "name": "guild_role",
+    "displayName": "Guild Role",
+    "type": "enum",
+    "latencyTier": "<1d",
+    "substrate": "B",
+    "domain": "social-playstyle",
+    "games": [
+      "nth",
+      "tf",
+      "ptg"
+    ],
+    "owner": "gds-social",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-guild-role",
+    "usedBySegments": 1,
+    "usedByCampaigns": 1
+  },
+  {
+    "name": "guild_contribution_30d",
+    "displayName": "Guild Contribution (30d)",
+    "type": "numeric",
+    "latencyTier": "<1d",
+    "substrate": "B",
+    "domain": "social-playstyle",
+    "games": [
+      "nth",
+      "tf",
+      "ptg"
+    ],
+    "owner": "gds-social",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-guild-contribution-30d",
+    "usedBySegments": 1,
+    "usedByCampaigns": 1
+  },
+  {
+    "name": "dominant_playstyle",
+    "displayName": "Dominant Playstyle",
+    "type": "enum",
+    "latencyTier": "<1d",
+    "substrate": "B",
+    "domain": "social-playstyle",
+    "games": [
+      "cfm",
+      "pt",
+      "tf"
+    ],
+    "owner": "gds-engagement",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-dominant-playstyle",
+    "usedBySegments": 3,
+    "usedByCampaigns": 2
+  },
+  {
+    "name": "pvp_engagement_score",
+    "displayName": "PvP Engagement Score",
+    "type": "numeric",
+    "latencyTier": "<1d",
+    "substrate": "B",
+    "domain": "social-playstyle",
+    "games": [
+      "cfm",
+      "tf"
+    ],
+    "owner": "gds-engagement",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-pvp-engagement-score",
+    "usedBySegments": 2,
+    "usedByCampaigns": 1
+  },
+  {
+    "name": "social_engagement_score",
+    "displayName": "Social Engagement Score",
+    "type": "numeric",
+    "latencyTier": "<1d",
+    "substrate": "B",
+    "domain": "social-playstyle",
+    "games": [
+      "pt",
+      "nth",
+      "tf",
+      "ptg"
+    ],
+    "owner": "gds-social",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-social-engagement-score",
+    "usedBySegments": 2,
+    "usedByCampaigns": 1
+  },
+  {
+    "name": "ugc_creator_score",
+    "displayName": "UGC Creator Score",
+    "type": "numeric",
+    "latencyTier": "<1d",
+    "substrate": "B",
+    "domain": "social-playstyle",
+    "games": [
+      "pt",
+      "ptg"
+    ],
+    "owner": "gds-nth",
+    "status": "active",
+    "addedAt": "2025-02-14",
+    "sparklineKey": "spk-ugc-creator-score",
+    "usedBySegments": 2,
+    "usedByCampaigns": 2
+  },
+  {
+    "name": "ugc_voter_score",
+    "displayName": "UGC Voter Score",
+    "type": "numeric",
+    "latencyTier": "<1d",
+    "substrate": "B",
+    "domain": "social-playstyle",
+    "games": [
+      "pt",
+      "ptg"
+    ],
+    "owner": "gds-nth",
+    "status": "active",
+    "addedAt": "2025-02-14",
+    "sparklineKey": "spk-ugc-voter-score",
+    "usedBySegments": 1,
+    "usedByCampaigns": 1
+  },
+  {
+    "name": "mong_hoa_luc_popularity_score",
+    "displayName": "Mộng Hóa Lục Popularity Score",
+    "type": "numeric",
+    "latencyTier": "<1h",
+    "substrate": "B",
+    "domain": "social-playstyle",
+    "games": [
+      "nth"
+    ],
+    "owner": "gds-nth",
+    "status": "active",
+    "addedAt": "2025-02-14",
+    "sparklineKey": "spk-mong-hoa-luc-popularity-score",
+    "usedBySegments": 1,
+    "usedByCampaigns": 1
+  },
+  {
+    "name": "anti_fraud_trust_score",
+    "displayName": "Anti-Fraud Trust Score",
+    "type": "numeric",
+    "latencyTier": "<1h",
+    "substrate": "B",
+    "domain": "social-playstyle",
+    "games": [
+      "cfm",
+      "pt",
+      "nth",
+      "tf",
+      "cos",
+      "ptg"
+    ],
+    "owner": "gds-security",
+    "status": "active",
+    "addedAt": "2025-03-01",
+    "sparklineKey": "spk-anti-fraud-trust-score",
+    "usedBySegments": 2,
+    "usedByCampaigns": 1
+  },
+  {
+    "name": "cs_flag",
+    "displayName": "Customer Service Flag",
+    "type": "enum",
+    "latencyTier": "<1h",
+    "substrate": "B",
+    "domain": "social-playstyle",
+    "games": [
+      "cfm",
+      "pt",
+      "nth",
+      "tf",
+      "cos",
+      "ptg"
+    ],
+    "owner": "gds-cx",
+    "status": "active",
+    "addedAt": "2025-03-01",
+    "sparklineKey": "spk-cs-flag",
+    "usedBySegments": 1,
+    "usedByCampaigns": 1
+  },
+  {
+    "name": "marketing_consent_flag",
+    "displayName": "Marketing Consent Flag",
+    "type": "bool",
+    "latencyTier": "<1d",
+    "substrate": "B",
+    "domain": "social-playstyle",
+    "games": [
+      "cfm",
+      "pt",
+      "nth",
+      "tf",
+      "cos",
+      "ptg"
+    ],
+    "owner": "gds-lifecycle",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-marketing-consent-flag",
+    "usedBySegments": 3,
+    "usedByCampaigns": 4
+  },
+  {
+    "name": "is_test_account",
+    "displayName": "Is Test Account",
+    "type": "bool",
+    "latencyTier": "<1d",
+    "substrate": "B",
+    "domain": "test-system",
+    "games": [
+      "cfm",
+      "pt",
+      "nth",
+      "tf",
+      "cos",
+      "ptg"
+    ],
+    "owner": "gds-platform",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-is-test-account",
+    "usedBySegments": 13,
+    "usedByCampaigns": 7
+  },
+  {
+    "name": "is_internal_user",
+    "displayName": "Is Internal User",
+    "type": "bool",
+    "latencyTier": "<1d",
+    "substrate": "B",
+    "domain": "test-system",
+    "games": [
+      "cfm",
+      "pt",
+      "nth",
+      "tf",
+      "cos",
+      "ptg"
+    ],
+    "owner": "gds-platform",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-is-internal-user",
+    "usedBySegments": 8,
+    "usedByCampaigns": 5
+  },
+  {
+    "name": "last_iam_received_ts",
+    "displayName": "Last IAM Received (Timestamp)",
+    "type": "timestamp",
+    "latencyTier": "<1h",
+    "substrate": "B",
+    "domain": "campaign-engagement",
+    "games": [
+      "cfm",
+      "pt",
+      "nth",
+      "tf",
+      "cos",
+      "ptg"
+    ],
+    "owner": "gds-platform",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-last-iam-received-ts",
+    "usedBySegments": 2,
+    "usedByCampaigns": 5
+  },
+  {
+    "name": "iam_received_count_24h",
+    "displayName": "IAM Received Count (24h)",
+    "type": "int",
+    "latencyTier": "<1h",
+    "substrate": "B",
+    "domain": "campaign-engagement",
+    "games": [
+      "cfm",
+      "pt",
+      "nth",
+      "tf",
+      "cos",
+      "ptg"
+    ],
+    "owner": "gds-platform",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-iam-received-count-24h",
+    "usedBySegments": 1,
+    "usedByCampaigns": 6
+  },
+  {
+    "name": "iam_received_count_7d",
+    "displayName": "IAM Received Count (7d)",
+    "type": "int",
+    "latencyTier": "<1h",
+    "substrate": "B",
+    "domain": "campaign-engagement",
+    "games": [
+      "cfm",
+      "pt",
+      "nth",
+      "tf",
+      "cos",
+      "ptg"
+    ],
+    "owner": "gds-platform",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-iam-received-count-7d",
+    "usedBySegments": 1,
+    "usedByCampaigns": 3
+  },
+  {
+    "name": "last_campaign_id_received",
+    "displayName": "Last Campaign ID Received",
+    "type": "string",
+    "latencyTier": "<1h",
+    "substrate": "B",
+    "domain": "campaign-engagement",
+    "games": [
+      "cfm",
+      "pt",
+      "nth",
+      "tf",
+      "cos",
+      "ptg"
+    ],
+    "owner": "gds-platform",
+    "status": "active",
+    "addedAt": "2025-01-10",
+    "sparklineKey": "spk-last-campaign-id-received",
+    "usedBySegments": 0,
+    "usedByCampaigns": 2
+  },
+  {
+    "name": "pltv_30d_score",
+    "displayName": "Predicted 30-Day LTV",
+    "type": "numeric",
+    "latencyTier": "<1d",
+    "substrate": "B",
+    "domain": "predictive",
+    "games": [
+      "cfm",
+      "pt",
+      "nth",
+      "tf",
+      "cos",
+      "ptg"
+    ],
+    "platform": true,
+    "propensityModel": {
+      "family": "pltv",
+      "target": "30d_revenue",
+      "trainingWindowDays": 90,
+      "aucBand": "0.78-0.82",
+      "modelVersion": "v3.2",
+      "refreshCadence": "daily"
+    },
+    "owner": "gds-ml-platform",
+    "status": "active",
+    "addedAt": "2026-02-15",
+    "sparklineKey": "spk-pltv-30d-score",
+    "usedBySegments": 12,
+    "usedByCampaigns": 18,
+    "definition": {
+      "exprLang": "# Substrate B — served from offline cache; not computed at TEE\n# Real-time evaluation reads the last refreshed value (≤24h staleness).\n@features.pltv_30d_score",
+      "dbtSql": "-- Substrate B — materialized by GDS ML pipeline (ml/pltv_30d.py).\n-- Refresh cadence: daily at 06:00 ICT after batch features land.\nSELECT\n  uid,\n  score AS pltv_30d_score\nFROM {{ source(\"ml\", \"pltv_30d_predictions\") }}\nWHERE ds = CURRENT_DATE"
+    }
+  },
+  {
+    "name": "churn_7d_propensity",
+    "displayName": "Churn-in-7-Days Propensity",
+    "type": "numeric",
+    "latencyTier": "<1d",
+    "substrate": "B",
+    "domain": "predictive",
+    "games": [
+      "cfm",
+      "pt",
+      "nth",
+      "tf",
+      "cos",
+      "ptg"
+    ],
+    "platform": true,
+    "propensityModel": {
+      "family": "churn",
+      "target": "7d_churn",
+      "trainingWindowDays": 60,
+      "aucBand": "0.81-0.85",
+      "modelVersion": "v2.4",
+      "refreshCadence": "daily"
+    },
+    "owner": "gds-ml-platform",
+    "status": "active",
+    "addedAt": "2026-01-20",
+    "sparklineKey": "spk-churn-7d-propensity",
+    "usedBySegments": 9,
+    "usedByCampaigns": 14,
+    "definition": {
+      "exprLang": "# Substrate B — XGBoost classifier output, cached daily\n@features.churn_7d_propensity",
+      "dbtSql": "-- Substrate B — last 60 days of session/spend signals fed into\n-- the churn classifier. Score range [0, 1]; higher = more likely to churn.\nSELECT\n  uid,\n  score AS churn_7d_propensity\nFROM {{ source(\"ml\", \"churn_7d_predictions\") }}\nWHERE ds = CURRENT_DATE"
+    }
+  },
+  {
+    "name": "reactivation_propensity",
+    "displayName": "Reactivation Propensity",
+    "type": "numeric",
+    "latencyTier": "<1d",
+    "substrate": "B",
+    "domain": "predictive",
+    "games": [
+      "cfm",
+      "pt",
+      "nth",
+      "tf",
+      "cos",
+      "ptg"
+    ],
+    "platform": true,
+    "propensityModel": {
+      "family": "reactivation",
+      "target": "14d_return",
+      "trainingWindowDays": 180,
+      "aucBand": "0.72-0.76",
+      "modelVersion": "v1.7",
+      "refreshCadence": "weekly"
+    },
+    "owner": "gds-ml-platform",
+    "status": "active",
+    "addedAt": "2026-03-05",
+    "sparklineKey": "spk-reactivation-propensity",
+    "usedBySegments": 6,
+    "usedByCampaigns": 9,
+    "definition": {
+      "exprLang": "# Substrate B — win-back probability; refreshed weekly\n@features.reactivation_propensity",
+      "dbtSql": "-- Substrate B — for users in lapsed/churned lifecycle stage,\n-- predict P(return within 14 days). Trained on 180d rolling window.\nSELECT\n  uid,\n  score AS reactivation_propensity\nFROM {{ source(\"ml\", \"reactivation_predictions\") }}\nWHERE ds = DATE_TRUNC('week', CURRENT_DATE)"
+    }
+  }
+]

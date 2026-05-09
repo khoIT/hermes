@@ -114,6 +114,212 @@ export async function deleteRawAggregates(sourceTable: string, isSynthesized: bo
   return res.rowCount ?? 0;
 }
 
+// ── feature_values ──────────────────────────────────────────────────
+
+export type FeatureValueRow = {
+  featureName:    string;
+  uid:            string;
+  valueText:      string | null;
+  valueNumeric:   number | null;
+  isSynthesized:  boolean;
+};
+
+/** Wipe all rows for a feature; used for idempotent rewrites. */
+export async function deleteFeatureValues(featureName: string): Promise<number> {
+  const pool = getPool();
+  const res = await pool.query('DELETE FROM feature_values WHERE feature_name = $1', [featureName]);
+  return res.rowCount ?? 0;
+}
+
+export async function bulkUpsertFeatureValues(rows: FeatureValueRow[]): Promise<number> {
+  if (rows.length === 0) return 0;
+  const pool = getPool();
+  let total = 0;
+  const client = await pool.connect();
+  try {
+    for (let i = 0; i < rows.length; i += BATCH_SIZE) {
+      const batch = rows.slice(i, i + BATCH_SIZE);
+      const placeholders: string[] = [];
+      const params: unknown[] = [];
+      let p = 1;
+      for (const r of batch) {
+        placeholders.push(`($${p++}, $${p++}, $${p++}, $${p++}, $${p++}, NOW())`);
+        params.push(r.featureName, r.uid, r.valueText, r.valueNumeric, r.isSynthesized);
+      }
+      await client.query(
+        `INSERT INTO feature_values (feature_name, uid, value_text, value_numeric, is_synthesized, computed_at)
+         VALUES ${placeholders.join(',')}
+         ON CONFLICT (feature_name, uid) DO UPDATE SET
+           value_text     = EXCLUDED.value_text,
+           value_numeric  = EXCLUDED.value_numeric,
+           is_synthesized = EXCLUDED.is_synthesized,
+           computed_at    = NOW()`,
+        params,
+      );
+      total += batch.length;
+    }
+  } finally {
+    client.release();
+  }
+  return total;
+}
+
+// ── feature_distributions_daily ────────────────────────────────────
+
+export type FeatureDistributionRow = {
+  featureName:    string;
+  snapshotDate:   string;
+  bucketKind:     'numeric' | 'categorical';
+  buckets:        unknown;
+  totalUids:      number;
+  nullCount:      number;
+  distinctCount:  number;
+  isSynthesized:  boolean;
+};
+
+export async function deleteFeatureDistributions(featureName: string): Promise<number> {
+  const pool = getPool();
+  const res = await pool.query('DELETE FROM feature_distributions_daily WHERE feature_name = $1', [featureName]);
+  return res.rowCount ?? 0;
+}
+
+export async function bulkUpsertFeatureDistributions(rows: FeatureDistributionRow[]): Promise<number> {
+  if (rows.length === 0) return 0;
+  const pool = getPool();
+  const client = await pool.connect();
+  try {
+    const placeholders: string[] = [];
+    const params: unknown[] = [];
+    let p = 1;
+    for (const r of rows) {
+      placeholders.push(`($${p++}, $${p++}, $${p++}, $${p++}, $${p++}, $${p++}, $${p++}, $${p++}, NOW())`);
+      params.push(
+        r.featureName, r.snapshotDate, r.bucketKind,
+        JSON.stringify(r.buckets),
+        r.totalUids, r.nullCount, r.distinctCount, r.isSynthesized,
+      );
+    }
+    await client.query(
+      `INSERT INTO feature_distributions_daily (
+         feature_name, snapshot_date, bucket_kind, buckets,
+         total_uids, null_count, distinct_count, is_synthesized, computed_at
+       ) VALUES ${placeholders.join(',')}
+       ON CONFLICT (feature_name, snapshot_date) DO UPDATE SET
+         bucket_kind     = EXCLUDED.bucket_kind,
+         buckets         = EXCLUDED.buckets,
+         total_uids      = EXCLUDED.total_uids,
+         null_count      = EXCLUDED.null_count,
+         distinct_count  = EXCLUDED.distinct_count,
+         is_synthesized  = EXCLUDED.is_synthesized,
+         computed_at     = NOW()`,
+      params,
+    );
+  } finally {
+    client.release();
+  }
+  return rows.length;
+}
+
+// ── feature_analytics_180d ─────────────────────────────────────────
+
+export type FeatureAnalyticsRow = {
+  featureName:           string;
+  usageCount180d:        number;
+  driftScore:            number;
+  driftEventDates:       string[];
+  freshnessSlaMet:       number;
+  nullRate:              number;
+  distinctValuesP50:     number;
+  topConsumingCampaigns: unknown;
+  requestRateSparkline:  number[];
+  lastBackfillAt:        Date | null;
+  p99LookupLatencyMs:    number | null;
+  coverageOfMau:         number | null;
+  medianLagMinutes:      number | null;
+  lastSlaMissAt:         Date | null;
+  source:                'real' | 'hybrid' | 'synth';
+};
+
+export async function upsertFeatureAnalytics(row: FeatureAnalyticsRow): Promise<void> {
+  const pool = getPool();
+  await pool.query(
+    `INSERT INTO feature_analytics_180d (
+       feature_name, usage_count_180d, drift_score, drift_event_dates,
+       freshness_sla_met, null_rate, distinct_values_p50,
+       top_consuming_campaigns, request_rate_sparkline, last_backfill_at,
+       p99_lookup_latency_ms, coverage_of_mau, median_lag_minutes,
+       last_sla_miss_at, source, computed_at
+     ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, NOW())
+     ON CONFLICT (feature_name) DO UPDATE SET
+       usage_count_180d        = EXCLUDED.usage_count_180d,
+       drift_score             = EXCLUDED.drift_score,
+       drift_event_dates       = EXCLUDED.drift_event_dates,
+       freshness_sla_met       = EXCLUDED.freshness_sla_met,
+       null_rate               = EXCLUDED.null_rate,
+       distinct_values_p50     = EXCLUDED.distinct_values_p50,
+       top_consuming_campaigns = EXCLUDED.top_consuming_campaigns,
+       request_rate_sparkline  = EXCLUDED.request_rate_sparkline,
+       last_backfill_at        = EXCLUDED.last_backfill_at,
+       p99_lookup_latency_ms   = EXCLUDED.p99_lookup_latency_ms,
+       coverage_of_mau         = EXCLUDED.coverage_of_mau,
+       median_lag_minutes      = EXCLUDED.median_lag_minutes,
+       last_sla_miss_at        = EXCLUDED.last_sla_miss_at,
+       source                  = EXCLUDED.source,
+       computed_at             = NOW()`,
+    [
+      row.featureName, row.usageCount180d, row.driftScore,
+      JSON.stringify(row.driftEventDates),
+      row.freshnessSlaMet, row.nullRate, row.distinctValuesP50,
+      JSON.stringify(row.topConsumingCampaigns),
+      JSON.stringify(row.requestRateSparkline),
+      row.lastBackfillAt,
+      row.p99LookupLatencyMs, row.coverageOfMau, row.medianLagMinutes,
+      row.lastSlaMissAt, row.source,
+    ],
+  );
+}
+
+/**
+ * Stream ALL aggregates (real + synth) for a source table, sorted by
+ * (uid, event_date) so consumers can group by uid in O(1) memory.
+ */
+export async function* streamAllAggregates(sourceTable: string): AsyncGenerator<RawAggregateRow[]> {
+  const pool = getPool();
+  const CHUNK = 10_000;
+  let lastUid = '';
+  let lastEventDate = '1970-01-01';
+
+  while (true) {
+    const res = await pool.query(
+      `SELECT source_table, uid, event_date::text AS event_date, row_count,
+              numeric_sum, numeric_max, numeric_min, last_value, is_synthesized
+       FROM raw_event_aggregates
+       WHERE source_table = $1
+         AND (uid, event_date) > ($2, $3)
+       ORDER BY uid, event_date
+       LIMIT $4`,
+      [sourceTable, lastUid, lastEventDate, CHUNK],
+    );
+    const rowCount = res.rowCount ?? 0;
+    if (rowCount === 0) return;
+    yield res.rows.map((r): RawAggregateRow => ({
+      sourceTable: r.source_table,
+      uid: r.uid,
+      eventDate: r.event_date,
+      rowCount: Number(r.row_count),
+      numericSum: r.numeric_sum,
+      numericMax: r.numeric_max,
+      numericMin: r.numeric_min,
+      lastValue: r.last_value,
+      isSynthesized: r.is_synthesized,
+    }));
+    const last = res.rows[res.rows.length - 1];
+    lastUid = last.uid;
+    lastEventDate = last.event_date;
+    if (rowCount < CHUNK) return;
+  }
+}
+
 /**
  * Stream all real (is_synthesized=false) aggregates for a source table.
  * Used by the synth backfill step. Cursor-style chunks of 10k rows.

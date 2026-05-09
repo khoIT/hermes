@@ -18,6 +18,7 @@ import { MasterTablesModule } from './master-tables/master-tables.module';
 import { PipelinesModule } from './pipelines/pipelines.module';
 import { SchedulerModule } from './scheduler/scheduler.module';
 import { ConnectorsModule } from './connectors/connectors.module';
+import { FeaturesModule } from './features/features.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { ConnectorsModule } from './connectors/connectors.module';
     PipelinesModule,
     SchedulerModule,
     ConnectorsModule,
+    FeaturesModule,
   ],
   providers: [
     { provide: APP_FILTER, useClass: HttpErrorFilter },

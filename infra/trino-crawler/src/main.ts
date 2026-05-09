@@ -38,6 +38,8 @@ import { runEventVolumes } from './steps/04-event-volumes.js';
 import { runSegmentDemographics } from './steps/05-segment-demographics.js';
 import { runRawEventAggregates } from './steps/06-raw-event-aggregates.js';
 import { runSynthesize30dBackfill } from './steps/07-synthesize-30d-backfill.js';
+import { runComputeFeatureValues } from './steps/08-compute-feature-values.js';
+import { runComputeFeatureAnalytics } from './steps/09-compute-feature-analytics.js';
 import { endPool } from './postgres-client.js';
 
 // ── CLI flag parsing ──────────────────────────────────────────────────────────
@@ -52,6 +54,8 @@ type RunMode =
   | 'demographics-only'
   | 'raw-events-only'
   | 'synth-backfill-only'
+  | 'feature-values-only'
+  | 'feature-analytics-only'
   | 'all';
 
 type ParsedArgs = {
@@ -71,6 +75,8 @@ function parseArgs(argv: string[]): ParsedArgs {
   else if (argv.includes('--demographics-only'))  mode = 'demographics-only';
   else if (argv.includes('--raw-events-only'))    mode = 'raw-events-only';
   else if (argv.includes('--synth-backfill-only')) mode = 'synth-backfill-only';
+  else if (argv.includes('--feature-values-only'))   mode = 'feature-values-only';
+  else if (argv.includes('--feature-analytics-only')) mode = 'feature-analytics-only';
 
   // Parse --days=N  and --cap=N  from argv. Defaults: 7d, 500k rows/table.
   const findVal = (flag: string, fallback: number): number => {
@@ -126,6 +132,18 @@ async function main(): Promise<void> {
   }
   if (mode === 'synth-backfill-only') {
     await runSynthesize30dBackfill();
+    await endPool();
+    console.log('\n[crawler] Done.');
+    return;
+  }
+  if (mode === 'feature-values-only') {
+    await runComputeFeatureValues();
+    await endPool();
+    console.log('\n[crawler] Done.');
+    return;
+  }
+  if (mode === 'feature-analytics-only') {
+    await runComputeFeatureAnalytics();
     await endPool();
     console.log('\n[crawler] Done.');
     return;
@@ -204,6 +222,14 @@ async function main(): Promise<void> {
     console.log('');
     console.log('[crawler] Step 07: projecting 23d synth backfill...');
     await runSynthesize30dBackfill();
+
+    console.log('');
+    console.log('[crawler] Step 08: computing per-uid feature values...');
+    await runComputeFeatureValues();
+
+    console.log('');
+    console.log('[crawler] Step 09: building feature_analytics_180d rollup...');
+    await runComputeFeatureAnalytics();
   }
 
   // ── Steps 1-5: Synth fixtures (always run in 'all' mode) ───────────────
