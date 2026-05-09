@@ -6,6 +6,7 @@
 import React from 'react';
 import { T } from '../../../theme';
 import type { HermesFeature } from '@hermes/contracts';
+import { SUBSTRATE_PANE_LABEL } from '../../../components/_logic/latency-labels';
 
 interface DefinitionSideBySideProps {
   feature: HermesFeature;
@@ -106,13 +107,13 @@ export const DefinitionSideBySide: React.FC<DefinitionSideBySideProps> = ({ feat
       {/* Side-by-side blocks */}
       <div style={{ display: 'flex', gap: 12 }}>
         <CodeBlock
-          title="Substrate A · expr-lang"
+          title={SUBSTRATE_PANE_LABEL.A}
           subtitle="Apollo TEE · real-time"
           code={exprLang}
           accentColor={T.green600}
         />
         <CodeBlock
-          title="Substrate B · dbt SQL over Iceberg"
+          title={`${SUBSTRATE_PANE_LABEL.B} over Iceberg`}
           subtitle="Hatchet/Trino · warm batch"
           code={dbtSql}
           accentColor={T.amber500}

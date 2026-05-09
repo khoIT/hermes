@@ -9,6 +9,10 @@ import { T } from '../../../theme';
 import { allFeatures } from '../../../data/catalog/features/index';
 import type { HermesFeature } from '@hermes/contracts';
 import { LatencyBadge } from '../../../components/latency-badge';
+import { DriftBadge } from '../../../components/drift-badge';
+import { GamesChipCluster } from '../../feature-store/_components/games-chip-cluster';
+import { PlatformPropensityChip } from '../../feature-store/_components/platform-propensity-chip';
+import { rankByGameOverlap } from './_logic/rank-candidates';
 
 interface Props {
   featureName: string;
@@ -21,12 +25,19 @@ function featureByName(name: string): HermesFeature | undefined {
   return allFeatures.find(f => f.name === name);
 }
 
-/** Pick 3-5 alternatives: same domain, different name, sorted by usedBySegments desc */
+/**
+ * Pick 3-5 alternatives, ranked by game overlap with the current feature
+ * first, then domain match, then usage count (Phase 6 v2).
+ */
 function getAlternatives(current: HermesFeature): HermesFeature[] {
-  return allFeatures
-    .filter(f => f.domain === current.domain && f.name !== current.name)
-    .sort((a, b) => (b.usedBySegments ?? 0) - (a.usedBySegments ?? 0))
-    .slice(0, 4);
+  const candidates = allFeatures.filter(
+    (f) => f.domain === current.domain && f.name !== current.name,
+  );
+  const ranked = rankByGameOverlap(candidates, {
+    games: current.games,
+    domain: current.domain,
+  });
+  return ranked.slice(0, 4);
 }
 
 function FeatureCard({
@@ -53,13 +64,16 @@ function FeatureCard({
         </span>
         <LatencyBadge tier={feature.latencyTier} substrate={feature.substrate ?? 'B'} />
       </div>
-      <div style={{ display: 'flex', gap: 8 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+        {feature.platform && (
+          <PlatformPropensityChip propensity={feature.propensityModel} size="sm" />
+        )}
+        <GamesChipCluster games={feature.games} size="sm" />
+        <DriftBadge score={feature.analytics.driftScore} />
+      </div>
+      <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
         <span style={{ fontFamily: T.fSans, fontSize: 10, color: T.n500 }}>
           {feature.domain}
-        </span>
-        <span style={{ fontFamily: T.fSans, fontSize: 10, color: T.n400 }}>·</span>
-        <span style={{ fontFamily: T.fSans, fontSize: 10, color: T.n500 }}>
-          {feature.owner}
         </span>
         {(feature.usedBySegments ?? 0) > 0 && (
           <>

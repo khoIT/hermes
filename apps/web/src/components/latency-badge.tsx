@@ -1,13 +1,19 @@
 /**
- * LatencyBadge — mono pill showing feature latency tier + substrate.
- * Single: [<1s · A]  or  [<1h · B]  or  [<1d · B]
- * Dual-tier: shows both badges inline for features with two materializations.
+ * LatencyBadge — PM-facing latency pill (Phase 2 v2).
+ * Renders: [Realtime] / [Batch warm] / [Batch cold] — color-toned per tier.
+ * Dual-tier features render two pills side-by-side (Realtime · Batch warm).
  *
- * Per PRD §6.2 — bracket chars are literal, mono font, no color fill.
+ * Architecture identifier (A/B) is intentionally NOT shown on this badge.
+ * That signal lives on engineer surfaces (handoff modals, definition pane,
+ * lineage detail rows) — see latency-labels.ts.
+ *
+ * Substrate dot is preserved as a subtle ambient cue: orange = TEE realtime,
+ * neutral = batch.
  */
 import React from 'react';
 import { T } from '../theme';
 import type { HermesLatencyTier, HermesSubstrate } from '@hermes/contracts';
+import { TIER_COLORS, TIER_LABEL, TIER_TONE } from './_logic/latency-labels';
 
 export interface LatencyTierItem {
   tier: HermesLatencyTier;
@@ -16,62 +22,61 @@ export interface LatencyTierItem {
 
 interface SingleBadgeProps {
   tier: HermesLatencyTier;
-  substrate: HermesSubstrate;
+  /** Substrate is now decorative — drives the dot color, not the label. */
+  substrate?: HermesSubstrate;
   style?: React.CSSProperties;
 }
 
-// Substrate dot color: A (Apollo TEE · realtime) = deep red accent · B (batch) = neutral gray.
-// Per reference image (PRD §6.2): orange filled dot for substrate A, gray dot for substrate B.
 const SUBSTRATE_DOT: Record<HermesSubstrate, string> = {
-  A: '#f05a22', // deep red — realtime substrate signature
-  B: T.n500,    // neutral gray — batch substrate
+  A: '#f05a22', // realtime substrate signature
+  B: T.n500, // batch substrate
 };
 
-const SUBSTRATE_BG: Record<HermesSubstrate, string> = {
-  A: '#fef0e8', // peach tint — substrate A pill background
-  B: T.n100,    // neutral tint — substrate B pill background
-};
-
-const SUBSTRATE_TEXT: Record<HermesSubstrate, string> = {
-  A: '#a23d18', // darker red text on peach
-  B: T.n700,    // neutral dark text on gray
-};
-
-const SingleBadge = React.memo<SingleBadgeProps>(({ tier, substrate, style }) => (
-  <span style={{
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: 4,
-    fontFamily: T.fMono,
-    fontSize: 11,
-    fontWeight: 500,
-    color: SUBSTRATE_TEXT[substrate],
-    background: SUBSTRATE_BG[substrate],
-    border: `1px solid ${SUBSTRATE_BG[substrate]}`,
-    borderRadius: 999,
-    padding: '2px 8px',
-    letterSpacing: '0.01em',
-    whiteSpace: 'nowrap',
-    lineHeight: 1.4,
-    ...style,
-  }}>
-    <span style={{
-      width: 6,
-      height: 6,
-      borderRadius: '50%',
-      background: SUBSTRATE_DOT[substrate],
-      flexShrink: 0,
-    }} aria-hidden />
-    {`${tier} · ${substrate}`}
-  </span>
-));
+const SingleBadge = React.memo<SingleBadgeProps>(({ tier, substrate, style }) => {
+  const tone = TIER_TONE[tier];
+  const colors = TIER_COLORS[tone];
+  const dot = substrate ? SUBSTRATE_DOT[substrate] : undefined;
+  return (
+    <span
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 5,
+        fontFamily: T.fSans,
+        fontSize: 11,
+        fontWeight: 600,
+        color: colors.fg,
+        background: colors.bg,
+        border: `1px solid ${colors.border}`,
+        borderRadius: 999,
+        padding: '2px 9px',
+        letterSpacing: '0.01em',
+        whiteSpace: 'nowrap',
+        lineHeight: 1.4,
+        ...style,
+      }}
+    >
+      {dot && (
+        <span
+          style={{
+            width: 6,
+            height: 6,
+            borderRadius: '50%',
+            background: dot,
+            flexShrink: 0,
+          }}
+          aria-hidden
+        />
+      )}
+      {TIER_LABEL[tier]}
+    </span>
+  );
+});
 SingleBadge.displayName = 'SingleBadge';
-
-// ── Public API ──────────────────────────────────────────────────────────────
 
 interface LatencyBadgeSingle {
   tier: HermesLatencyTier;
-  substrate: HermesSubstrate;
+  substrate?: HermesSubstrate;
   tiers?: never;
   style?: React.CSSProperties;
 }

@@ -3,9 +3,9 @@
  * Source: Hermes_Demo_Data.md Part 1 §Identity & lifecycle
  * Substrate B · Hatchet + Trino + Iceberg · Latency <1d
  */
-import type { HermesFeature } from '@hermes/contracts';
+import type { HermesFeatureSource } from '@hermes/contracts';
 
-export const identityLifecycleFeatures: HermesFeature[] = [
+export const identityLifecycleFeatures: HermesFeatureSource[] = [
   {
     name: 'account_age_days',
     displayName: 'Account Age (Days)',
@@ -13,6 +13,7 @@ export const identityLifecycleFeatures: HermesFeature[] = [
     latencyTier: '<1d',
     substrate: 'B',
     domain: 'identity-lifecycle',
+    games: ['cfm', 'pt', 'nth', 'tf', 'cos', 'ptg'],
     owner: 'gds-lifecycle',
     status: 'active',
     addedAt: '2025-01-10',
@@ -27,6 +28,7 @@ export const identityLifecycleFeatures: HermesFeature[] = [
     latencyTier: '<1d',
     substrate: 'B',
     domain: 'identity-lifecycle',
+    games: ['cfm', 'pt', 'nth', 'tf', 'cos', 'ptg'],
     owner: 'gds-lifecycle',
     status: 'active',
     addedAt: '2025-01-10',
@@ -41,6 +43,7 @@ export const identityLifecycleFeatures: HermesFeature[] = [
     latencyTier: '<1d',
     substrate: 'B',
     domain: 'identity-lifecycle',
+    games: ['cfm', 'pt', 'nth', 'tf', 'cos', 'ptg'],
     owner: 'gds-lifecycle',
     status: 'active',
     addedAt: '2025-01-10',
@@ -55,6 +58,7 @@ export const identityLifecycleFeatures: HermesFeature[] = [
     latencyTier: '<1d',
     substrate: 'B',
     domain: 'identity-lifecycle',
+    games: ['cfm', 'pt', 'nth', 'tf', 'cos', 'ptg'],
     owner: 'gds-lifecycle',
     status: 'active',
     addedAt: '2025-01-10',
@@ -69,6 +73,7 @@ export const identityLifecycleFeatures: HermesFeature[] = [
     latencyTier: '<1d',
     substrate: 'B',
     domain: 'identity-lifecycle',
+    games: ['cfm', 'pt', 'nth', 'tf', 'cos', 'ptg'],
     owner: 'gds-lifecycle',
     status: 'active',
     addedAt: '2025-01-10',
@@ -83,6 +88,7 @@ export const identityLifecycleFeatures: HermesFeature[] = [
     latencyTier: '<1d',
     substrate: 'B',
     domain: 'identity-lifecycle',
+    games: ['cfm', 'pt', 'nth', 'tf', 'cos', 'ptg'],
     owner: 'gds-lifecycle',
     status: 'active',
     addedAt: '2025-01-10',
@@ -97,6 +103,7 @@ export const identityLifecycleFeatures: HermesFeature[] = [
     latencyTier: '<1d',
     substrate: 'B',
     domain: 'identity-lifecycle',
+    games: ['cfm', 'pt', 'nth', 'tf', 'cos', 'ptg'],
     owner: 'gds-lifecycle',
     status: 'active',
     addedAt: '2025-01-10',
@@ -111,6 +118,7 @@ export const identityLifecycleFeatures: HermesFeature[] = [
     latencyTier: '<1d',
     substrate: 'B',
     domain: 'identity-lifecycle',
+    games: ['cfm', 'pt', 'nth', 'tf', 'cos', 'ptg'],
     owner: 'gds-lifecycle',
     status: 'active',
     addedAt: '2025-01-10',
@@ -125,6 +133,7 @@ export const identityLifecycleFeatures: HermesFeature[] = [
     latencyTier: '<1d',
     substrate: 'B',
     domain: 'identity-lifecycle',
+    games: ['cfm', 'pt', 'nth', 'tf', 'cos', 'ptg'],
     owner: 'gds-lifecycle',
     status: 'active',
     addedAt: '2025-01-10',
@@ -139,6 +148,7 @@ export const identityLifecycleFeatures: HermesFeature[] = [
     latencyTier: '<1d',
     substrate: 'B',
     domain: 'identity-lifecycle',
+    games: ['cfm', 'pt', 'nth', 'tf', 'cos', 'ptg'],
     owner: 'gds-lifecycle',
     status: 'active',
     addedAt: '2025-01-10',
@@ -153,6 +163,7 @@ export const identityLifecycleFeatures: HermesFeature[] = [
     latencyTier: '<1d',
     substrate: 'B',
     domain: 'identity-lifecycle',
+    games: ['nth', 'tf', 'pt'],
     owner: 'gds-nth',
     status: 'active',
     addedAt: '2025-02-14',

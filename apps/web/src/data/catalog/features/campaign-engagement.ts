@@ -4,9 +4,9 @@
  * Substrate B · refresh hourly (<1h)
  * Used in anti-fatigue clauses (CFM-13, CFM-18) and attribution tracking.
  */
-import type { HermesFeature } from '@hermes/contracts';
+import type { HermesFeatureSource } from '@hermes/contracts';
 
-export const campaignEngagementFeatures: HermesFeature[] = [
+export const campaignEngagementFeatures: HermesFeatureSource[] = [
   {
     name: 'last_iam_received_ts',
     displayName: 'Last IAM Received (Timestamp)',
@@ -14,6 +14,7 @@ export const campaignEngagementFeatures: HermesFeature[] = [
     latencyTier: '<1h',
     substrate: 'B',
     domain: 'campaign-engagement',
+    games: ['cfm', 'pt', 'nth', 'tf', 'cos', 'ptg'],
     owner: 'gds-platform',
     status: 'active',
     addedAt: '2025-01-10',
@@ -28,6 +29,7 @@ export const campaignEngagementFeatures: HermesFeature[] = [
     latencyTier: '<1h',
     substrate: 'B',
     domain: 'campaign-engagement',
+    games: ['cfm', 'pt', 'nth', 'tf', 'cos', 'ptg'],
     owner: 'gds-platform',
     status: 'active',
     addedAt: '2025-01-10',
@@ -42,6 +44,7 @@ export const campaignEngagementFeatures: HermesFeature[] = [
     latencyTier: '<1h',
     substrate: 'B',
     domain: 'campaign-engagement',
+    games: ['cfm', 'pt', 'nth', 'tf', 'cos', 'ptg'],
     owner: 'gds-platform',
     status: 'active',
     addedAt: '2025-01-10',
@@ -56,6 +59,7 @@ export const campaignEngagementFeatures: HermesFeature[] = [
     latencyTier: '<1h',
     substrate: 'B',
     domain: 'campaign-engagement',
+    games: ['cfm', 'pt', 'nth', 'tf', 'cos', 'ptg'],
     owner: 'gds-platform',
     status: 'active',
     addedAt: '2025-01-10',

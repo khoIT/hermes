@@ -237,32 +237,149 @@ export class FeaturesService {
   }
 
   /**
-   * Sample value cards — N anonymized uids with their value. Phase 01a
-   * baseline; Phase 03 will join with player_lifecycle_stage etc. for
-   * richer context.
+   * Sample value cards — distribution-spread samples with cohort context.
+   *
+   * For numeric features: pick uids whose values land closest to p10, p25,
+   * p50, p75, p90 of the distribution. Each sample joins (LEFT) with key
+   * cohort features (player_lifecycle_stage, vip_status, region_code,
+   * lifetime_revenue_local, last_login_days_ago) by uid so each card
+   * reads as a user story, not a raw number.
+   *
+   * For categorical: one sample per top-N label.
+   *
+   * Falls back to first-N rows if the percentile spread + join can't
+   * resolve enough samples.
    */
   async getSamples(name: string, limit: number): Promise<{ feature: string; samples: unknown[] }> {
     const catalog = this.loader.read() as CatalogRow[];
     if (!catalog.some((f) => f.name === name)) {
       throw new NotFoundException(`feature ${name} not found`);
     }
-    const cap = Math.min(Math.max(limit, 1), 50);
-    const rows = await this.db
-      .select({
-        uid: featureValues.uid,
-        valueText: featureValues.valueText,
-        valueNumeric: featureValues.valueNumeric,
-        gameId: featureValues.gameId,
-      })
-      .from(featureValues)
-      .where(eq(featureValues.featureName, name))
-      .limit(cap);
+    const cap = Math.min(Math.max(limit, 1), 20);
+
+    // Percentile-spread sampling for numeric features. Each percentile
+    // tag (p10..p90) picks the uid whose value is closest. Join with
+    // 5 cohort features by uid for narrative context.
+    const numericRows = await this.db.execute(sql`
+      WITH stats AS (
+        SELECT
+          percentile_cont(0.10) WITHIN GROUP (ORDER BY value_numeric) AS p10,
+          percentile_cont(0.25) WITHIN GROUP (ORDER BY value_numeric) AS p25,
+          percentile_cont(0.50) WITHIN GROUP (ORDER BY value_numeric) AS p50,
+          percentile_cont(0.75) WITHIN GROUP (ORDER BY value_numeric) AS p75,
+          percentile_cont(0.90) WITHIN GROUP (ORDER BY value_numeric) AS p90
+        FROM feature_values
+        WHERE feature_name = ${name} AND value_numeric IS NOT NULL
+      ),
+      picks AS (
+        SELECT 'p10' AS pct, (SELECT uid FROM feature_values WHERE feature_name = ${name} AND value_numeric IS NOT NULL ORDER BY ABS(value_numeric - (SELECT p10 FROM stats)) LIMIT 1) AS uid
+        UNION ALL
+        SELECT 'p25', (SELECT uid FROM feature_values WHERE feature_name = ${name} AND value_numeric IS NOT NULL ORDER BY ABS(value_numeric - (SELECT p25 FROM stats)) LIMIT 1)
+        UNION ALL
+        SELECT 'p50', (SELECT uid FROM feature_values WHERE feature_name = ${name} AND value_numeric IS NOT NULL ORDER BY ABS(value_numeric - (SELECT p50 FROM stats)) LIMIT 1)
+        UNION ALL
+        SELECT 'p75', (SELECT uid FROM feature_values WHERE feature_name = ${name} AND value_numeric IS NOT NULL ORDER BY ABS(value_numeric - (SELECT p75 FROM stats)) LIMIT 1)
+        UNION ALL
+        SELECT 'p90', (SELECT uid FROM feature_values WHERE feature_name = ${name} AND value_numeric IS NOT NULL ORDER BY ABS(value_numeric - (SELECT p90 FROM stats)) LIMIT 1)
+      )
+      SELECT
+        p.pct,
+        f.value_text,
+        f.value_numeric,
+        f.game_id,
+        f.uid,
+        ls.value_text  AS lifecycle_stage,
+        vip.value_text AS vip_status,
+        rc.value_text  AS region_code,
+        rev.value_numeric AS lifetime_revenue_local,
+        ll.value_numeric  AS last_login_days_ago
+      FROM picks p
+      JOIN feature_values f ON f.feature_name = ${name} AND f.uid = p.uid
+      LEFT JOIN feature_values ls  ON ls.feature_name  = 'player_lifecycle_stage' AND ls.uid  = p.uid
+      LEFT JOIN feature_values vip ON vip.feature_name = 'vip_status'             AND vip.uid = p.uid
+      LEFT JOIN feature_values rc  ON rc.feature_name  = 'region_code'            AND rc.uid  = p.uid
+      LEFT JOIN feature_values rev ON rev.feature_name = 'lifetime_revenue_local' AND rev.uid = p.uid
+      LEFT JOIN feature_values ll  ON ll.feature_name  = 'last_login_days_ago'    AND ll.uid  = p.uid
+    `);
+    const numRows = (numericRows as unknown as { rows: Array<{
+      pct: string; value_text: string | null; value_numeric: number | null; game_id: string; uid: string;
+      lifecycle_stage: string | null; vip_status: string | null; region_code: string | null;
+      lifetime_revenue_local: number | null; last_login_days_ago: number | null;
+    }> }).rows;
+
+    if (numRows.length > 0 && numRows.some((r) => r.value_numeric !== null)) {
+      return {
+        feature: name,
+        samples: numRows.slice(0, cap).map((r) => ({
+          percentile:        r.pct,
+          uidAnonymized:     r.uid.length > 4 ? `…${r.uid.slice(-4)}` : r.uid,
+          value:             r.value_text ?? r.value_numeric,
+          gameId:            r.game_id,
+          context: {
+            lifecycleStage:        r.lifecycle_stage,
+            vipStatus:             r.vip_status,
+            region:                r.region_code,
+            lifetimeRevenueLocal:  r.lifetime_revenue_local === null ? null : Number(r.lifetime_revenue_local),
+            lastLoginDaysAgo:      r.last_login_days_ago === null ? null : Number(r.last_login_days_ago),
+          },
+        })),
+      };
+    }
+
+    // Categorical / text-only features — one sample per top label, with
+    // the same cohort joins.
+    const catRows = await this.db.execute(sql`
+      WITH labels AS (
+        SELECT value_text, COUNT(*) AS c
+        FROM feature_values
+        WHERE feature_name = ${name} AND value_text IS NOT NULL
+        GROUP BY value_text
+        ORDER BY c DESC
+        LIMIT ${cap}
+      ),
+      picks AS (
+        SELECT l.value_text AS label,
+               (SELECT uid FROM feature_values WHERE feature_name = ${name} AND value_text = l.value_text LIMIT 1) AS uid
+        FROM labels l
+      )
+      SELECT
+        p.label,
+        p.uid,
+        f.value_text,
+        f.game_id,
+        ls.value_text  AS lifecycle_stage,
+        vip.value_text AS vip_status,
+        rc.value_text  AS region_code,
+        rev.value_numeric AS lifetime_revenue_local,
+        ll.value_numeric  AS last_login_days_ago
+      FROM picks p
+      JOIN feature_values f ON f.feature_name = ${name} AND f.uid = p.uid
+      LEFT JOIN feature_values ls  ON ls.feature_name  = 'player_lifecycle_stage' AND ls.uid  = p.uid
+      LEFT JOIN feature_values vip ON vip.feature_name = 'vip_status'             AND vip.uid = p.uid
+      LEFT JOIN feature_values rc  ON rc.feature_name  = 'region_code'            AND rc.uid  = p.uid
+      LEFT JOIN feature_values rev ON rev.feature_name = 'lifetime_revenue_local' AND rev.uid = p.uid
+      LEFT JOIN feature_values ll  ON ll.feature_name  = 'last_login_days_ago'    AND ll.uid  = p.uid
+    `);
+    const cRows = (catRows as unknown as { rows: Array<{
+      label: string; uid: string; value_text: string; game_id: string;
+      lifecycle_stage: string | null; vip_status: string | null; region_code: string | null;
+      lifetime_revenue_local: number | null; last_login_days_ago: number | null;
+    }> }).rows;
     return {
       feature: name,
-      samples: rows.map((r) => ({
+      samples: cRows.map((r) => ({
+        percentile:    null,
+        labelGroup:    r.label,
         uidAnonymized: r.uid.length > 4 ? `…${r.uid.slice(-4)}` : r.uid,
-        value: r.valueText ?? r.valueNumeric,
-        gameId: r.gameId,
+        value:         r.value_text,
+        gameId:        r.game_id,
+        context: {
+          lifecycleStage:        r.lifecycle_stage,
+          vipStatus:             r.vip_status,
+          region:                r.region_code,
+          lifetimeRevenueLocal:  r.lifetime_revenue_local === null ? null : Number(r.lifetime_revenue_local),
+          lastLoginDaysAgo:      r.last_login_days_ago === null ? null : Number(r.last_login_days_ago),
+        },
       })),
     };
   }

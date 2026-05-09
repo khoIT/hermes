@@ -138,36 +138,144 @@ export const CoverageSegmentationPanel: React.FC<PanelProps> = ({ feature }) => 
   );
 };
 
-// ── 3. Sample value cards ──────────────────────────────────────────────
+// ── 3. Sample value cards (distribution-spread + cohort context) ───────
+
+interface SampleCardData {
+  percentile?:   string | null;
+  labelGroup?:   string | null;
+  uidAnonymized: string;
+  value:         unknown;
+  gameId:        string;
+  context: {
+    lifecycleStage:       string | null;
+    vipStatus:            string | null;
+    region:               string | null;
+    lifetimeRevenueLocal: number | null;
+    lastLoginDaysAgo:     number | null;
+  };
+}
+
+const formatVnd = (n: number | null): string => {
+  if (n === null) return '—';
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M ₫`;
+  if (n >= 1_000)     return `${(n / 1_000).toFixed(0)}k ₫`;
+  return `${n.toLocaleString('en-US')} ₫`;
+};
+
+const ContextChip: React.FC<{ label: string; value: string }> = ({ label, value }) => (
+  <span
+    style={{
+      fontFamily:   T.fMono,
+      fontSize:     10,
+      padding:      '1px 5px',
+      borderRadius: 3,
+      background:   T.n100,
+      color:        T.n700,
+    }}
+  >
+    <span style={{ color: T.n400 }}>{label}</span> {value}
+  </span>
+);
+
+const SampleCard: React.FC<{ s: SampleCardData; isNumeric: boolean }> = ({ s, isNumeric }) => {
+  const pct = s.percentile;
+  const tag = pct ?? s.labelGroup ?? 'SAMPLE';
+  const tagColor = pct === 'p10' ? T.blue500 : pct === 'p90' ? T.brand : pct ? T.n500 : T.purple500;
+
+  return (
+    <div
+      style={{
+        padding:       '10px 12px',
+        background:    '#fff',
+        borderRadius:  6,
+        border:        `1px solid ${T.n200}`,
+        borderLeft:    `3px solid ${tagColor}`,
+        display:       'flex',
+        flexDirection: 'column',
+        gap:           6,
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <span
+          style={{
+            fontFamily:    T.fMono,
+            fontSize:      10,
+            fontWeight:    700,
+            letterSpacing: '0.06em',
+            color:         tagColor,
+          }}
+        >
+          {tag}
+        </span>
+        <span style={{ fontFamily: T.fMono, fontSize: 10, color: T.n400 }}>{s.uidAnonymized}</span>
+      </div>
+      <div
+        style={{
+          fontFamily: T.fMono,
+          fontSize:   isNumeric ? 18 : 14,
+          fontWeight: 700,
+          color:      T.n900,
+        }}
+      >
+        {String(s.value)}
+      </div>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+        {s.context.lifecycleStage && <ContextChip label="stage:"  value={s.context.lifecycleStage} />}
+        {s.context.vipStatus      && <ContextChip label="vip:"    value={s.context.vipStatus} />}
+        {s.context.region         && <ContextChip label="region:" value={s.context.region} />}
+        {s.context.lastLoginDaysAgo !== null && (
+          <ContextChip label="last login:" value={`${s.context.lastLoginDaysAgo}d ago`} />
+        )}
+        {s.context.lifetimeRevenueLocal !== null && s.context.lifetimeRevenueLocal > 0 && (
+          <ContextChip label="lifetime:" value={formatVnd(s.context.lifetimeRevenueLocal)} />
+        )}
+        {!s.context.lifecycleStage && !s.context.vipStatus && !s.context.region && (
+          <span style={{ fontFamily: T.fMono, fontSize: 10, color: T.n400, fontStyle: 'italic' }}>
+            no cohort context joined
+          </span>
+        )}
+      </div>
+    </div>
+  );
+};
 
 export const SampleValueCardsPanel: React.FC<PanelProps> = ({ feature }) => {
-  const { status, data } = useApiFetch<{ samples: { uidAnonymized: string; value: unknown; gameId: string }[] }>(
-    `/api/v1/features/${encodeURIComponent(feature.name)}/samples?limit=8`,
+  const { status, data } = useApiFetch<{ samples: SampleCardData[] }>(
+    `/api/v1/features/${encodeURIComponent(feature.name)}/samples?limit=10`,
     [feature.name],
   );
+  const isNumeric = !['enum', 'string', 'bool'].includes(feature.type);
+
   return (
-    <Shell title="SAMPLE VALUES · what does a real value look like">
-      {status === 'loading' && <Empty msg="Picking samples…" />}
-      {status === 'ready' && data && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
-          {data.samples.map((s) => (
-            <div
-              key={s.uidAnonymized}
-              style={{
-                padding:      '8px 10px',
-                background:   T.n50,
-                borderRadius: 4,
-                border:       `1px solid ${T.n200}`,
-              }}
-            >
-              <div style={{ fontFamily: T.fMono, fontSize: 10, color: T.n500 }}>{s.uidAnonymized}</div>
-              <div style={{ fontFamily: T.fMono, fontSize: 14, color: T.n900, fontWeight: 600 }}>
-                {String(s.value)}
-              </div>
-              <div style={{ fontFamily: T.fMono, fontSize: 9, color: T.n400 }}>{s.gameId}</div>
-            </div>
-          ))}
-        </div>
+    <Shell title="SAMPLE USERS · who has each value · context joined from cohort features">
+      {status === 'loading' && <Empty msg="Sampling distribution + joining cohort context…" />}
+      {status === 'error' && <Empty msg="Could not load samples." />}
+      {status === 'ready' && data && data.samples.length === 0 && (
+        <Empty msg="No samples — feature has no real-data rows yet." />
+      )}
+      {status === 'ready' && data && data.samples.length > 0 && (
+        <>
+          <div
+            style={{
+              fontSize:     11,
+              color:        T.n500,
+              marginBottom: 10,
+              lineHeight:   1.5,
+            }}
+          >
+            Each card is a real user picked at a percentile of the distribution
+            (or one per top label). Cohort chips show who they are — stage,
+            VIP tier, region, last-login recency, lifetime spend. Use these to
+            sanity-check what a value of{' '}
+            <code style={{ fontFamily: T.fMono }}>{String(data.samples[0]?.value ?? '?')}</code>{' '}
+            actually means in terms of player profile.
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 8 }}>
+            {data.samples.map((s, i) => (
+              <SampleCard key={`${s.uidAnonymized}-${i}`} s={s} isNumeric={isNumeric} />
+            ))}
+          </div>
+        </>
       )}
     </Shell>
   );

@@ -3,9 +3,9 @@
  * Source: Hermes_Demo_Data.md Part 1 §Engagement
  * Substrate B · latency mix <1h and <1d
  */
-import type { HermesFeature } from '@hermes/contracts';
+import type { HermesFeatureSource } from '@hermes/contracts';
 
-export const engagementFeatures: HermesFeature[] = [
+export const engagementFeatures: HermesFeatureSource[] = [
   {
     name: 'session_count_30d',
     displayName: 'Session Count (30d)',
@@ -13,6 +13,7 @@ export const engagementFeatures: HermesFeature[] = [
     latencyTier: '<1d',
     substrate: 'B',
     domain: 'engagement',
+    games: ['cfm', 'pt', 'nth', 'tf', 'cos', 'ptg'],
     owner: 'gds-engagement',
     status: 'active',
     addedAt: '2025-01-10',
@@ -27,6 +28,7 @@ export const engagementFeatures: HermesFeature[] = [
     latencyTier: '<1d',
     substrate: 'B',
     domain: 'engagement',
+    games: ['cfm', 'pt', 'nth', 'tf', 'cos', 'ptg'],
     owner: 'gds-engagement',
     status: 'active',
     addedAt: '2025-01-10',
@@ -41,6 +43,7 @@ export const engagementFeatures: HermesFeature[] = [
     latencyTier: '<1h',
     substrate: 'B',
     domain: 'engagement',
+    games: ['cfm', 'pt', 'nth', 'tf', 'cos', 'ptg'],
     owner: 'gds-engagement',
     status: 'active',
     addedAt: '2025-01-10',
@@ -55,6 +58,7 @@ export const engagementFeatures: HermesFeature[] = [
     latencyTier: '<1d',
     substrate: 'B',
     domain: 'engagement',
+    games: ['cfm', 'pt', 'nth', 'tf', 'cos', 'ptg'],
     owner: 'gds-engagement',
     status: 'active',
     addedAt: '2025-01-10',
@@ -69,6 +73,7 @@ export const engagementFeatures: HermesFeature[] = [
     latencyTier: '<1d',
     substrate: 'B',
     domain: 'engagement',
+    games: ['cfm', 'pt', 'nth', 'tf', 'cos', 'ptg'],
     owner: 'gds-engagement',
     status: 'active',
     addedAt: '2025-01-10',
@@ -83,6 +88,7 @@ export const engagementFeatures: HermesFeature[] = [
     latencyTier: '<1d',
     substrate: 'B',
     domain: 'engagement',
+    games: ['cfm', 'pt', 'nth', 'tf', 'cos', 'ptg'],
     owner: 'gds-engagement',
     status: 'active',
     addedAt: '2025-01-10',
@@ -97,6 +103,7 @@ export const engagementFeatures: HermesFeature[] = [
     latencyTier: '<1d',
     substrate: 'B',
     domain: 'engagement',
+    games: ['cfm', 'nth', 'tf', 'ptg'],
     owner: 'gds-engagement',
     status: 'active',
     addedAt: '2025-01-10',
@@ -111,6 +118,7 @@ export const engagementFeatures: HermesFeature[] = [
     latencyTier: '<1d',
     substrate: 'B',
     domain: 'engagement',
+    games: ['cfm', 'nth', 'tf', 'ptg'],
     owner: 'gds-engagement',
     status: 'active',
     addedAt: '2025-01-10',
@@ -125,6 +133,7 @@ export const engagementFeatures: HermesFeature[] = [
     latencyTier: '<1d',
     substrate: 'B',
     domain: 'engagement',
+    games: ['nth', 'tf'],
     owner: 'gds-tf',
     status: 'active',
     addedAt: '2025-02-01',

@@ -3,9 +3,9 @@
  * Source: Hermes_Demo_Data.md Part 1 §Monetization
  * Substrate B (latency mix: <1h and <1d)
  */
-import type { HermesFeature } from '@hermes/contracts';
+import type { HermesFeatureSource } from '@hermes/contracts';
 
-export const monetizationFeatures: HermesFeature[] = [
+export const monetizationFeatures: HermesFeatureSource[] = [
   {
     name: 'is_paying_user_lifetime',
     displayName: 'Is Paying User (Lifetime)',
@@ -13,6 +13,7 @@ export const monetizationFeatures: HermesFeature[] = [
     latencyTier: '<1h',
     substrate: 'B',
     domain: 'monetization',
+    games: ['cfm', 'pt', 'nth', 'tf', 'cos', 'ptg'],
     owner: 'gds-monetization',
     status: 'active',
     addedAt: '2025-01-10',
@@ -27,6 +28,7 @@ export const monetizationFeatures: HermesFeature[] = [
     latencyTier: '<1h',
     substrate: 'B',
     domain: 'monetization',
+    games: ['cfm', 'pt', 'nth', 'tf', 'cos', 'ptg'],
     owner: 'gds-monetization',
     status: 'active',
     addedAt: '2025-01-10',
@@ -41,6 +43,7 @@ export const monetizationFeatures: HermesFeature[] = [
     latencyTier: '<1h',
     substrate: 'B',
     domain: 'monetization',
+    games: ['cfm', 'pt', 'nth', 'tf', 'cos', 'ptg'],
     owner: 'gds-monetization',
     status: 'active',
     addedAt: '2025-01-10',
@@ -55,6 +58,7 @@ export const monetizationFeatures: HermesFeature[] = [
     latencyTier: '<1h',
     substrate: 'B',
     domain: 'monetization',
+    games: ['cfm', 'pt', 'nth', 'tf', 'cos', 'ptg'],
     owner: 'gds-monetization',
     status: 'active',
     addedAt: '2025-01-10',
@@ -69,6 +73,7 @@ export const monetizationFeatures: HermesFeature[] = [
     latencyTier: '<1d',
     substrate: 'B',
     domain: 'monetization',
+    games: ['cfm', 'pt', 'nth', 'tf', 'cos', 'ptg'],
     owner: 'gds-monetization',
     status: 'active',
     addedAt: '2025-01-10',
@@ -83,6 +88,7 @@ export const monetizationFeatures: HermesFeature[] = [
     latencyTier: '<1h',
     substrate: 'B',
     domain: 'monetization',
+    games: ['cfm', 'pt', 'nth', 'tf', 'cos', 'ptg'],
     owner: 'gds-monetization',
     status: 'active',
     addedAt: '2025-01-10',
@@ -97,6 +103,7 @@ export const monetizationFeatures: HermesFeature[] = [
     latencyTier: '<1h',
     substrate: 'B',
     domain: 'monetization',
+    games: ['cfm', 'pt', 'nth', 'tf', 'cos', 'ptg'],
     owner: 'gds-monetization',
     status: 'active',
     addedAt: '2025-01-10',
@@ -111,6 +118,7 @@ export const monetizationFeatures: HermesFeature[] = [
     latencyTier: '<1h',
     substrate: 'B',
     domain: 'monetization',
+    games: ['cfm', 'pt', 'nth', 'tf', 'cos', 'ptg'],
     owner: 'gds-monetization',
     status: 'active',
     addedAt: '2025-01-10',
@@ -125,6 +133,7 @@ export const monetizationFeatures: HermesFeature[] = [
     latencyTier: '<1d',
     substrate: 'B',
     domain: 'monetization',
+    games: ['nth', 'tf'],
     owner: 'gds-monetization',
     status: 'active',
     addedAt: '2025-01-15',
@@ -139,6 +148,7 @@ export const monetizationFeatures: HermesFeature[] = [
     latencyTier: '<1d',
     substrate: 'B',
     domain: 'monetization',
+    games: ['cfm', 'pt', 'nth', 'tf', 'cos', 'ptg'],
     owner: 'gds-monetization',
     status: 'active',
     addedAt: '2025-01-10',
@@ -153,6 +163,7 @@ export const monetizationFeatures: HermesFeature[] = [
     latencyTier: '<1d',
     substrate: 'B',
     domain: 'monetization',
+    games: ['cfm', 'pt', 'nth', 'tf', 'cos', 'ptg'],
     owner: 'gds-monetization',
     status: 'active',
     addedAt: '2025-01-10',
@@ -167,6 +178,7 @@ export const monetizationFeatures: HermesFeature[] = [
     latencyTier: '<1d',
     substrate: 'B',
     domain: 'monetization',
+    games: ['cfm', 'pt', 'nth', 'tf', 'cos', 'ptg'],
     owner: 'gds-monetization',
     status: 'active',
     addedAt: '2025-01-10',

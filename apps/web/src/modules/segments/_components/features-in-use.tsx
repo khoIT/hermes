@@ -7,6 +7,8 @@ import React from 'react';
 import { T } from '../../../theme';
 import { allFeatures } from '../../../data/catalog/features/index';
 import { LatencyBadge } from '../../../components/latency-badge';
+import { GamesChipCluster } from '../../feature-store/_components/games-chip-cluster';
+import { PlatformPropensityChip } from '../../feature-store/_components/platform-propensity-chip';
 
 interface Props {
   featureNames: string[];
@@ -47,15 +49,16 @@ export const FeaturesInUse = React.memo<Props>(({ featureNames, onFeatureClick }
             }}>
               {name}
             </span>
-            {feat && <LatencyBadge tier={feat.latencyTier} substrate={feat.substrate ?? 'B'} />}
             {feat && (
-              <span style={{
-                fontFamily: T.fSans, fontSize: 9, color: T.n400,
-                background: T.n100, borderRadius: 3, padding: '1px 4px',
-                flexShrink: 0,
-              }}>
-                {feat.type}
+              <span title={`Freshness ${(feat.analytics.freshnessSlaMet * 100).toFixed(1)}%`}>
+                <LatencyBadge tier={feat.latencyTier} substrate={feat.substrate ?? 'B'} />
               </span>
+            )}
+            {feat && feat.platform && (
+              <PlatformPropensityChip propensity={feat.propensityModel} size="xs" />
+            )}
+            {feat && !feat.platform && (
+              <GamesChipCluster games={feat.games} size="xs" />
             )}
           </div>
         );

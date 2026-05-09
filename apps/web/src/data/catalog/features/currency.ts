@@ -3,9 +3,9 @@
  * Source: Hermes_Demo_Data.md Part 1 §Currency snapshots
  * Substrate B · refresh hourly (<1h)
  */
-import type { HermesFeature } from '@hermes/contracts';
+import type { HermesFeatureSource } from '@hermes/contracts';
 
-export const currencyFeatures: HermesFeature[] = [
+export const currencyFeatures: HermesFeatureSource[] = [
   {
     name: 'gem_balance_current',
     displayName: 'Gem Balance (Current)',
@@ -13,6 +13,7 @@ export const currencyFeatures: HermesFeature[] = [
     latencyTier: '<1h',
     substrate: 'B',
     domain: 'currency',
+    games: ['cfm', 'pt', 'ptg'],
     owner: 'gds-monetization',
     status: 'active',
     addedAt: '2025-01-10',
@@ -27,6 +28,7 @@ export const currencyFeatures: HermesFeature[] = [
     latencyTier: '<1h',
     substrate: 'B',
     domain: 'currency',
+    games: ['cfm'],
     owner: 'gds-cfm',
     status: 'active',
     addedAt: '2025-01-10',
@@ -41,6 +43,7 @@ export const currencyFeatures: HermesFeature[] = [
     latencyTier: '<1h',
     substrate: 'B',
     domain: 'currency',
+    games: ['pt', 'nth', 'tf', 'cos', 'ptg'],
     owner: 'gds-monetization',
     status: 'active',
     addedAt: '2025-01-10',

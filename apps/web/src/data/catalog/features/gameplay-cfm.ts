@@ -3,9 +3,9 @@
  * Source: Hermes_Demo_Data.md Part 1 §Gameplay — CFM specific
  * Substrate B · latency mix <1h and <1d
  */
-import type { HermesFeature } from '@hermes/contracts';
+import type { HermesFeatureSource } from '@hermes/contracts';
 
-export const gameplayCfmFeatures: HermesFeature[] = [
+export const gameplayCfmFeatures: HermesFeatureSource[] = [
   {
     name: 'ranked_match_count_lifetime',
     displayName: 'Ranked Match Count (Lifetime)',
@@ -13,6 +13,7 @@ export const gameplayCfmFeatures: HermesFeature[] = [
     latencyTier: '<1h',
     substrate: 'B',
     domain: 'gameplay-cfm',
+    games: ['cfm'],
     owner: 'gds-cfm',
     status: 'active',
     addedAt: '2025-01-10',
@@ -27,6 +28,7 @@ export const gameplayCfmFeatures: HermesFeature[] = [
     latencyTier: '<1d',
     substrate: 'B',
     domain: 'gameplay-cfm',
+    games: ['cfm'],
     owner: 'gds-cfm',
     status: 'active',
     addedAt: '2025-01-10',
@@ -41,6 +43,7 @@ export const gameplayCfmFeatures: HermesFeature[] = [
     latencyTier: '<1d',
     substrate: 'B',
     domain: 'gameplay-cfm',
+    games: ['cfm'],
     owner: 'gds-cfm',
     status: 'active',
     addedAt: '2025-01-10',
@@ -55,6 +58,7 @@ export const gameplayCfmFeatures: HermesFeature[] = [
     latencyTier: '<1d',
     substrate: 'B',
     domain: 'gameplay-cfm',
+    games: ['cfm'],
     owner: 'gds-cfm',
     status: 'active',
     addedAt: '2025-01-10',
@@ -69,6 +73,7 @@ export const gameplayCfmFeatures: HermesFeature[] = [
     latencyTier: '<1h',
     substrate: 'B',
     domain: 'gameplay-cfm',
+    games: ['cfm'],
     owner: 'gds-cfm',
     status: 'active',
     addedAt: '2025-01-10',
@@ -83,6 +88,7 @@ export const gameplayCfmFeatures: HermesFeature[] = [
     latencyTier: '<1d',
     substrate: 'B',
     domain: 'gameplay-cfm',
+    games: ['cfm'],
     owner: 'gds-cfm',
     status: 'active',
     addedAt: '2025-01-10',
@@ -101,6 +107,7 @@ export const gameplayCfmFeatures: HermesFeature[] = [
     latencyTier: '<1h',
     substrate: 'B',
     domain: 'gameplay-cfm',
+    games: ['cfm'],
     owner: 'gds-cfm',
     status: 'active',
     addedAt: '2025-01-10',
@@ -115,6 +122,7 @@ export const gameplayCfmFeatures: HermesFeature[] = [
     latencyTier: '<1h',
     substrate: 'B',
     domain: 'gameplay-cfm',
+    games: ['cfm'],
     owner: 'gds-cfm',
     status: 'active',
     addedAt: '2025-01-10',
@@ -129,6 +137,7 @@ export const gameplayCfmFeatures: HermesFeature[] = [
     latencyTier: '<1h',
     substrate: 'B',
     domain: 'gameplay-cfm',
+    games: ['cfm'],
     owner: 'gds-cfm',
     status: 'active',
     addedAt: '2025-02-01',
@@ -147,6 +156,7 @@ export const gameplayCfmFeatures: HermesFeature[] = [
     latencyTier: '<1h',
     substrate: 'B',
     domain: 'gameplay-cfm',
+    games: ['cfm'],
     owner: 'gds-cfm',
     status: 'active',
     addedAt: '2025-02-01',

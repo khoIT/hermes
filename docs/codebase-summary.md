@@ -201,7 +201,9 @@ modules/{module-name}/
 
 **Key modules:**
 
-**Feature Store:** Browse 67 features by domain/tier. Detail page shows dual-target definitions (which substrate). Histogram + lineage + used-by tabs.
+**Feature Store (v2 May 2026):** Browse 76 features (73 game + 3 platform propensity) with attribution by `games[]`, not owner. 7 group-by strategies (Domain · Game · Tier · Status · Platform · In-prod · None) and 4 sort strategies. Filter rail: Type · Latency · Games · Platform · Status. Detail page has 4 tabs (Overview · Analytics · Lineage · Used By); Analytics tab renders 6 panels (health · freshness · distribution-over-time · top consuming campaigns · online request rate · data quality). Right rail shows a Health snapshot card across all tabs. New `/feature-store/new` route lets PMs register features into the in-memory catalog with a side-by-side definition editor + handoff modal mirroring segment/campaign handoffs.
+
+Component tree (v2 additions): `_components/games-chip-cluster.tsx` · `platform-propensity-chip.tsx` · `propensity-model-card.tsx` · `description-block.tsx` · `health-snapshot-card.tsx` · `analytics-tab.tsx` · `_analytics/{6 panels + format helpers}` · `_register/{8 form sections + handoff modal}` · `_logic/{sort, definition-stubs, feature-form-validation}`. Shared: `components/drift-badge.tsx`, `components/_logic/latency-labels.ts` (Realtime / Batch warm / Batch cold), `components/_logic/game-colors.ts` (per-game tints).
 
 **Segments:** AND-of-OR predicate composition. Threshold playground reads `data/crawled/audience-counts.json`. Sticky audience band updates live as you adjust predicates. Handoff modal names Substrate B verbatim.
 

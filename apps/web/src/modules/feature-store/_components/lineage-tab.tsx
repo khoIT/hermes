@@ -8,6 +8,7 @@ import { T } from '../../../theme';
 import type { HermesFeature } from '@hermes/contracts';
 import type { HermesSegment } from '@hermes/contracts';
 import type { HermesCampaign } from '@hermes/contracts';
+import { TIER_LABEL } from '../../../components/_logic/latency-labels';
 
 interface LineageTabProps {
   feature: HermesFeature;
@@ -115,10 +116,11 @@ export const LineageTab: React.FC<LineageTabProps> = ({ feature, segments, campa
         return MID_Y - spread / 2 + (i / (totalDown - 1)) * spread;
       });
 
-  // Pipeline node label
+  // Pipeline node label — PM-facing toolbar copy (Phase 2 v2).
+  // Engineer detail signals (Substrate A/B) live on the source-table sublabels below.
   const pipelineLabel = feature.dualTier
     ? 'Dual-tier pipeline'
-    : `${feature.latencyTier} materialiser`;
+    : `${TIER_LABEL[feature.latencyTier]} materialiser`;
 
   return (
     <div>

@@ -4,9 +4,9 @@
  * Substrate B · latency <1d
  * Note: is_test_account is always excluded from production segments by convention.
  */
-import type { HermesFeature } from '@hermes/contracts';
+import type { HermesFeatureSource } from '@hermes/contracts';
 
-export const testSystemFeatures: HermesFeature[] = [
+export const testSystemFeatures: HermesFeatureSource[] = [
   {
     name: 'is_test_account',
     displayName: 'Is Test Account',
@@ -14,6 +14,7 @@ export const testSystemFeatures: HermesFeature[] = [
     latencyTier: '<1d',
     substrate: 'B',
     domain: 'test-system',
+    games: ['cfm', 'pt', 'nth', 'tf', 'cos', 'ptg'],
     owner: 'gds-platform',
     status: 'active',
     addedAt: '2025-01-10',
@@ -28,6 +29,7 @@ export const testSystemFeatures: HermesFeature[] = [
     latencyTier: '<1d',
     substrate: 'B',
     domain: 'test-system',
+    games: ['cfm', 'pt', 'nth', 'tf', 'cos', 'ptg'],
     owner: 'gds-platform',
     status: 'active',
     addedAt: '2025-01-10',

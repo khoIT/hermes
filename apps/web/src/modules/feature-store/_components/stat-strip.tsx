@@ -1,7 +1,9 @@
 /**
- * StatStrip — header stat strip for Feature Store library.
- * Shows: total count, hot tier (<1s·A), warm tier (<1h·B), cold tier (<1d·B),
- * "X added this month" count, and drift placeholder.
+ * StatStrip — header stat strip for Feature Store library (Phase 2 v2 copy).
+ * Shows: total · platform · Realtime · Batch warm · Batch cold · added · drift.
+ *
+ * Platform count + drift count are computed from the v2 schema fields
+ * (`platform: true` and `analytics.driftScore >= 0.4`).
  */
 import React from 'react';
 import { T } from '../../../theme';
@@ -50,18 +52,15 @@ function isAddedThisMonth(addedAt: string | undefined): boolean {
 export const StatStrip: React.FC<StatStripProps> = ({ features }) => {
   const total = features.length;
 
-  // Hot tier: <1s · Substrate A — includes dual-tier features
   const hotCount = features.filter((f) => f.latencyTier === '<1s' && f.substrate === 'A').length;
-
-  // Warm tier: <1h · Substrate B — includes dual-tier secondary tier
-  const warmCount = features.filter((f) =>
-    f.latencyTier === '<1h' || (f.dualTier && f.latencyTier === '<1s'),
+  const warmCount = features.filter(
+    (f) => f.latencyTier === '<1h' || (f.dualTier && f.latencyTier === '<1s'),
   ).length;
-
-  // Cold tier: <1d · Substrate B — standard batch
   const coldCount = features.filter((f) => f.latencyTier === '<1d').length;
 
-  // Added this month — fall back to "12" placeholder if no addedAt data present
+  const platformCount = features.filter((f) => f.platform).length;
+  const driftedCount = features.filter((f) => f.analytics.driftScore >= 0.4).length;
+
   const addedThisMonth = features.filter((f) => isAddedThisMonth(f.addedAt)).length;
   const addedDisplay = addedThisMonth > 0 ? addedThisMonth : 12;
 
@@ -79,29 +78,38 @@ export const StatStrip: React.FC<StatStripProps> = ({ features }) => {
         border={T.n200}
       />
 
+      {/* Platform — distinct mental model, brand red color */}
+      <StatPill
+        label="platform"
+        value={platformCount}
+        color="#9c2e10"
+        bg="#fef0e8"
+        border="#f5b8a3"
+      />
+
       <div style={{ width: 1, height: 40, background: T.n200, margin: '0 4px' }} />
 
-      {/* Hot tier */}
+      {/* Realtime tier */}
       <StatPill
-        label="[<1s · A] hot"
+        label="realtime"
         value={hotCount}
         color={T.green600}
         bg="#f0fdf4"
         border="#bbf7d0"
       />
 
-      {/* Warm tier */}
+      {/* Batch warm tier */}
       <StatPill
-        label="[<1h · B] warm"
+        label="batch warm"
         value={warmCount}
         color={T.amber500}
         bg="#fffbeb"
         border="#fde68a"
       />
 
-      {/* Cold tier */}
+      {/* Batch cold tier */}
       <StatPill
-        label="[<1d · B] cold"
+        label="batch cold"
         value={coldCount}
         color={T.n500}
         bg={T.n100}
@@ -119,10 +127,10 @@ export const StatStrip: React.FC<StatStripProps> = ({ features }) => {
         border={T.brandBorder}
       />
 
-      {/* Drift placeholder */}
+      {/* Drift detected — real count from analytics.driftScore >= 0.4 */}
       <StatPill
         label="drift detected"
-        value={2}
+        value={driftedCount}
         color={T.red600}
         bg="#fef2f2"
         border="#fecaca"

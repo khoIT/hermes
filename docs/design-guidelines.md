@@ -111,23 +111,49 @@
 
 ## 2. Component Patterns
 
-### 2.1 Latency Badge
+### 2.1 Latency Badge (v2 Substrate Relabel)
 
-**Format:** `[latency · tier]`
+**PM-facing labels** (library, detail header, picker, predicate row, filter rail):
+- `Realtime` — `<1s` · green tone (#dcfce7 / #15803d)
+- `Batch warm` — `<1h` · amber tone (#fef3c7 / #b45309)
+- `Batch cold` — `<1d` · slate tone (#e2e8f0 / #475569)
 
-**Examples:**
-- `[<1s · A]` — Substrate A (Apollo TEE) · sub-second evaluation
-- `[<1h · B]` — Substrate B (Batch) · hourly refresh
-- `[<1d · B]` — Substrate B (Cold) · daily refresh
+**Engineer-facing labels** (handoff modals, lineage detail rows, definition pane):
+- `Substrate A · Apollo TEE + Temporal` — verbatim, never paraphrased
+- `Substrate B · Hatchet + Trino + Iceberg` — verbatim, never paraphrased
 
-**Implementation:** `modules/_shared/components/LatencyBadge.tsx`
+**Single source of truth:** `apps/web/src/components/_logic/latency-labels.ts`.
+
+**Implementation:** `apps/web/src/components/latency-badge.tsx`
 
 ```tsx
-<LatencyBadge latency="<1s" tier="A" />
-<LatencyBadge latency="<1h" tier="B" />
+<LatencyBadge tier="<1s" substrate="A" />   // → "Realtime"
+<LatencyBadge tier="<1h" substrate="B" />   // → "Batch warm"
+<LatencyBadge tiers={[                     // dual-tier pair
+  { tier: '<1s', substrate: 'A' },
+  { tier: '<1h', substrate: 'B' },
+]} />
 ```
 
-**Visual:** Small pill, mono font, color-coded (A = primary red, B = gray).
+**Substrate dot:** preserved as ambient cue — orange dot for A, neutral for B.
+
+### 2.1b Game Color Tokens (v2 Phase 3+)
+
+Per-game tint table for chip clusters, library group headers, predicate row pills.
+
+| Game | Code | bg / fg / border                       | Full name           |
+|------|------|----------------------------------------|---------------------|
+| cfm  | CFM  | #fee2e2 / #991b1b / #fecaca            | CrossFire Mobile    |
+| pt   | PT   | #dbeafe / #1e40af / #bfdbfe            | PlayTogether        |
+| nth  | NTH  | #dcfce7 / #166534 / #bbf7d0            | Ngọa Thiên Hạ       |
+| tf   | TF   | #fef3c7 / #92400e / #fde68a            | Thiết Hỏa            |
+| cos  | COS  | #fce7f3 / #9d174d / #fbcfe8            | Cộng Đồng           |
+| ptg  | PG   | #e0e7ff / #3730a3 / #c7d2fe            | PlayTogether-G      |
+
+**Platform tint:** deep-red brand color `#f05a22` / `#fff` — used for the
+`Platform · Propensity` chip across the library, detail, and segment surfaces.
+
+**Token file:** `apps/web/src/components/_logic/game-colors.ts`.
 
 ### 2.2 Feature Pill
 

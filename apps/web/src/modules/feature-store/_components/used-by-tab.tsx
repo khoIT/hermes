@@ -1,19 +1,66 @@
 /**
  * UsedByTab — tables of segments and campaigns referencing a feature.
- * Segments table links to /segments/:id.
- * Campaigns table shows transitive reference via audience segment.
+ * v2: header summary with unique games used; rows tinted by game chip;
+ * sort order CFM → PT → NTH → TF → COS → PG (canonical demo order).
  */
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { T, Badge } from '../../../theme';
-import type { HermesSegment } from '@hermes/contracts';
-import type { HermesCampaign } from '@hermes/contracts';
+import type { HermesCampaign, HermesGame, HermesSegment } from '@hermes/contracts';
+import { GAME_ORDER, GAME_TINT } from '../../../components/_logic/game-colors';
 
 interface UsedByTabProps {
   segments: HermesSegment[];
   campaigns: HermesCampaign[];
   featureName: string;
 }
+
+function gameRank(g: string): number {
+  const idx = GAME_ORDER.indexOf(g as HermesGame);
+  return idx === -1 ? 99 : idx;
+}
+
+function uniqueGames(rows: { game: string }[]): HermesGame[] {
+  const set = new Set<string>();
+  for (const r of rows) set.add(r.game);
+  return GAME_ORDER.filter((g) => set.has(g));
+}
+
+const GameChipCell: React.FC<{ game: string }> = ({ game }) => {
+  const tint = GAME_TINT[game as HermesGame];
+  if (!tint) {
+    return (
+      <span
+        style={{
+          fontFamily: T.fMono,
+          fontSize: 11,
+          background: T.n100,
+          padding: '2px 6px',
+          borderRadius: 4,
+        }}
+      >
+        {game}
+      </span>
+    );
+  }
+  return (
+    <span
+      style={{
+        fontFamily: T.fMono,
+        fontWeight: 700,
+        fontSize: 10,
+        padding: '2px 6px',
+        background: tint.bg,
+        color: tint.fg,
+        border: `1px solid ${tint.border}`,
+        borderRadius: 4,
+        letterSpacing: '0.04em',
+      }}
+    >
+      {tint.label}
+    </span>
+  );
+};
 
 function StatusBadge({ status }: { status: string }) {
   const variantMap: Record<string, 'success' | 'warning' | 'destructive' | 'secondary'> = {
@@ -41,8 +88,44 @@ const TABLE_CELL: React.CSSProperties = {
 export const UsedByTab: React.FC<UsedByTabProps> = ({ segments, campaigns, featureName }) => {
   const navigate = useNavigate();
 
+  const sortedSegments = React.useMemo(
+    () =>
+      [...segments].sort(
+        (a, b) => gameRank(a.game) - gameRank(b.game) || b.audienceSize - a.audienceSize,
+      ),
+    [segments],
+  );
+  const sortedCampaigns = React.useMemo(
+    () =>
+      [...campaigns].sort(
+        (a, b) => gameRank(a.game) - gameRank(b.game) || a.id.localeCompare(b.id),
+      ),
+    [campaigns],
+  );
+
+  const games = uniqueGames([...sortedSegments, ...sortedCampaigns]);
+  const summary = `Used by ${segments.length} segment${segments.length === 1 ? '' : 's'} and ${
+    campaigns.length
+  } campaign${campaigns.length === 1 ? '' : 's'}${
+    games.length > 0 ? ` across ${games.map((g) => GAME_TINT[g].label).join(', ')}` : ''
+  }`;
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
+      {/* ── Header summary ── */}
+      <div
+        style={{
+          fontFamily: T.fSans,
+          fontSize: 13,
+          color: T.n600,
+          padding: '4px 0',
+          borderBottom: `1px solid ${T.n200}`,
+          paddingBottom: 12,
+        }}
+      >
+        {summary}
+      </div>
+
       {/* ── Segments table ── */}
       <div>
         <div style={{
@@ -71,7 +154,7 @@ export const UsedByTab: React.FC<UsedByTabProps> = ({ segments, campaigns, featu
                 </tr>
               </thead>
               <tbody>
-                {segments.map((seg) => (
+                {sortedSegments.map((seg) => (
                   <tr
                     key={seg.id}
                     onClick={() => navigate(`/segments/${seg.id}`)}
@@ -84,12 +167,7 @@ export const UsedByTab: React.FC<UsedByTabProps> = ({ segments, campaigns, featu
                       <div style={{ fontFamily: T.fMono, fontSize: 10, color: T.n400 }}>{seg.id}</div>
                     </td>
                     <td style={TABLE_CELL}>
-                      <span style={{
-                        fontFamily: T.fMono, fontSize: 11,
-                        background: T.n100, padding: '2px 6px', borderRadius: 4,
-                      }}>
-                        {seg.game}
-                      </span>
+                      <GameChipCell game={seg.game} />
                     </td>
                     <td style={TABLE_CELL}>
                       {seg.audienceSize.toLocaleString()}
@@ -138,19 +216,14 @@ export const UsedByTab: React.FC<UsedByTabProps> = ({ segments, campaigns, featu
                 </tr>
               </thead>
               <tbody>
-                {campaigns.map((camp) => (
+                {sortedCampaigns.map((camp) => (
                   <tr key={camp.id}>
                     <td style={TABLE_CELL}>
                       <div style={{ fontFamily: T.fSans, fontWeight: 500 }}>{camp.displayName}</div>
                       <div style={{ fontFamily: T.fMono, fontSize: 10, color: T.n400 }}>{camp.id}</div>
                     </td>
                     <td style={TABLE_CELL}>
-                      <span style={{
-                        fontFamily: T.fMono, fontSize: 11,
-                        background: T.n100, padding: '2px 6px', borderRadius: 4,
-                      }}>
-                        {camp.game}
-                      </span>
+                      <GameChipCell game={camp.game} />
                     </td>
                     <td style={{ ...TABLE_CELL, fontFamily: T.fMono, fontSize: 11, color: T.n500 }}>
                       {camp.triggerType}

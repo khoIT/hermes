@@ -2,7 +2,11 @@
  * Handoff modal copy — PRD-verbatim mono substrate copy strings.
  * Centralised here so drift from spec is caught in one place.
  * Validate verbatim against PRD §8.7 (segment) and §9.9 (campaign).
+ *
+ * Substrate lines reuse `SUBSTRATE_LONG` from latency-labels.ts so the
+ * engineer-facing identifier policy stays in one source of truth.
  */
+import { SUBSTRATE_LONG } from './_logic/latency-labels';
 
 export interface HandoffStep {
   text: string;
@@ -17,7 +21,7 @@ export const SEGMENT_STEPS: HandoffStep[] = [
   { text: 'Activation API exposes list to Apollo channels', status: 'ready' },
 ];
 
-export const SEGMENT_SUBSTRATE_LINE = 'Substrate B · Hatchet + Trino + Iceberg';
+export const SEGMENT_SUBSTRATE_LINE = SUBSTRATE_LONG.B;
 export const SEGMENT_CONSUMER_PATH  = 'Apollo consumes via: GET /segments/{id}/uids';
 
 /** PRD §9.9 — Campaign handoff (Substrate A) */
@@ -28,7 +32,7 @@ export const CAMPAIGN_STEPS: HandoffStep[] = [
   { text: 'TEE evaluates against event_match_end events',           status: 'live'    },
 ];
 
-export const CAMPAIGN_SUBSTRATE_LINE = 'Substrate A · Apollo TEE + Temporal';
+export const CAMPAIGN_SUBSTRATE_LINE = SUBSTRATE_LONG.A;
 
 /**
  * PRD §9.9 verbatim multi-line TEE evaluation note.

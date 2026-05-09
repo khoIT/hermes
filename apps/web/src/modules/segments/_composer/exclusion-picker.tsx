@@ -9,6 +9,9 @@ import { T } from '../../../theme';
 import { allFeatures } from '../../../data/catalog/features/index';
 import type { HermesFeature } from '@hermes/contracts';
 import { LatencyBadge } from '../../../components/latency-badge';
+import { DriftBadge } from '../../../components/drift-badge';
+import { GamesChipCluster } from '../../feature-store/_components/games-chip-cluster';
+import { PlatformPropensityChip } from '../../feature-store/_components/platform-propensity-chip';
 
 const EXCLUSION_TEMPLATES: Array<{ label: string; feature: string; featureType: string; operator: string; value: unknown }> = [
   { label: 'Paying users',          feature: 'is_paying_user_lifetime',  featureType: 'bool',   operator: 'is_true',  value: true },
@@ -52,8 +55,15 @@ function FeatureCard({ feature, onSelect }: { feature: HermesFeature; onSelect: 
           {feature.type}
         </span>
       </div>
-      <div style={{ fontFamily: T.fSans, fontSize: 10, color: T.n500, marginTop: 2 }}>
-        {feature.domain} · {feature.owner}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4, flexWrap: 'wrap' }}>
+        {feature.platform && (
+          <PlatformPropensityChip propensity={feature.propensityModel} size="sm" />
+        )}
+        <GamesChipCluster games={feature.games} size="sm" />
+        <DriftBadge score={feature.analytics.driftScore} />
+      </div>
+      <div style={{ fontFamily: T.fSans, fontSize: 10, color: T.n500, marginTop: 4 }}>
+        {feature.domain}
       </div>
     </div>
   );

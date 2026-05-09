@@ -1,6 +1,7 @@
 /**
- * GroupByControl — segmented control for Feature Store library grouping strategy.
- * 5 options: domain (default) | tier | owner | used-in-prod | none
+ * GroupByControl — segmented control for Feature Store library grouping (Phase 5 v2).
+ * Options: Domain (default) · Game · Tier · Status · Platform · Used-in-prod · None
+ * Owner option removed (replaced by Game attribution).
  */
 import React from 'react';
 import { T } from '../../../theme';
@@ -14,9 +15,11 @@ interface GroupByControlProps {
 
 const OPTIONS: { value: GroupByStrategy; label: string }[] = [
   { value: 'domain', label: 'Domain' },
+  { value: 'game', label: 'Game' },
   { value: 'tier', label: 'Tier' },
-  { value: 'owner', label: 'Owner' },
-  { value: 'usedInProd', label: 'Used in prod' },
+  { value: 'status', label: 'Status' },
+  { value: 'platform', label: 'Platform' },
+  { value: 'usedInProd', label: 'In prod' },
   { value: 'none', label: 'None' },
 ];
 

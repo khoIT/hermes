@@ -3,9 +3,9 @@
  * Source: Hermes_Demo_Data.md Part 1 §Promotion / config
  * Substrate B · refresh on config push (<1h)
  */
-import type { HermesFeature } from '@hermes/contracts';
+import type { HermesFeatureSource } from '@hermes/contracts';
 
-export const promotionConfigFeatures: HermesFeature[] = [
+export const promotionConfigFeatures: HermesFeatureSource[] = [
   {
     name: 'promoted_weapon_list',
     displayName: 'Promoted Weapon List',
@@ -13,6 +13,7 @@ export const promotionConfigFeatures: HermesFeature[] = [
     latencyTier: '<1h',
     substrate: 'B',
     domain: 'promotion-config',
+    games: ['cfm'],
     owner: 'gds-cfm',
     status: 'active',
     addedAt: '2025-02-01',
@@ -27,6 +28,7 @@ export const promotionConfigFeatures: HermesFeature[] = [
     latencyTier: '<1h',
     substrate: 'B',
     domain: 'promotion-config',
+    games: ['cfm', 'pt', 'nth', 'tf', 'cos', 'ptg'],
     owner: 'gds-cfm',
     status: 'active',
     addedAt: '2025-02-01',
@@ -41,6 +43,7 @@ export const promotionConfigFeatures: HermesFeature[] = [
     latencyTier: '<1h',
     substrate: 'B',
     domain: 'promotion-config',
+    games: ['cfm'],
     owner: 'gds-cfm',
     status: 'active',
     addedAt: '2025-02-01',

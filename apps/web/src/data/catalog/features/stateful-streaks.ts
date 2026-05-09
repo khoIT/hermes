@@ -15,9 +15,9 @@
  *   - Opportunity ag-op-1042 evidence row
  *   - Full definition.exprLang + definition.dbtSql required per phase spec
  */
-import type { HermesFeature } from '@hermes/contracts';
+import type { HermesFeatureSource } from '@hermes/contracts';
 
-export const statefulStreaksFeatures: HermesFeature[] = [
+export const statefulStreaksFeatures: HermesFeatureSource[] = [
   {
     name: 'consecutive_ranked_losses_streak',
     displayName: 'Consecutive Ranked Losses Streak',
@@ -26,6 +26,7 @@ export const statefulStreaksFeatures: HermesFeature[] = [
     latencyTier: '<1s',
     substrate: 'A',
     domain: 'stateful-streaks',
+    games: ['cfm'],
     owner: 'gds-cfm',
     status: 'active',
     dualTier: true,
@@ -93,6 +94,7 @@ export const statefulStreaksFeatures: HermesFeature[] = [
     latencyTier: '<1s',
     substrate: 'A',
     domain: 'stateful-streaks',
+    games: ['cfm'],
     owner: 'gds-cfm',
     status: 'active',
     dualTier: true,

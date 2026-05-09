@@ -3,9 +3,9 @@
  * Source: Hermes_Demo_Data.md Part 1 §Social, playstyle & external
  * Substrate B · latency mix <1h and <1d (external signals pushed via API)
  */
-import type { HermesFeature } from '@hermes/contracts';
+import type { HermesFeatureSource } from '@hermes/contracts';
 
-export const socialPlaystyleFeatures: HermesFeature[] = [
+export const socialPlaystyleFeatures: HermesFeatureSource[] = [
   {
     name: 'guild_id',
     displayName: 'Guild ID',
@@ -13,6 +13,7 @@ export const socialPlaystyleFeatures: HermesFeature[] = [
     latencyTier: '<1d',
     substrate: 'B',
     domain: 'social-playstyle',
+    games: ['nth', 'tf', 'ptg'],
     owner: 'gds-social',
     status: 'active',
     addedAt: '2025-01-10',
@@ -27,6 +28,7 @@ export const socialPlaystyleFeatures: HermesFeature[] = [
     latencyTier: '<1d',
     substrate: 'B',
     domain: 'social-playstyle',
+    games: ['nth', 'tf', 'ptg'],
     owner: 'gds-social',
     status: 'active',
     addedAt: '2025-01-10',
@@ -41,6 +43,7 @@ export const socialPlaystyleFeatures: HermesFeature[] = [
     latencyTier: '<1d',
     substrate: 'B',
     domain: 'social-playstyle',
+    games: ['nth', 'tf', 'ptg'],
     owner: 'gds-social',
     status: 'active',
     addedAt: '2025-01-10',
@@ -55,6 +58,7 @@ export const socialPlaystyleFeatures: HermesFeature[] = [
     latencyTier: '<1d',
     substrate: 'B',
     domain: 'social-playstyle',
+    games: ['cfm', 'pt', 'tf'],
     owner: 'gds-engagement',
     status: 'active',
     addedAt: '2025-01-10',
@@ -69,6 +73,7 @@ export const socialPlaystyleFeatures: HermesFeature[] = [
     latencyTier: '<1d',
     substrate: 'B',
     domain: 'social-playstyle',
+    games: ['cfm', 'tf'],
     owner: 'gds-engagement',
     status: 'active',
     addedAt: '2025-01-10',
@@ -83,6 +88,7 @@ export const socialPlaystyleFeatures: HermesFeature[] = [
     latencyTier: '<1d',
     substrate: 'B',
     domain: 'social-playstyle',
+    games: ['pt', 'nth', 'tf', 'ptg'],
     owner: 'gds-social',
     status: 'active',
     addedAt: '2025-01-10',
@@ -97,6 +103,7 @@ export const socialPlaystyleFeatures: HermesFeature[] = [
     latencyTier: '<1d',
     substrate: 'B',
     domain: 'social-playstyle',
+    games: ['pt', 'ptg'],
     owner: 'gds-nth',
     status: 'active',
     addedAt: '2025-02-14',
@@ -111,6 +118,7 @@ export const socialPlaystyleFeatures: HermesFeature[] = [
     latencyTier: '<1d',
     substrate: 'B',
     domain: 'social-playstyle',
+    games: ['pt', 'ptg'],
     owner: 'gds-nth',
     status: 'active',
     addedAt: '2025-02-14',
@@ -125,6 +133,7 @@ export const socialPlaystyleFeatures: HermesFeature[] = [
     latencyTier: '<1h',
     substrate: 'B',
     domain: 'social-playstyle',
+    games: ['nth'],
     owner: 'gds-nth',
     status: 'active',
     addedAt: '2025-02-14',
@@ -139,6 +148,7 @@ export const socialPlaystyleFeatures: HermesFeature[] = [
     latencyTier: '<1h',
     substrate: 'B',
     domain: 'social-playstyle',
+    games: ['cfm', 'pt', 'nth', 'tf', 'cos', 'ptg'],
     owner: 'gds-security',
     status: 'active',
     addedAt: '2025-03-01',
@@ -153,6 +163,7 @@ export const socialPlaystyleFeatures: HermesFeature[] = [
     latencyTier: '<1h',
     substrate: 'B',
     domain: 'social-playstyle',
+    games: ['cfm', 'pt', 'nth', 'tf', 'cos', 'ptg'],
     owner: 'gds-cx',
     status: 'active',
     addedAt: '2025-03-01',
@@ -167,6 +178,7 @@ export const socialPlaystyleFeatures: HermesFeature[] = [
     latencyTier: '<1d',
     substrate: 'B',
     domain: 'social-playstyle',
+    games: ['cfm', 'pt', 'nth', 'tf', 'cos', 'ptg'],
     owner: 'gds-lifecycle',
     status: 'active',
     addedAt: '2025-01-10',

@@ -35,8 +35,9 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import HomePage from './modules/home/page';
 
 // -- Module 01: Feature Store
-import FeatureStoreLibraryPage from './modules/feature-store/library';
+import FeatureStoreLibraryPage  from './modules/feature-store/library';
 import FeatureStoreDetailPage   from './modules/feature-store/detail';
+import FeatureStoreRegisterPage from './modules/feature-store/register';
 
 // -- Module 02: Explore
 import ExploreStubPage from './modules/explore/stub';
@@ -75,6 +76,7 @@ export function AppRoutes() {
 
       {/* 01-02 — Feature Store */}
       <Route path="/feature-store"       element={<FeatureStoreLibraryPage />} />
+      <Route path="/feature-store/new"   element={<FeatureStoreRegisterPage />} />
       <Route path="/feature-store/:name" element={<FeatureStoreDetailPage />} />
 
       {/* Explore — nav-only stub */}

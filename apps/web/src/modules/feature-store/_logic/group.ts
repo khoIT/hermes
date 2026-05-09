@@ -1,40 +1,60 @@
 /**
- * Feature Store groupBy logic — pure functions for grouping features.
- * Supports 5 strategies: domain | tier | owner | usedInProd | none
+ * Feature Store groupBy logic (Phase 5 v2).
+ * Strategies: domain (default) · game · tier · status · platform · usedInProd · none
+ *
+ * v2 changes:
+ *   - Removed `owner` strategy (replaced by game attribution)
+ *   - Added `game` (multi-pin: a feature with games=[cfm,pt] appears in BOTH groups)
+ *   - Added `platform` (Platform · cross-game vs Game-specific)
+ *   - Added `status`
+ *   - 'predictive' domain label added
  */
-import type { HermesFeature } from '@hermes/contracts';
+import type { HermesFeature, HermesGame } from '@hermes/contracts';
+import { GAME_ORDER, GAME_TINT } from '../../../components/_logic/game-colors';
 
-export type GroupByStrategy = 'domain' | 'tier' | 'owner' | 'usedInProd' | 'none';
+export type GroupByStrategy =
+  | 'domain'
+  | 'game'
+  | 'tier'
+  | 'status'
+  | 'platform'
+  | 'usedInProd'
+  | 'none';
 
 export interface FeatureGroup {
   groupName: string;
   features: HermesFeature[];
 }
 
-/** Domain display labels — human readable from snake-case domain key */
 const DOMAIN_LABEL: Record<string, string> = {
   'identity-lifecycle': 'Identity & Lifecycle',
-  'monetization': 'Monetization',
-  'currency': 'Currency',
-  'engagement': 'Engagement',
+  monetization: 'Monetization',
+  currency: 'Currency',
+  engagement: 'Engagement',
   'gameplay-cfm': 'Gameplay · CFM',
   'stateful-streaks': 'Stateful Streaks',
-  'inventory': 'Inventory',
+  inventory: 'Inventory',
   'promotion-config': 'Promotion Config',
   'social-playstyle': 'Social & Playstyle',
   'test-system': 'Test System',
   'campaign-engagement': 'Campaign Engagement',
+  predictive: 'Platform · Predictive',
 };
 
-/** Tier display labels */
 const TIER_LABEL: Record<string, string> = {
-  '<1s': 'Hot · <1s (Substrate A)',
-  '<1h': 'Warm · <1h (Substrate B)',
-  '<1d': 'Cold · <1d (Substrate B)',
+  '<1s': 'Realtime',
+  '<1h': 'Batch warm',
+  '<1d': 'Batch cold',
 };
 
-/** Tier sort order for consistent display */
 const TIER_ORDER = ['<1s', '<1h', '<1d'];
+
+const STATUS_LABEL: Record<string, string> = {
+  active: 'Active',
+  beta: 'Beta',
+  deprecated: 'Deprecated',
+};
+const STATUS_ORDER = ['active', 'beta', 'deprecated'];
 
 function groupByKey(
   features: HermesFeature[],
@@ -43,18 +63,15 @@ function groupByKey(
   sortOrder?: string[],
 ): FeatureGroup[] {
   const map = new Map<string, HermesFeature[]>();
-
   for (const feature of features) {
-    const keys = keyFn(feature);
-    for (const key of keys) {
+    for (const key of keyFn(feature)) {
       const existing = map.get(key) ?? [];
       existing.push(feature);
       map.set(key, existing);
     }
   }
 
-  let entries = Array.from(map.entries());
-
+  const entries = Array.from(map.entries());
   if (sortOrder) {
     entries.sort(([a], [b]) => {
       const ai = sortOrder.indexOf(a);
@@ -67,44 +84,69 @@ function groupByKey(
   } else {
     entries.sort(([a], [b]) => a.localeCompare(b));
   }
-
-  return entries.map(([key, feats]) => ({
-    groupName: labelFn(key),
-    features: feats,
-  }));
+  return entries.map(([key, feats]) => ({ groupName: labelFn(key), features: feats }));
 }
 
-/** Group features by the given strategy */
 export function groupFeatures(
   features: HermesFeature[],
   strategy: GroupByStrategy,
 ): FeatureGroup[] {
   switch (strategy) {
     case 'domain':
-      return groupByKey(
-        features,
-        (f) => [f.domain],
-        (k) => DOMAIN_LABEL[k] ?? k,
-      );
+      return groupByKey(features, (f) => [f.domain], (k) => DOMAIN_LABEL[k] ?? k);
+
+    case 'game': {
+      // Platform features land in their own pinned group; game-specific features
+      // multi-pin into every game they touch (CFM-author looking for CFM features
+      // wants to see them all even if cross-game).
+      const platformGroup: HermesFeature[] = [];
+      const byGame = new Map<HermesGame, HermesFeature[]>();
+      for (const f of features) {
+        if (f.platform) {
+          platformGroup.push(f);
+          continue;
+        }
+        for (const g of f.games) {
+          const arr = byGame.get(g) ?? [];
+          arr.push(f);
+          byGame.set(g, arr);
+        }
+      }
+      const out: FeatureGroup[] = [];
+      if (platformGroup.length > 0) {
+        out.push({ groupName: 'Platform · Cross-game', features: platformGroup });
+      }
+      for (const g of GAME_ORDER) {
+        const arr = byGame.get(g);
+        if (arr && arr.length > 0) {
+          out.push({ groupName: GAME_TINT[g].fullName, features: arr });
+        }
+      }
+      return out;
+    }
 
     case 'tier':
-      // Dual-tier features appear in both tier buckets
       return groupByKey(
         features,
-        (f) => {
-          if (f.dualTier) return ['<1s', '<1h'];
-          return [f.latencyTier];
-        },
+        (f) => (f.dualTier ? ['<1s', '<1h'] : [f.latencyTier]),
         (k) => TIER_LABEL[k] ?? k,
         TIER_ORDER,
       );
 
-    case 'owner':
-      return groupByKey(
-        features,
-        (f) => [f.owner],
-        (k) => k,
-      );
+    case 'status':
+      return groupByKey(features, (f) => [f.status], (k) => STATUS_LABEL[k] ?? k, STATUS_ORDER);
+
+    case 'platform':
+      return [
+        {
+          groupName: 'Platform · Cross-game',
+          features: features.filter((f) => f.platform),
+        },
+        {
+          groupName: 'Game-specific',
+          features: features.filter((f) => !f.platform),
+        },
+      ].filter((g) => g.features.length > 0);
 
     case 'usedInProd':
       return groupByKey(

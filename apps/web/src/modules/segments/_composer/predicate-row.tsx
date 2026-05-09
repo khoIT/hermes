@@ -16,6 +16,8 @@ import { allFeatures } from '../../../data/catalog/features/index';
 import { LatencyBadge } from '../../../components/latency-badge';
 import { MatchBar } from '../_components/match-bar';
 import type { HermesLatencyTier, HermesSubstrate } from '@hermes/contracts';
+import { GamesChipCluster } from '../../feature-store/_components/games-chip-cluster';
+import { PlatformPropensityChip } from '../../feature-store/_components/platform-propensity-chip';
 
 const OPERATORS = ['>=', '<=', '>', '<', '=', '!=', 'in', 'not_in', 'between', 'is_true', 'is_false', 'contains_any'];
 const MAU_BASE = 1_250_000;
@@ -167,6 +169,16 @@ export const PredicateRow = React.memo<Props>(({
             />
           )}
         </div>
+
+        {/* v2: xs game chip (or platform `P` chip) — replaces owner avatar */}
+        {(() => {
+          const f = lookupFeature(row.feature);
+          if (!f) return null;
+          if (f.platform) {
+            return <PlatformPropensityChip propensity={f.propensityModel} size="xs" />;
+          }
+          return <GamesChipCluster games={f.games} size="xs" />;
+        })()}
 
         {/* Latency badge(s) — dual for streak features */}
         {tiers.length === 2 ? (

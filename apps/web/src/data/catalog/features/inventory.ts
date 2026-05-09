@@ -3,9 +3,9 @@
  * Source: Hermes_Demo_Data.md Part 1 §Inventory & items
  * Substrate B · latency mix <1h and <1d
  */
-import type { HermesFeature } from '@hermes/contracts';
+import type { HermesFeatureSource } from '@hermes/contracts';
 
-export const inventoryFeatures: HermesFeature[] = [
+export const inventoryFeatures: HermesFeatureSource[] = [
   {
     name: 'weapon_owned_lifetime',
     displayName: 'Weapons Owned (Lifetime)',
@@ -13,6 +13,7 @@ export const inventoryFeatures: HermesFeature[] = [
     latencyTier: '<1d',
     substrate: 'B',
     domain: 'inventory',
+    games: ['cfm'],
     owner: 'gds-cfm',
     status: 'active',
     addedAt: '2025-01-10',
@@ -27,6 +28,7 @@ export const inventoryFeatures: HermesFeature[] = [
     latencyTier: '<1d',
     substrate: 'B',
     domain: 'inventory',
+    games: ['cfm'],
     owner: 'gds-cfm',
     status: 'active',
     addedAt: '2025-01-10',
@@ -41,6 +43,7 @@ export const inventoryFeatures: HermesFeature[] = [
     latencyTier: '<1d',
     substrate: 'B',
     domain: 'inventory',
+    games: ['pt', 'ptg'],
     owner: 'gds-nth',
     status: 'active',
     addedAt: '2025-02-14',
@@ -55,6 +58,7 @@ export const inventoryFeatures: HermesFeature[] = [
     latencyTier: '<1d',
     substrate: 'B',
     domain: 'inventory',
+    games: ['cfm', 'pt', 'nth', 'tf', 'cos'],
     owner: 'gds-monetization',
     status: 'active',
     addedAt: '2025-01-10',
@@ -69,6 +73,7 @@ export const inventoryFeatures: HermesFeature[] = [
     latencyTier: '<1h',
     substrate: 'B',
     domain: 'inventory',
+    games: ['cfm', 'pt', 'nth', 'tf', 'cos', 'ptg'],
     owner: 'gds-monetization',
     status: 'active',
     addedAt: '2025-01-10',
