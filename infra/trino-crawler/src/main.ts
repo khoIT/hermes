@@ -37,6 +37,7 @@ import { runSamplePlayers } from './steps/03-sample-players.js';
 import { runEventVolumes } from './steps/04-event-volumes.js';
 import { runSegmentDemographics } from './steps/05-segment-demographics.js';
 import { runRawEventAggregates } from './steps/06-raw-event-aggregates.js';
+import { runSynthesize30dBackfill } from './steps/07-synthesize-30d-backfill.js';
 import { endPool } from './postgres-client.js';
 
 // ── CLI flag parsing ──────────────────────────────────────────────────────────
@@ -50,6 +51,7 @@ type RunMode =
   | 'events-only'
   | 'demographics-only'
   | 'raw-events-only'
+  | 'synth-backfill-only'
   | 'all';
 
 type ParsedArgs = {
@@ -68,6 +70,7 @@ function parseArgs(argv: string[]): ParsedArgs {
   else if (argv.includes('--events-only'))        mode = 'events-only';
   else if (argv.includes('--demographics-only'))  mode = 'demographics-only';
   else if (argv.includes('--raw-events-only'))    mode = 'raw-events-only';
+  else if (argv.includes('--synth-backfill-only')) mode = 'synth-backfill-only';
 
   // Parse --days=N  and --cap=N  from argv. Defaults: 7d, 500k rows/table.
   const findVal = (flag: string, fallback: number): number => {
@@ -117,6 +120,12 @@ async function main(): Promise<void> {
   }
   if (mode === 'raw-events-only') {
     await runRawEventAggregates({ days, capRows });
+    await endPool();
+    console.log('\n[crawler] Done.');
+    return;
+  }
+  if (mode === 'synth-backfill-only') {
+    await runSynthesize30dBackfill();
     await endPool();
     console.log('\n[crawler] Done.');
     return;
@@ -191,6 +200,10 @@ async function main(): Promise<void> {
     console.log('');
     console.log(`[crawler] Step 06: pulling ${days}d real aggregates into Postgres...`);
     await runRawEventAggregates({ days, capRows });
+
+    console.log('');
+    console.log('[crawler] Step 07: projecting 23d synth backfill...');
+    await runSynthesize30dBackfill();
   }
 
   // ── Steps 1-5: Synth fixtures (always run in 'all' mode) ───────────────
