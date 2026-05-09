@@ -1,0 +1,268 @@
+{
+  "cfm-11-rfm-tiers": {
+    "canonicalCount": 1847000,
+    "computedAt": "2026-05-09T09:22:39.172Z",
+    "displayName": "CFM-11 Lễ Hội Cuối Năm — RFM Tier Ladder",
+    "predicate": "Four mutually-exclusive RFM tier segments (see thresholdGrid)",
+    "predicateId": "cfm-11-rfm-tiers",
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "synthesised": true,
+    "thresholdGrid": [
+      {
+        "breakdownAtCanonical": {
+          "lifecycle": {
+            "lapsed": 0,
+            "mid": 0.05,
+            "nru": 0.95,
+            "veteran": 0
+          },
+          "spend_tier": {
+            "free": 1,
+            "high": 0,
+            "low": 0,
+            "mid": 0,
+            "whale": 0
+          }
+        },
+        "count": 480000,
+        "label": "Tier 1 · NRU",
+        "predicate": "account_age_days <= 90 AND is_paying_user_lifetime = false",
+        "tier": "nru"
+      },
+      {
+        "breakdownAtCanonical": {
+          "lifecycle": {
+            "lapsed": 0,
+            "mid": 0.7,
+            "nru": 0.05,
+            "veteran": 0.25
+          },
+          "spend_tier": {
+            "free": 0,
+            "high": 0,
+            "low": 0.6,
+            "mid": 0.4,
+            "whale": 0
+          }
+        },
+        "count": 1200000,
+        "label": "Tier 2 · Mid Spender",
+        "predicate": "account_age_days > 90 AND spend_tier_lifetime IN [low, mid] AND ranked_match_count_30d >= 10",
+        "tier": "mid"
+      },
+      {
+        "breakdownAtCanonical": {
+          "lifecycle": {
+            "lapsed": 0,
+            "mid": 0.25,
+            "nru": 0,
+            "veteran": 0.75
+          },
+          "spend_tier": {
+            "free": 0,
+            "high": 1,
+            "low": 0,
+            "mid": 0,
+            "whale": 0
+          }
+        },
+        "count": 145000,
+        "label": "Tier 3 · High Spender",
+        "predicate": "spend_tier_lifetime = high AND daily_login_streak_current >= 7",
+        "tier": "high"
+      },
+      {
+        "breakdownAtCanonical": {
+          "lifecycle": {
+            "lapsed": 0.2,
+            "mid": 0.1,
+            "nru": 0,
+            "veteran": 0.7
+          },
+          "spend_tier": {
+            "free": 0,
+            "high": 0.1,
+            "low": 0,
+            "mid": 0,
+            "whale": 0.9
+          }
+        },
+        "count": 22000,
+        "label": "Tier 4 · Whale",
+        "predicate": "spend_tier_lifetime = whale OR annual_contribution_tier >= 4",
+        "tier": "whale"
+      }
+    ]
+  },
+  "cfm-13-pass-stuck": {
+    "breakdownAtCanonical": {
+      "lifecycle": {
+        "mid": 0.31,
+        "nru": 0.04,
+        "veteran": 0.65
+      },
+      "spend_tier": {
+        "free": 0.91,
+        "high": 0.01,
+        "low": 0.06,
+        "mid": 0.02,
+        "whale": 0
+      }
+    },
+    "canonicalCount": 23890,
+    "canonicalThreshold": 5,
+    "computedAt": "2026-05-09T09:22:39.172Z",
+    "displayName": "CFM-13 Pass Stuck Rescue",
+    "predicate": "event_match_end.outcome = lose AND consecutive_ranked_losses_streak >= {threshold} AND is_paying_user_lifetime = false AND mmr_drift_7d < -30 AND NOT is_test_account",
+    "predicateId": "cfm-13-pass-stuck",
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "synthesised": true,
+    "thresholdGrid": [
+      {
+        "count": 47210,
+        "threshold": 3
+      },
+      {
+        "count": 31120,
+        "threshold": 4
+      },
+      {
+        "count": 23890,
+        "threshold": 5
+      },
+      {
+        "count": 14512,
+        "threshold": 6
+      },
+      {
+        "count": 8420,
+        "threshold": 7
+      },
+      {
+        "count": 4100,
+        "threshold": 8
+      },
+      {
+        "count": 850,
+        "threshold": 10
+      }
+    ]
+  },
+  "cfm-18-low-cf-coin": {
+    "breakdownAtCanonical": {
+      "lifecycle": {
+        "lapsed": 0,
+        "mid": 0.45,
+        "nru": 0.05,
+        "veteran": 0.5
+      },
+      "spend_tier": {
+        "free": 0,
+        "high": 0.35,
+        "low": 0.1,
+        "mid": 0.4,
+        "whale": 0.15
+      }
+    },
+    "canonicalCount": 7400,
+    "canonicalThreshold": {
+      "hi": 900,
+      "lo": 500
+    },
+    "computedAt": "2026-05-09T09:22:39.172Z",
+    "displayName": "CFM-18 Low CF Coin + Promoted Item",
+    "predicate": "cf_coin_balance_current BETWEEN {lo} AND {hi} AND vip_status != none AND promoted_item_active_count >= 1 AND NOT is_test_account AND iam_received_count_24h < 2",
+    "predicateId": "cfm-18-low-cf-coin",
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "synthesised": true,
+    "thresholdGrid": [
+      {
+        "count": 12800,
+        "range": {
+          "hi": 500,
+          "lo": 300
+        }
+      },
+      {
+        "count": 10200,
+        "range": {
+          "hi": 700,
+          "lo": 400
+        }
+      },
+      {
+        "count": 7400,
+        "range": {
+          "hi": 900,
+          "lo": 500
+        }
+      },
+      {
+        "count": 9100,
+        "range": {
+          "hi": 1000,
+          "lo": 500
+        }
+      }
+    ]
+  },
+  "cfm-2-ss1-weapon-owners": {
+    "breakdownAtCanonical": {
+      "lifecycle": {
+        "mid": 0.31,
+        "nru": 0.04,
+        "veteran": 0.65
+      },
+      "spend_tier": {
+        "free": 0.22,
+        "high": 0.17,
+        "low": 0.31,
+        "mid": 0.2,
+        "whale": 0.1
+      }
+    },
+    "canonicalCount": 84200,
+    "computedAt": "2026-05-09T09:22:39.172Z",
+    "displayName": "CFM-2 Voting Vũ Khí SS1",
+    "predicate": "weapon_owned_lifetime CONTAINS_ANY [w_ak47_ss1, w_m4a1_ss1, w_awm_ss1, w_desert_eagle_ss1] AND account_age_days >= 365 AND NOT is_test_account",
+    "predicateId": "cfm-2-ss1-weapon-owners",
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "synthesised": true,
+    "thresholdGrid": [
+      {
+        "count": 84200,
+        "threshold": "canonical"
+      }
+    ]
+  },
+  "tf-1-returning-coaches": {
+    "breakdownAtCanonical": {
+      "lifecycle": {
+        "lapsed": 0.6,
+        "mid": 0.15,
+        "nru": 0,
+        "veteran": 0.25
+      },
+      "spend_tier": {
+        "free": 0.45,
+        "high": 0.07,
+        "low": 0.3,
+        "mid": 0.15,
+        "whale": 0.03
+      }
+    },
+    "canonicalCount": 38000,
+    "computedAt": "2026-05-09T09:22:39.172Z",
+    "displayName": "TF-1 Football Hub · Returning Coaches",
+    "predicate": "account_age_days >= 90 AND last_login_days_ago BETWEEN 30 AND 180 AND chapter_progress_max >= 3 AND ranked_match_count_lifetime >= 20 AND NOT is_test_account",
+    "predicateId": "tf-1-returning-coaches",
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "synthesised": true,
+    "thresholdGrid": [
+      {
+        "count": 38000,
+        "threshold": "canonical"
+      }
+    ]
+  }
+}

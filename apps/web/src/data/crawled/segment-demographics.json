@@ -1,0 +1,457 @@
+{
+  "seg-cfm-lapsed-mid-spender-2026": {
+    "audienceSize": 54300,
+    "breakdowns": {
+      "lifecycle": {
+        "lapsed": 0.4,
+        "mid": 0.3,
+        "nru": 0,
+        "veteran": 0.3
+      },
+      "region": {
+        "ID": 0.115,
+        "Other": 0.054,
+        "PH": 0.109,
+        "TH": 0.174,
+        "VN": 0.548
+      },
+      "spendTier": {
+        "free": 0,
+        "high": 0,
+        "low": 0.55,
+        "mid": 0.45,
+        "whale": 0
+      }
+    },
+    "computedAt": "2026-05-09T09:22:41.291Z",
+    "displayName": "CFM · Lapsed Mid Spender",
+    "game": "CFM",
+    "segmentId": "seg-cfm-lapsed-mid-spender-2026",
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "synthesised": true
+  },
+  "seg-cfm-loss-streak-non-paying-2026-0508-a3f9": {
+    "audienceSize": 23890,
+    "breakdowns": {
+      "lifecycle": {
+        "mid": 0.52,
+        "nru": 0.08,
+        "veteran": 0.4
+      },
+      "region": {
+        "ID": 0.118,
+        "Other": 0.056,
+        "PH": 0.084,
+        "TH": 0.203,
+        "VN": 0.539
+      },
+      "spendTier": {
+        "free": 1,
+        "high": 0,
+        "low": 0,
+        "mid": 0,
+        "whale": 0
+      }
+    },
+    "computedAt": "2026-05-09T09:22:41.291Z",
+    "displayName": "CFM · Loss Streak · Non-Paying · Ranked",
+    "game": "CFM",
+    "segmentId": "seg-cfm-loss-streak-non-paying-2026-0508-a3f9",
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "synthesised": true
+  },
+  "seg-cfm-low-coin-vip-2026": {
+    "audienceSize": 7400,
+    "breakdowns": {
+      "lifecycle": {
+        "mid": 0.45,
+        "nru": 0.05,
+        "veteran": 0.5
+      },
+      "region": {
+        "ID": 0.101,
+        "Other": 0.051,
+        "PH": 0.096,
+        "TH": 0.208,
+        "VN": 0.544
+      },
+      "spendTier": {
+        "free": 0,
+        "high": 0.35,
+        "low": 0.1,
+        "mid": 0.4,
+        "whale": 0.15
+      }
+    },
+    "computedAt": "2026-05-09T09:22:41.291Z",
+    "displayName": "CFM · Low CF Coin · VIP",
+    "game": "CFM",
+    "segmentId": "seg-cfm-low-coin-vip-2026",
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "synthesised": true
+  },
+  "seg-cfm-new-player-d2-2026": {
+    "audienceSize": 8900,
+    "breakdowns": {
+      "lifecycle": {
+        "mid": 0,
+        "nru": 1,
+        "veteran": 0
+      },
+      "region": {
+        "ID": 0.131,
+        "Other": 0.07,
+        "PH": 0.064,
+        "TH": 0.206,
+        "VN": 0.529
+      },
+      "spendTier": {
+        "free": 0.95,
+        "high": 0,
+        "low": 0.05,
+        "mid": 0,
+        "whale": 0
+      }
+    },
+    "computedAt": "2026-05-09T09:22:41.291Z",
+    "displayName": "CFM · New Player D2 Nudge",
+    "game": "CFM",
+    "segmentId": "seg-cfm-new-player-d2-2026",
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "synthesised": true
+  },
+  "seg-cfm-pass-stuck-vip-2026": {
+    "audienceSize": 11200,
+    "breakdowns": {
+      "lifecycle": {
+        "mid": 0.45,
+        "nru": 0.02,
+        "veteran": 0.53
+      },
+      "region": {
+        "ID": 0.117,
+        "Other": 0.086,
+        "PH": 0.1,
+        "TH": 0.152,
+        "VN": 0.545
+      },
+      "spendTier": {
+        "free": 0,
+        "high": 0.45,
+        "low": 0.05,
+        "mid": 0.35,
+        "whale": 0.15
+      }
+    },
+    "computedAt": "2026-05-09T09:22:41.291Z",
+    "displayName": "CFM · Pass Stuck · VIP Tier",
+    "game": "CFM",
+    "segmentId": "seg-cfm-pass-stuck-vip-2026",
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "synthesised": true
+  },
+  "seg-cfm-rfm-tier-1-2026": {
+    "audienceSize": 480000,
+    "breakdowns": {
+      "lifecycle": {
+        "mid": 0.05,
+        "nru": 0.95,
+        "veteran": 0
+      },
+      "region": {
+        "ID": 0.112,
+        "Other": 0.07,
+        "PH": 0.099,
+        "TH": 0.193,
+        "VN": 0.526
+      },
+      "spendTier": {
+        "free": 1,
+        "high": 0,
+        "low": 0,
+        "mid": 0,
+        "whale": 0
+      }
+    },
+    "computedAt": "2026-05-09T09:22:41.291Z",
+    "displayName": "CFM · Year-End Tier 1 · NRU",
+    "game": "CFM",
+    "segmentId": "seg-cfm-rfm-tier-1-2026",
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "synthesised": true
+  },
+  "seg-cfm-rfm-tier-2-2026": {
+    "audienceSize": 1200000,
+    "breakdowns": {
+      "lifecycle": {
+        "mid": 0.7,
+        "nru": 0.05,
+        "veteran": 0.25
+      },
+      "region": {
+        "ID": 0.127,
+        "Other": 0.077,
+        "PH": 0.114,
+        "TH": 0.167,
+        "VN": 0.515
+      },
+      "spendTier": {
+        "free": 0,
+        "high": 0,
+        "low": 0.6,
+        "mid": 0.4,
+        "whale": 0
+      }
+    },
+    "computedAt": "2026-05-09T09:22:41.291Z",
+    "displayName": "CFM · Year-End Tier 2 · Mid Spender",
+    "game": "CFM",
+    "segmentId": "seg-cfm-rfm-tier-2-2026",
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "synthesised": true
+  },
+  "seg-cfm-rfm-tier-3-2026": {
+    "audienceSize": 145000,
+    "breakdowns": {
+      "lifecycle": {
+        "mid": 0.25,
+        "nru": 0,
+        "veteran": 0.75
+      },
+      "region": {
+        "ID": 0.112,
+        "Other": 0.042,
+        "PH": 0.11,
+        "TH": 0.176,
+        "VN": 0.56
+      },
+      "spendTier": {
+        "free": 0,
+        "high": 1,
+        "low": 0,
+        "mid": 0,
+        "whale": 0
+      }
+    },
+    "computedAt": "2026-05-09T09:22:41.291Z",
+    "displayName": "CFM · Year-End Tier 3 · High Spender",
+    "game": "CFM",
+    "segmentId": "seg-cfm-rfm-tier-3-2026",
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "synthesised": true
+  },
+  "seg-cfm-rfm-tier-4-2026": {
+    "audienceSize": 22000,
+    "breakdowns": {
+      "lifecycle": {
+        "lapsed": 0.2,
+        "mid": 0.1,
+        "nru": 0,
+        "veteran": 0.7
+      },
+      "region": {
+        "ID": 0.097,
+        "Other": 0.039,
+        "PH": 0.103,
+        "TH": 0.159,
+        "VN": 0.602
+      },
+      "spendTier": {
+        "free": 0,
+        "high": 0.1,
+        "low": 0,
+        "mid": 0,
+        "whale": 0.9
+      }
+    },
+    "computedAt": "2026-05-09T09:22:41.291Z",
+    "displayName": "CFM · Year-End Tier 4 · Whale",
+    "game": "CFM",
+    "segmentId": "seg-cfm-rfm-tier-4-2026",
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "synthesised": true
+  },
+  "seg-cfm-shop-window-shopper-2026": {
+    "audienceSize": 186000,
+    "breakdowns": {
+      "lifecycle": {
+        "mid": 0.6,
+        "nru": 0.12,
+        "veteran": 0.28
+      },
+      "region": {
+        "ID": 0.108,
+        "Other": 0.056,
+        "PH": 0.082,
+        "TH": 0.188,
+        "VN": 0.566
+      },
+      "spendTier": {
+        "free": 1,
+        "high": 0,
+        "low": 0,
+        "mid": 0,
+        "whale": 0
+      }
+    },
+    "computedAt": "2026-05-09T09:22:41.291Z",
+    "displayName": "CFM · Shop Window Shopper",
+    "game": "CFM",
+    "segmentId": "seg-cfm-shop-window-shopper-2026",
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "synthesised": true
+  },
+  "seg-cfm-ss1-weapon-owners-2026": {
+    "audienceSize": 84200,
+    "breakdowns": {
+      "lifecycle": {
+        "mid": 0.31,
+        "nru": 0.04,
+        "veteran": 0.65
+      },
+      "region": {
+        "ID": 0.115,
+        "Other": 0.057,
+        "PH": 0.102,
+        "TH": 0.194,
+        "VN": 0.532
+      },
+      "spendTier": {
+        "free": 0.22,
+        "high": 0.17,
+        "low": 0.31,
+        "mid": 0.2,
+        "whale": 0.1
+      }
+    },
+    "computedAt": "2026-05-09T09:22:41.290Z",
+    "displayName": "CFM · SS1 Weapon Owners 2026",
+    "game": "CFM",
+    "segmentId": "seg-cfm-ss1-weapon-owners-2026",
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "synthesised": true
+  },
+  "seg-cfm-veteran-pvp-2026": {
+    "audienceSize": 92400,
+    "breakdowns": {
+      "lifecycle": {
+        "mid": 0.1,
+        "nru": 0,
+        "veteran": 0.9
+      },
+      "region": {
+        "ID": 0.141,
+        "Other": 0.036,
+        "PH": 0.079,
+        "TH": 0.195,
+        "VN": 0.549
+      },
+      "spendTier": {
+        "free": 0.2,
+        "high": 0.12,
+        "low": 0.35,
+        "mid": 0.28,
+        "whale": 0.05
+      }
+    },
+    "computedAt": "2026-05-09T09:22:41.291Z",
+    "displayName": "CFM · Veteran PvP Core",
+    "game": "CFM",
+    "segmentId": "seg-cfm-veteran-pvp-2026",
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "synthesised": true
+  },
+  "seg-cfm-whale-at-risk-2026": {
+    "audienceSize": 4120,
+    "breakdowns": {
+      "lifecycle": {
+        "lapsed": 0.3,
+        "mid": 0.05,
+        "nru": 0,
+        "veteran": 0.65
+      },
+      "region": {
+        "ID": 0.113,
+        "Other": 0.071,
+        "PH": 0.11,
+        "TH": 0.169,
+        "VN": 0.537
+      },
+      "spendTier": {
+        "free": 0,
+        "high": 0,
+        "low": 0,
+        "mid": 0,
+        "whale": 1
+      }
+    },
+    "computedAt": "2026-05-09T09:22:41.291Z",
+    "displayName": "CFM · Whale At Risk",
+    "game": "CFM",
+    "segmentId": "seg-cfm-whale-at-risk-2026",
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "synthesised": true
+  },
+  "seg-nth-whale-at-risk-2026": {
+    "audienceSize": 3870,
+    "breakdowns": {
+      "lifecycle": {
+        "lapsed": 0.32,
+        "mid": 0.08,
+        "nru": 0,
+        "veteran": 0.6
+      },
+      "region": {
+        "ID": 0.097,
+        "Other": 0.087,
+        "PH": 0.045,
+        "TH": 0.112,
+        "VN": 0.659
+      },
+      "spendTier": {
+        "free": 0,
+        "high": 0.05,
+        "low": 0,
+        "mid": 0,
+        "whale": 0.95
+      }
+    },
+    "computedAt": "2026-05-09T09:22:41.291Z",
+    "displayName": "NTH · Whale At Risk · Login Drift",
+    "game": "NTH",
+    "segmentId": "seg-nth-whale-at-risk-2026",
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "synthesised": true
+  },
+  "seg-tf-returning-coaches-2026": {
+    "audienceSize": 38000,
+    "breakdowns": {
+      "lifecycle": {
+        "lapsed": 0.6,
+        "mid": 0.15,
+        "nru": 0,
+        "veteran": 0.25
+      },
+      "region": {
+        "ID": 0.131,
+        "Other": 0.071,
+        "PH": 0.096,
+        "TH": 0.179,
+        "VN": 0.523
+      },
+      "spendTier": {
+        "free": 0.45,
+        "high": 0.07,
+        "low": 0.3,
+        "mid": 0.15,
+        "whale": 0.03
+      }
+    },
+    "computedAt": "2026-05-09T09:22:41.291Z",
+    "displayName": "TF · Returning Coaches 2026",
+    "game": "TF",
+    "segmentId": "seg-tf-returning-coaches-2026",
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "synthesised": true
+  }
+}

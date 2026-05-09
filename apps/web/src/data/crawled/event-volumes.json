@@ -1,0 +1,920 @@
+{
+  "event_chapter_complete": {
+    "computedAt": "2026-05-09T09:22:41.289Z",
+    "dailyVolume": 144602,
+    "domain": "progression",
+    "peakRate": 4,
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "sparkline7d": [
+      127214,
+      133179,
+      141807,
+      147212,
+      145456,
+      152244,
+      139317
+    ],
+    "synthesised": true,
+    "tier": "low"
+  },
+  "event_chapter_started": {
+    "computedAt": "2026-05-09T09:22:41.289Z",
+    "dailyVolume": 100488,
+    "domain": "progression",
+    "peakRate": 2,
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "sparkline7d": [
+      82777,
+      86712,
+      97165,
+      96159,
+      104999,
+      109760,
+      92021
+    ],
+    "synthesised": true,
+    "tier": "low"
+  },
+  "event_chat_message_sent": {
+    "computedAt": "2026-05-09T09:22:41.289Z",
+    "dailyVolume": 290070,
+    "domain": "social",
+    "peakRate": 7,
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "sparkline7d": [
+      258790,
+      264774,
+      271431,
+      293455,
+      300454,
+      323868,
+      287892
+    ],
+    "synthesised": true,
+    "tier": "mid"
+  },
+  "event_clicktobuy_item_iap": {
+    "computedAt": "2026-05-09T09:22:41.289Z",
+    "dailyVolume": 45664,
+    "domain": "purchase-monetization",
+    "peakRate": 1,
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "sparkline7d": [
+      37557,
+      41248,
+      42930,
+      47535,
+      45810,
+      49522,
+      45513
+    ],
+    "synthesised": true,
+    "tier": "low"
+  },
+  "event_currency_balance_change": {
+    "computedAt": "2026-05-09T09:22:41.289Z",
+    "dailyVolume": 744533,
+    "domain": "item-inventory",
+    "peakRate": 18,
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "sparkline7d": [
+      604242,
+      666893,
+      695763,
+      754375,
+      816050,
+      831569,
+      692461
+    ],
+    "synthesised": true,
+    "tier": "mid"
+  },
+  "event_death": {
+    "computedAt": "2026-05-09T09:22:41.289Z",
+    "dailyVolume": 1994581,
+    "domain": "match-gameplay",
+    "peakRate": 48,
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "sparkline7d": [
+      1615791,
+      1750535,
+      1809299,
+      1917793,
+      2114706,
+      2245721,
+      1824021
+    ],
+    "synthesised": true,
+    "tier": "high"
+  },
+  "event_friend_invite_accepted": {
+    "computedAt": "2026-05-09T09:22:41.289Z",
+    "dailyVolume": 125283,
+    "domain": "social",
+    "peakRate": 3,
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "sparkline7d": [
+      103726,
+      107478,
+      124237,
+      122499,
+      127437,
+      141239,
+      115855
+    ],
+    "synthesised": true,
+    "tier": "low"
+  },
+  "event_friend_invite_sent": {
+    "computedAt": "2026-05-09T09:22:41.289Z",
+    "dailyVolume": 39194,
+    "domain": "social",
+    "peakRate": 1,
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "sparkline7d": [
+      34051,
+      33516,
+      35771,
+      40090,
+      41842,
+      42962,
+      38103
+    ],
+    "synthesised": true,
+    "tier": "low"
+  },
+  "event_guild_join": {
+    "computedAt": "2026-05-09T09:22:41.289Z",
+    "dailyVolume": 11922,
+    "domain": "social",
+    "peakRate": 0,
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "sparkline7d": [
+      10287,
+      10216,
+      10774,
+      12121,
+      12128,
+      13337,
+      11124
+    ],
+    "synthesised": true,
+    "tier": "rare"
+  },
+  "event_guild_leave": {
+    "computedAt": "2026-05-09T09:22:41.289Z",
+    "dailyVolume": 4805,
+    "domain": "social",
+    "peakRate": 0,
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "sparkline7d": [
+      4277,
+      4386,
+      4713,
+      4907,
+      4956,
+      5333,
+      4398
+    ],
+    "synthesised": true,
+    "tier": "rare"
+  },
+  "event_h5_event_open": {
+    "computedAt": "2026-05-09T09:22:41.289Z",
+    "dailyVolume": 57466,
+    "domain": "campaign-ui",
+    "peakRate": 1,
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "sparkline7d": [
+      48859,
+      53586,
+      55129,
+      58059,
+      61142,
+      64880,
+      52721
+    ],
+    "synthesised": true,
+    "tier": "low"
+  },
+  "event_iam_clicked": {
+    "computedAt": "2026-05-09T09:22:41.289Z",
+    "dailyVolume": 14495,
+    "domain": "campaign-ui",
+    "peakRate": 0,
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "sparkline7d": [
+      12600,
+      13495,
+      14433,
+      14757,
+      14760,
+      16698,
+      13803
+    ],
+    "synthesised": true,
+    "tier": "low"
+  },
+  "event_iam_dismissed": {
+    "computedAt": "2026-05-09T09:22:41.289Z",
+    "dailyVolume": 122996,
+    "domain": "campaign-ui",
+    "peakRate": 3,
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "sparkline7d": [
+      108921,
+      114062,
+      115644,
+      124491,
+      133108,
+      132147,
+      112973
+    ],
+    "synthesised": true,
+    "tier": "low"
+  },
+  "event_iam_shown": {
+    "computedAt": "2026-05-09T09:22:41.289Z",
+    "dailyVolume": 129773,
+    "domain": "campaign-ui",
+    "peakRate": 3,
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "sparkline7d": [
+      114052,
+      118001,
+      117785,
+      129840,
+      129476,
+      146501,
+      125812
+    ],
+    "synthesised": true,
+    "tier": "low"
+  },
+  "event_iap_shop_open": {
+    "computedAt": "2026-05-09T09:22:41.289Z",
+    "dailyVolume": 570129,
+    "domain": "purchase-monetization",
+    "peakRate": 14,
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "sparkline7d": [
+      473883,
+      514662,
+      568162,
+      569595,
+      606656,
+      644105,
+      556366
+    ],
+    "synthesised": true,
+    "tier": "mid"
+  },
+  "event_item_received": {
+    "computedAt": "2026-05-09T09:22:41.289Z",
+    "dailyVolume": 746132,
+    "domain": "item-inventory",
+    "peakRate": 18,
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "sparkline7d": [
+      659971,
+      664610,
+      682670,
+      713081,
+      801708,
+      800658,
+      730311
+    ],
+    "synthesised": true,
+    "tier": "mid"
+  },
+  "event_item_used": {
+    "computedAt": "2026-05-09T09:22:41.289Z",
+    "dailyVolume": 347251,
+    "domain": "item-inventory",
+    "peakRate": 8,
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "sparkline7d": [
+      294484,
+      312092,
+      334057,
+      349757,
+      366460,
+      380521,
+      326205
+    ],
+    "synthesised": true,
+    "tier": "mid"
+  },
+  "event_kill": {
+    "computedAt": "2026-05-09T09:22:41.289Z",
+    "dailyVolume": 744320,
+    "domain": "match-gameplay",
+    "peakRate": 18,
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "sparkline7d": [
+      637352,
+      673332,
+      698469,
+      724955,
+      754302,
+      857900,
+      727180
+    ],
+    "synthesised": true,
+    "tier": "high"
+  },
+  "event_level_up": {
+    "computedAt": "2026-05-09T09:22:41.289Z",
+    "dailyVolume": 29411,
+    "domain": "progression",
+    "peakRate": 1,
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "sparkline7d": [
+      25678,
+      25346,
+      29237,
+      28480,
+      31358,
+      31489,
+      28302
+    ],
+    "synthesised": true,
+    "tier": "low"
+  },
+  "event_lobby_enter": {
+    "computedAt": "2026-05-09T09:22:41.289Z",
+    "dailyVolume": 463306,
+    "domain": "session-login",
+    "peakRate": 11,
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "sparkline7d": [
+      411965,
+      430903,
+      448407,
+      480709,
+      462884,
+      534932,
+      460898
+    ],
+    "synthesised": true,
+    "tier": "mid"
+  },
+  "event_lobby_exit": {
+    "computedAt": "2026-05-09T09:22:41.289Z",
+    "dailyVolume": 315714,
+    "domain": "session-login",
+    "peakRate": 8,
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "sparkline7d": [
+      281539,
+      279397,
+      296687,
+      302426,
+      342080,
+      330537,
+      308754
+    ],
+    "synthesised": true,
+    "tier": "mid"
+  },
+  "event_lobby_idle_60min": {
+    "computedAt": "2026-05-09T09:22:41.289Z",
+    "dailyVolume": 120873,
+    "domain": "session-login",
+    "peakRate": 3,
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "sparkline7d": [
+      101706,
+      106304,
+      111605,
+      120544,
+      130171,
+      133433,
+      109189
+    ],
+    "synthesised": true,
+    "tier": "low"
+  },
+  "event_login": {
+    "computedAt": "2026-05-09T09:22:41.289Z",
+    "dailyVolume": 658099,
+    "domain": "session-login",
+    "peakRate": 16,
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "sparkline7d": [
+      569467,
+      612689,
+      646989,
+      637392,
+      702656,
+      712182,
+      613043
+    ],
+    "synthesised": true,
+    "tier": "mid"
+  },
+  "event_logout": {
+    "computedAt": "2026-05-09T09:22:41.289Z",
+    "dailyVolume": 218408,
+    "domain": "session-login",
+    "peakRate": 5,
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "sparkline7d": [
+      194056,
+      187409,
+      198475,
+      228319,
+      227729,
+      238680,
+      208749
+    ],
+    "synthesised": true,
+    "tier": "mid"
+  },
+  "event_match_end": {
+    "computedAt": "2026-05-09T09:22:41.289Z",
+    "dailyVolume": 896990,
+    "domain": "match-gameplay",
+    "peakRate": 22,
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "sparkline7d": [
+      791592,
+      783454,
+      817674,
+      932480,
+      959328,
+      963534,
+      849541
+    ],
+    "synthesised": true,
+    "tier": "high"
+  },
+  "event_match_start": {
+    "computedAt": "2026-05-09T09:22:41.289Z",
+    "dailyVolume": 1062712,
+    "domain": "match-gameplay",
+    "peakRate": 26,
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "sparkline7d": [
+      899233,
+      992404,
+      960263,
+      1092778,
+      1094662,
+      1145909,
+      959776
+    ],
+    "synthesised": true,
+    "tier": "high"
+  },
+  "event_milestone_reached": {
+    "computedAt": "2026-05-09T09:22:41.289Z",
+    "dailyVolume": 49152,
+    "domain": "progression",
+    "peakRate": 1,
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "sparkline7d": [
+      41670,
+      43262,
+      45780,
+      49956,
+      52539,
+      52188,
+      48909
+    ],
+    "synthesised": true,
+    "tier": "low"
+  },
+  "event_minigame_played": {
+    "computedAt": "2026-05-09T09:22:41.289Z",
+    "dailyVolume": 139357,
+    "domain": "campaign-ui",
+    "peakRate": 3,
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "sparkline7d": [
+      122495,
+      126938,
+      137938,
+      141471,
+      145956,
+      150931,
+      132620
+    ],
+    "synthesised": true,
+    "tier": "low"
+  },
+  "event_mmr_threshold_crossed": {
+    "computedAt": "2026-05-09T09:22:41.289Z",
+    "dailyVolume": 98152,
+    "domain": "progression",
+    "peakRate": 2,
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "sparkline7d": [
+      80774,
+      91787,
+      97198,
+      97507,
+      107450,
+      106334,
+      95968
+    ],
+    "synthesised": true,
+    "tier": "low"
+  },
+  "event_pack_offered": {
+    "computedAt": "2026-05-09T09:22:41.289Z",
+    "dailyVolume": 89783,
+    "domain": "purchase-monetization",
+    "peakRate": 2,
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "sparkline7d": [
+      78373,
+      79428,
+      88940,
+      85347,
+      96001,
+      96214,
+      87944
+    ],
+    "synthesised": true,
+    "tier": "low"
+  },
+  "event_pack_purchased": {
+    "computedAt": "2026-05-09T09:22:41.289Z",
+    "dailyVolume": 41481,
+    "domain": "purchase-monetization",
+    "peakRate": 1,
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "sparkline7d": [
+      34852,
+      36459,
+      39147,
+      42474,
+      42598,
+      44971,
+      39511
+    ],
+    "synthesised": true,
+    "tier": "low"
+  },
+  "event_pair_formed": {
+    "computedAt": "2026-05-09T09:22:41.289Z",
+    "dailyVolume": 15420,
+    "domain": "social",
+    "peakRate": 0,
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "sparkline7d": [
+      13201,
+      13749,
+      14511,
+      15578,
+      15622,
+      17267,
+      13989
+    ],
+    "synthesised": true,
+    "tier": "rare"
+  },
+  "event_purchase": {
+    "computedAt": "2026-05-09T09:22:41.289Z",
+    "dailyVolume": 105493,
+    "domain": "purchase-monetization",
+    "peakRate": 3,
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "sparkline7d": [
+      89246,
+      94631,
+      96948,
+      108140,
+      105740,
+      117060,
+      98238
+    ],
+    "synthesised": true,
+    "tier": "low"
+  },
+  "event_purchase_failed": {
+    "computedAt": "2026-05-09T09:22:41.289Z",
+    "dailyVolume": 133970,
+    "domain": "purchase-monetization",
+    "peakRate": 3,
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "sparkline7d": [
+      115746,
+      126035,
+      130080,
+      128491,
+      141488,
+      150076,
+      132350
+    ],
+    "synthesised": true,
+    "tier": "low"
+  },
+  "event_quest_complete": {
+    "computedAt": "2026-05-09T09:22:41.289Z",
+    "dailyVolume": 111755,
+    "domain": "progression",
+    "peakRate": 3,
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "sparkline7d": [
+      90308,
+      95807,
+      104141,
+      110163,
+      113642,
+      123736,
+      102380
+    ],
+    "synthesised": true,
+    "tier": "low"
+  },
+  "event_rank_demotion": {
+    "computedAt": "2026-05-09T09:22:41.289Z",
+    "dailyVolume": 71153,
+    "domain": "progression",
+    "peakRate": 2,
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "sparkline7d": [
+      62549,
+      63676,
+      68636,
+      72870,
+      72956,
+      78953,
+      66018
+    ],
+    "synthesised": true,
+    "tier": "low"
+  },
+  "event_rank_promotion": {
+    "computedAt": "2026-05-09T09:22:41.289Z",
+    "dailyVolume": 53960,
+    "domain": "progression",
+    "peakRate": 1,
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "sparkline7d": [
+      47996,
+      47053,
+      52653,
+      52951,
+      54783,
+      57675,
+      51899
+    ],
+    "synthesised": true,
+    "tier": "low"
+  },
+  "event_round_end": {
+    "computedAt": "2026-05-09T09:22:41.289Z",
+    "dailyVolume": 665159,
+    "domain": "match-gameplay",
+    "peakRate": 16,
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "sparkline7d": [
+      559424,
+      596762,
+      647461,
+      677392,
+      689472,
+      723500,
+      648368
+    ],
+    "synthesised": true,
+    "tier": "high"
+  },
+  "event_session_end": {
+    "computedAt": "2026-05-09T09:22:41.289Z",
+    "dailyVolume": 748843,
+    "domain": "session-login",
+    "peakRate": 18,
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "sparkline7d": [
+      664629,
+      686861,
+      715704,
+      737075,
+      792239,
+      858690,
+      697432
+    ],
+    "synthesised": true,
+    "tier": "mid"
+  },
+  "event_session_start": {
+    "computedAt": "2026-05-09T09:22:41.289Z",
+    "dailyVolume": 729039,
+    "domain": "session-login",
+    "peakRate": 18,
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "sparkline7d": [
+      625710,
+      674535,
+      699306,
+      742277,
+      781690,
+      836613,
+      668592
+    ],
+    "synthesised": true,
+    "tier": "mid"
+  },
+  "event_shop_click": {
+    "computedAt": "2026-05-09T09:22:41.289Z",
+    "dailyVolume": 363908,
+    "domain": "campaign-ui",
+    "peakRate": 9,
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "sparkline7d": [
+      307017,
+      323305,
+      334185,
+      366457,
+      372063,
+      409806,
+      343462
+    ],
+    "synthesised": true,
+    "tier": "mid"
+  },
+  "event_shop_open": {
+    "computedAt": "2026-05-09T09:22:41.289Z",
+    "dailyVolume": 665051,
+    "domain": "campaign-ui",
+    "peakRate": 16,
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "sparkline7d": [
+      585019,
+      623159,
+      662670,
+      662472,
+      708052,
+      742226,
+      658634
+    ],
+    "synthesised": true,
+    "tier": "mid"
+  },
+  "event_survey_response": {
+    "computedAt": "2026-05-09T09:22:41.289Z",
+    "dailyVolume": 14296,
+    "domain": "campaign-ui",
+    "peakRate": 0,
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "sparkline7d": [
+      12741,
+      13377,
+      13105,
+      13856,
+      15094,
+      15621,
+      13110
+    ],
+    "synthesised": true,
+    "tier": "rare"
+  },
+  "event_suspicious_activity_flagged": {
+    "computedAt": "2026-05-09T09:22:41.289Z",
+    "dailyVolume": 5349,
+    "domain": "ugc-moderation",
+    "peakRate": 0,
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "sparkline7d": [
+      4605,
+      4971,
+      5065,
+      5098,
+      5412,
+      6123,
+      5091
+    ],
+    "synthesised": true,
+    "tier": "rare"
+  },
+  "event_ugc_submission": {
+    "computedAt": "2026-05-09T09:22:41.289Z",
+    "dailyVolume": 5005,
+    "domain": "ugc-moderation",
+    "peakRate": 0,
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "sparkline7d": [
+      4083,
+      4723,
+      4753,
+      4868,
+      5163,
+      5648,
+      4566
+    ],
+    "synthesised": true,
+    "tier": "rare"
+  },
+  "event_ugc_view": {
+    "computedAt": "2026-05-09T09:22:41.289Z",
+    "dailyVolume": 76692,
+    "domain": "ugc-moderation",
+    "peakRate": 2,
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "sparkline7d": [
+      67620,
+      65968,
+      72150,
+      79811,
+      84434,
+      80612,
+      74240
+    ],
+    "synthesised": true,
+    "tier": "low"
+  },
+  "event_ugc_vote": {
+    "computedAt": "2026-05-09T09:22:41.289Z",
+    "dailyVolume": 17412,
+    "domain": "ugc-moderation",
+    "peakRate": 0,
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "sparkline7d": [
+      15484,
+      16084,
+      16492,
+      17745,
+      18702,
+      20086,
+      17095
+    ],
+    "synthesised": true,
+    "tier": "rare"
+  },
+  "event_weapon_pickup": {
+    "computedAt": "2026-05-09T09:22:41.289Z",
+    "dailyVolume": 592011,
+    "domain": "match-gameplay",
+    "peakRate": 14,
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "sparkline7d": [
+      508762,
+      519213,
+      549577,
+      602337,
+      604026,
+      638422,
+      585250
+    ],
+    "synthesised": true,
+    "tier": "high"
+  },
+  "event_weapon_trial_expired": {
+    "computedAt": "2026-05-09T09:22:41.289Z",
+    "dailyVolume": 61421,
+    "domain": "item-inventory",
+    "peakRate": 1,
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "sparkline7d": [
+      54668,
+      55494,
+      60020,
+      62863,
+      63199,
+      70588,
+      56022
+    ],
+    "synthesised": true,
+    "tier": "low"
+  },
+  "event_weapon_trial_started": {
+    "computedAt": "2026-05-09T09:22:41.289Z",
+    "dailyVolume": 95593,
+    "domain": "item-inventory",
+    "peakRate": 2,
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "sparkline7d": [
+      82913,
+      88355,
+      93378,
+      98629,
+      96476,
+      101537,
+      93526
+    ],
+    "synthesised": true,
+    "tier": "low"
+  },
+  "event_weapon_unlocked": {
+    "computedAt": "2026-05-09T09:22:41.289Z",
+    "dailyVolume": 16427,
+    "domain": "item-inventory",
+    "peakRate": 0,
+    "source": "P-4 synth · awaiting VPN/auth for cfm_vn pull",
+    "sparkline7d": [
+      14606,
+      14811,
+      15452,
+      16647,
+      17988,
+      18598,
+      16183
+    ],
+    "synthesised": true,
+    "tier": "low"
+  }
+}
