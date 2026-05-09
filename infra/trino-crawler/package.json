@@ -5,6 +5,7 @@
   "description": "Step-0 schema audit crawler for iceberg.cfm_vn via Trino",
   "scripts": {
     "start": "tsx src/main.ts",
+    "diagnose": "tsx src/diagnose-trino.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

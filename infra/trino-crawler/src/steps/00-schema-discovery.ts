@@ -8,6 +8,12 @@
  *
  * Writes infra/trino-crawler/schema-audit.md.
  *
+ * Access-denied fallback: this user's account has SHOW SCHEMAS denied
+ * even when the underlying tables are queryable directly. When SHOW
+ * SCHEMAS errors with "Access Denied", we skip the listing step and
+ * DESCRIBE the known table set (etl_*, std_master_user_profile)
+ * directly so the audit reflects real schemas instead of a stub.
+ *
  * VPN-down behaviour: on any network error (ECONNREFUSED / ETIMEDOUT /
  * ENOTFOUND / HTTP 4xx before the query executes), writes a STUB audit
  * and exits with code 0 + a clear "stub mode" message.
@@ -36,23 +42,50 @@ export type SchemaDiscoveryResult = {
 
 const OUTPUT_FILE = path.resolve(_dirname, '../../schema-audit.md');
 
+/**
+ * Known cfm_vn tables — referenced when SHOW SCHEMAS is access-denied
+ * but direct table queries succeed. Mirrors the diagnose-trino probe set.
+ */
+const KNOWN_CFM_VN_TABLES: readonly string[] = [
+  'etl_login',
+  'etl_logout',
+  'etl_game_detail',
+  'etl_recharge',
+  'etl_moneyflow',
+  'etl_appsflyer_installs_datalocker',
+  'std_master_user_profile',
+];
+
+function isAccessDenied(err: unknown): boolean {
+  if (!(err instanceof Error)) return false;
+  return /access denied/i.test(err.message);
+}
+
 /** Run full discovery; returns result (stub or real). */
 export async function runSchemaDiscovery(
   client: Trino,
   cfg: TrinoConfig,
 ): Promise<SchemaDiscoveryResult> {
   // ── 1. SHOW SCHEMAS ──────────────────────────────────────────────────────
-  let schemaRows: unknown[][];
+  // Access-denied is not fatal: this user has SHOW SCHEMAS denied even when
+  // direct DESCRIBE on iceberg.cfm_vn.<table> succeeds. Fall through to the
+  // known table set rather than emitting a stub audit.
+  let schemas: string[] = [];
+  let useKnownTablesFallback = false;
   try {
     const res = await runQuery(client, `SHOW SCHEMAS FROM ${cfg.catalog}`);
-    schemaRows = res.rows;
+    schemas = res.rows
+      .map((r) => String((r as string[])[0]))
+      .filter((s) => /^cfm/i.test(s) || s === cfg.schema);
   } catch (err) {
-    return writeStub(cfg, networkMessage(err));
+    if (isAccessDenied(err)) {
+      console.warn('[step-00] SHOW SCHEMAS denied — falling back to known table list');
+      useKnownTablesFallback = true;
+      schemas = [cfg.schema];
+    } else {
+      return writeStub(cfg, networkMessage(err));
+    }
   }
-
-  const schemas = schemaRows
-    .map((r) => String((r as string[])[0]))
-    .filter((s) => /^cfm/i.test(s) || s === cfg.schema);
 
   if (schemas.length === 0) {
     // Fallback: use the default schema name even if not confirmed
@@ -63,15 +96,25 @@ export async function runSchemaDiscovery(
   const tables: TableMeta[] = [];
 
   for (const schema of schemas) {
-    let tableRows: unknown[][];
-    try {
-      const res = await runQuery(client, `SHOW TABLES IN ${cfg.catalog}.${schema}`);
-      tableRows = res.rows;
-    } catch (err) {
-      return writeStub(cfg, networkMessage(err));
+    let tableNames: string[];
+    if (useKnownTablesFallback) {
+      tableNames = [...KNOWN_CFM_VN_TABLES];
+    } else {
+      let tableRows: unknown[][];
+      try {
+        const res = await runQuery(client, `SHOW TABLES IN ${cfg.catalog}.${schema}`);
+        tableRows = res.rows;
+      } catch (err) {
+        if (isAccessDenied(err)) {
+          console.warn(`[step-00] SHOW TABLES denied on ${schema} — falling back to known list`);
+          tableRows = [];
+        } else {
+          return writeStub(cfg, networkMessage(err));
+        }
+      }
+      tableNames = tableRows.map((r) => String((r as string[])[0]));
+      if (tableNames.length === 0) tableNames = [...KNOWN_CFM_VN_TABLES];
     }
-
-    const tableNames = tableRows.map((r) => String((r as string[])[0]));
 
     // ── 3. DESCRIBE each table ──────────────────────────────────────────────
     for (const tableName of tableNames) {

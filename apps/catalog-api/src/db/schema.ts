@@ -385,3 +385,14 @@ export const metricPipelines = pgTable('metric_pipelines', {
   byStatus: index('mp_by_status').on(t.status),
   byNextRun: index('mp_by_next_run').on(t.nextRunAt),
 }));
+
+// ─── Real Trino Feature Pipeline (Phase 2) ──────────────────────────
+// Feature-pipeline tables defined in schema-features.ts; re-exported
+// here so drizzle-kit picks them up via the single configured schema
+// path and existing imports keep working.
+export {
+  rawEventAggregates,
+  featureValues,
+  featureDistributionsDaily,
+  featureAnalytics180d,
+} from './schema-features';

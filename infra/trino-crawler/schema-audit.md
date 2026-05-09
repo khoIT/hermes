@@ -1,36 +1,689 @@
-# Trino Schema Audit — STUB (VPN down)
-
-> **Status:** VPN not connected — Trino unreachable.
-> Rerun `pnpm refresh-cfm-data --schema-only` after connecting VPN.
+# Trino Schema Audit — iceberg.cfm_vn
 
 | Field | Value |
 |---|---|
-| Generated | 2026-05-09T09:22:41.087Z |
-| Attempted host | gio-gds-trino.vnggames.net:8080 |
+| Generated | 2026-05-09T14:07:24.559Z |
+| Host | gio-gds-trino.vnggames.net:8080 |
 | Catalog | iceberg |
-| Expected schema | cfm_vn |
-| Failure reason | [trino] Access Denied: Cannot show schemas: iceberg
-SQL: SHOW SCHEMAS FROM iceberg |
+| Schemas found | cfm_vn |
+| Total tables | 7 |
 
-## Expected Tables (from trino-mock bedrock)
+## Schema: cfm_vn (7 tables)
 
-These tables are confirmed to exist in the trino-mock JSONL bedrock
-and are expected to be present in `iceberg.cfm_vn` once VPN is connected:
+### `etl_login`
 
-| Table | Notes |
+| Column | Type |
 |---|---|
-| `etl_login` | Session start events |
-| `etl_logout` | Session end + online time |
-| `etl_game_detail` | Per-match stats (kills, ladder score, game result) |
-| `etl_moneyflow` | In-game currency flow (balance deltas) |
-| `etl_recharge` | Real-money purchase events |
-| `etl_new_register` | New user registration events |
-| `etl_appsflyer_installs_datalocker` | AppsFlyer install attribution |
-| `etl_match_net_work_stats` | Per-match network quality |
-| `std_master_user_profile` | Unified user profile (install_time, first/last login, total_rev) |
+| `tdbank_imp_date` | `varchar` |
+| `worldid` | `varchar` |
+| `ip` | `varchar` |
+| `__tablename` | `varchar` |
+| `gamesvrid` | `varchar` |
+| `dteventtime` | `timestamp(6) with time zone` |
+| `platid` | `varchar` |
+| `izoneareaid` | `varchar` |
+| `vopenid` | `varchar` |
+| `roleid` | `varchar` |
+| `level` | `integer` |
+| `playerfriendsnum` | `varchar` |
+| `clientversion` | `varchar` |
+| `systemsoftware` | `varchar` |
+| `systemhardware` | `varchar` |
+| `telecomoper` | `varchar` |
+| `network` | `varchar` |
+| `screenwidth` | `varchar` |
+| `screenhight` | `varchar` |
+| `density` | `varchar` |
+| `loginchannel` | `varchar` |
+| `vrolename` | `varchar` |
+| `cpuhardware` | `varchar` |
+| `memory` | `varchar` |
+| `glrender` | `varchar` |
+| `glversion` | `varchar` |
+| `deviceid` | `varchar` |
+| `clientip` | `varchar` |
+| `country` | `varchar` |
+| `language` | `varchar` |
+| `ping` | `varchar` |
+| `appchannel` | `varchar` |
+| `systemlanguage` | `varchar` |
+| `xwid` | `varchar` |
+| `dtcreatetime` | `timestamp(6) with time zone` |
+| `onlinetotaltime` | `varchar` |
+| `exvipflag` | `varchar` |
+| `viplevel` | `integer` |
+| `monthcardlevel` | `integer` |
+| `appbundleid` | `varchar` |
+| `appsignature` | `varchar` |
+| `ispstat` | `varchar` |
+| `vip` | `varchar` |
+| `ispstattdr` | `varchar` |
+| `clientreqplat` | `varchar` |
+| `creditscore` | `varchar` |
+| `ladderscore` | `varchar` |
+| `ladderscoretop` | `varchar` |
+| `is_reconnect` | `varchar` |
+| `imei` | `varchar` |
+| `zone` | `varchar` |
+| `isbackflowuser` | `varchar` |
+| `noviceflag` | `varchar` |
+| `playerurl` | `varchar` |
+| `ladderscorepeak` | `varchar` |
+| `backflowleavedays` | `varchar` |
+| `oaid` | `varchar` |
+| `playerurltype` | `varchar` |
+| `localdeviceid` | `varchar` |
+| `clientsdkuserid` | `varchar` |
+| `vgameappid` | `varchar` |
+| `event_time_with_timezone` | `timestamp(6) with time zone` |
+| `folder_date` | `date` |
+| `raw_date` | `varchar` |
+| `ds` | `date` |
 
-## Next Steps
+### `etl_logout`
 
-1. Connect VPN to reach `gio-gds-trino.vnggames.net`
-2. Run: `pnpm refresh-cfm-data --schema-only`
-3. This stub file will be overwritten with the real audit.
+| Column | Type |
+|---|---|
+| `tdbank_imp_date` | `varchar` |
+| `worldid` | `varchar` |
+| `ip` | `varchar` |
+| `__tablename` | `varchar` |
+| `gamesvrid` | `varchar` |
+| `dteventtime` | `timestamp(6) with time zone` |
+| `platid` | `varchar` |
+| `izoneareaid` | `varchar` |
+| `vopenid` | `varchar` |
+| `roleid` | `varchar` |
+| `onlinetime` | `varchar` |
+| `level` | `integer` |
+| `playerfriendsnum` | `varchar` |
+| `clientversion` | `varchar` |
+| `systemsoftware` | `varchar` |
+| `systemhardware` | `varchar` |
+| `telecomoper` | `varchar` |
+| `network` | `varchar` |
+| `screenwidth` | `varchar` |
+| `screenhight` | `varchar` |
+| `density` | `varchar` |
+| `loginchannel` | `varchar` |
+| `cpuhardware` | `varchar` |
+| `memory` | `varchar` |
+| `glrender` | `varchar` |
+| `glversion` | `varchar` |
+| `deviceid` | `varchar` |
+| `clientip` | `varchar` |
+| `country` | `varchar` |
+| `language` | `varchar` |
+| `appchannel` | `varchar` |
+| `systemlanguage` | `varchar` |
+| `xwid` | `varchar` |
+| `vrolename` | `varchar` |
+| `logouttype` | `varchar` |
+| `imei` | `varchar` |
+| `zone` | `varchar` |
+| `isbackflowuser` | `varchar` |
+| `reflowstarttime` | `varchar` |
+| `playerurl` | `varchar` |
+| `clientsdkuserid` | `varchar` |
+| `vgameappid` | `varchar` |
+| `event_time_with_timezone` | `timestamp(6) with time zone` |
+| `folder_date` | `date` |
+| `raw_date` | `varchar` |
+| `ds` | `date` |
+
+### `etl_game_detail`
+
+| Column | Type |
+|---|---|
+| `tdbank_imp_date` | `varchar` |
+| `worldid` | `varchar` |
+| `ip` | `varchar` |
+| `__tablename` | `varchar` |
+| `gamesvrid` | `varchar` |
+| `dteventtime` | `timestamp(6) with time zone` |
+| `vgameappid` | `varchar` |
+| `platid` | `varchar` |
+| `izoneareaid` | `varchar` |
+| `playerid` | `varchar` |
+| `level` | `integer` |
+| `mapid` | `varchar` |
+| `gametype` | `varchar` |
+| `gamemode` | `varchar` |
+| `dtgamestarttime` | `timestamp(6) with time zone` |
+| `gameduration` | `varchar` |
+| `playerduration` | `varchar` |
+| `survivalduration` | `varchar` |
+| `gainedexp` | `varchar` |
+| `totalexp` | `varchar` |
+| `gainedgamepoint` | `varchar` |
+| `totalgamepoint` | `varchar` |
+| `gainedgold` | `varchar` |
+| `totalgold` | `varchar` |
+| `gaineddiamond` | `varchar` |
+| `totaldiamond` | `varchar` |
+| `score` | `varchar` |
+| `rankingame` | `varchar` |
+| `damagevalue` | `varchar` |
+| `timeskill` | `varchar` |
+| `timesbekilled` | `varchar` |
+| `chapterid` | `varchar` |
+| `roundid` | `varchar` |
+| `resurrectiontimes` | `varchar` |
+| `firstgameflag` | `varchar` |
+| `unitid` | `varchar` |
+| `difficulty` | `varchar` |
+| `gameresult` | `varchar` |
+| `isboss` | `varchar` |
+| `dropmatchflag` | `varchar` |
+| `roomid` | `varchar` |
+| `dsasvrid` | `varchar` |
+| `chapterstar` | `varchar` |
+| `matchmodule` | `varchar` |
+| `gainedhiddenscore` | `varchar` |
+| `totalhiddenscore` | `varchar` |
+| `gainedladderscore` | `varchar` |
+| `totalladderscore` | `varchar` |
+| `playeropenid` | `varchar` |
+| `playercamp` | `varchar` |
+| `wincamp` | `varchar` |
+| `totaltimeskill` | `varchar` |
+| `totaltimesbekilled` | `varchar` |
+| `totaltimesgame` | `varchar` |
+| `totaltimeswin` | `varchar` |
+| `totaltimeslose` | `varchar` |
+| `totaltimesdraw` | `varchar` |
+| `isnewbie` | `varchar` |
+| `hardlevel` | `varchar` |
+| `timesuserebirthcoin` | `varchar` |
+| `gainclanactivity` | `varchar` |
+| `isteam` | `varchar` |
+| `displayweaponid` | `varchar` |
+| `ischooserandmap` | `varchar` |
+| `playergamenick` | `varchar` |
+| `quitreason` | `varchar` |
+| `roleid` | `varchar` |
+| `getacecnt` | `varchar` |
+| `silveracecnt` | `varchar` |
+| `awardhonorpoint` | `varchar` |
+| `gameachievementcnt` | `varchar` |
+| `gameachievements` | `varchar` |
+| `headshottimes` | `varchar` |
+| `beenheadshottimes` | `varchar` |
+| `throwweaponkill` | `varchar` |
+| `beenkilledbythrowweapon` | `varchar` |
+| `meleeweaponkill` | `varchar` |
+| `gainpropcnt` | `varchar` |
+| `gainprops` | `varchar` |
+| `ctkillcnt` | `varchar` |
+| `tkillcnt` | `varchar` |
+| `totaltakendamage` | `varchar` |
+| `zombieinfecthumancnt` | `varchar` |
+| `killzombiebymelee` | `varchar` |
+| `teckpioint` | `varchar` |
+| `topcontinuekill` | `varchar` |
+| `bulletshotcnt` | `varchar` |
+| `bulletshothitcnt` | `varchar` |
+| `killflag` | `varchar` |
+| `weakpointdamage` | `varchar` |
+| `winround` | `varchar` |
+| `roomcreatetime` | `timestamp(6) with time zone` |
+| `plantc4times` | `varchar` |
+| `defusec4times` | `varchar` |
+| `deadtime` | `varchar` |
+| `towercnt` | `varchar` |
+| `towerlvupcnt` | `varchar` |
+| `towerkillcnt` | `varchar` |
+| `basehitcnt` | `varchar` |
+| `canignoregamestat` | `varchar` |
+| `plantc4cnt` | `varchar` |
+| `defusec4cnt` | `varchar` |
+| `hasclanmemberingame` | `varchar` |
+| `timesthrowweapon` | `varchar` |
+| `iscrosszone` | `varchar` |
+| `gspzoneid` | `varchar` |
+| `breakoutcount` | `varchar` |
+| `ladderseason` | `varchar` |
+| `ladderlevel` | `varchar` |
+| `ladderstage` | `varchar` |
+| `battleid` | `varchar` |
+| `roomtype` | `varchar` |
+| `rankinds` | `varchar` |
+| `teamnum` | `varchar` |
+| `teamid` | `varchar` |
+| `timescore` | `varchar` |
+| `killlscore` | `varchar` |
+| `survivalscore` | `varchar` |
+| `timesassists` | `varchar` |
+| `clanid` | `varchar` |
+| `clanname` | `varchar` |
+| `networkquality` | `varchar` |
+| `lobbyteamid` | `varchar` |
+| `avgh1z1score` | `varchar` |
+| `lastavgh1z1score` | `varchar` |
+| `rescuescore` | `varchar` |
+| `h1z1seasonid` | `varchar` |
+| `knockdowntimes` | `varchar` |
+| `haveheroweapon` | `varchar` |
+| `rescuecnt` | `varchar` |
+| `destoryvehiclecnt` | `varchar` |
+| `treatval` | `varchar` |
+| `takevehicledistance` | `varchar` |
+| `movedistance` | `varchar` |
+| `maxkilldistance` | `varchar` |
+| `roompoolid` | `varchar` |
+| `luckyredbagcnt` | `varchar` |
+| `nianredbagcnt` | `varchar` |
+| `survivalmode` | `varchar` |
+| `rebelcnt` | `varchar` |
+| `regularcnt` | `varchar` |
+| `remainrebel` | `varchar` |
+| `remainregular` | `varchar` |
+| `open_h1z1_laddermatch` | `varchar` |
+| `killpolicecnt` | `varchar` |
+| `killclowncnt` | `varchar` |
+| `occupybriefcasecnt` | `varchar` |
+| `cardusedcnt` | `varchar` |
+| `clownlivetime` | `varchar` |
+| `clownroundcnt` | `varchar` |
+| `groupid` | `varchar` |
+| `viplevel` | `varchar` |
+| `lobbyteamzoneid` | `varchar` |
+| `plantpropsnum` | `varchar` |
+| `recyclepropsnum` | `varchar` |
+| `destroypropsnum` | `varchar` |
+| `destroywallnum` | `varchar` |
+| `evolveexppoint` | `varchar` |
+| `gamemodetype` | `varchar` |
+| `creditscore` | `varchar` |
+| `boardscore` | `varchar` |
+| `displayweaponvlvl` | `varchar` |
+| `isinchampion` | `varchar` |
+| `isboard` | `varchar` |
+| `realsurvivaltime` | `varchar` |
+| `killzombiecnt` | `varchar` |
+| `killzombietypecntarr` | `varchar` |
+| `isbackflowuser` | `varchar` |
+| `doublekillcnt` | `varchar` |
+| `triplekillcnt` | `varchar` |
+| `quadrakillcnt` | `varchar` |
+| `pentakillcnt` | `varchar` |
+| `sniperkillcnt` | `varchar` |
+| `snipershootcnt` | `varchar` |
+| `sniperhitcnt` | `varchar` |
+| `sniperhitheadcnt` | `varchar` |
+| `throwweaponhitcnt` | `varchar` |
+| `penetratekillcnt` | `varchar` |
+| `roundmvpcnt` | `varchar` |
+| `ladderdownlevelscoredelta` | `varchar` |
+| `ladderdownlevelscoreused` | `varchar` |
+| `jumpstarcnt` | `varchar` |
+| `jumpminpasstime` | `varchar` |
+| `jumpminlifecost` | `varchar` |
+| `jumpbestcollectcnt` | `varchar` |
+| `jumprankinspeed` | `varchar` |
+| `arenabattleid` | `varchar` |
+| `airobotcnt` | `varchar` |
+| `pingmax` | `varchar` |
+| `pingmin` | `varchar` |
+| `pingchangecount` | `varchar` |
+| `pingover300` | `varchar` |
+| `playerdistance` | `varchar` |
+| `courageroomgaindelta` | `varchar` |
+| `couragescore` | `varchar` |
+| `isairobot` | `varchar` |
+| `warmabtestindex` | `varchar` |
+| `isaireplace` | `varchar` |
+| `campkdinfostr` | `varchar` |
+| `campopenid` | `varchar` |
+| `roundcount` | `varchar` |
+| `lobbyteamplayercount` | `varchar` |
+| `scenarioscriptid` | `varchar` |
+| `warmrule` | `varchar` |
+| `iswarmmiss` | `varchar` |
+| `ailevel` | `varchar` |
+| `middlejoinflag` | `varchar` |
+| `aistyle` | `varchar` |
+| `recommendwarmtriggerid` | `varchar` |
+| `bioseason` | `varchar` |
+| `bioladderscore` | `varchar` |
+| `bioladderlevel` | `varchar` |
+| `penaltypositionrejecttimes` | `varchar` |
+| `tmbigsupply` | `varchar` |
+| `tmbiggetskill` | `varchar` |
+| `tmbigskillkill` | `varchar` |
+| `attackheadcnt` | `varchar` |
+| `attacktrunkcnt` | `varchar` |
+| `attacklimbcnt` | `varchar` |
+| `attackothercnt` | `varchar` |
+| `glasskillcnt` | `varchar` |
+| `aisource` | `varchar` |
+| `wangzheweaponcnt` | `varchar` |
+| `pveskill` | `varchar` |
+| `ladderlevelbeforematch` | `varchar` |
+| `ladderstagebeforematch` | `varchar` |
+| `dssetid` | `varchar` |
+| `aihostduration` | `varchar` |
+| `aihosttotaltimes` | `varchar` |
+| `fightbackcatattachtimes` | `varchar` |
+| `fightbackcatalive2fightback` | `varchar` |
+| `fightbackcatmovedistance` | `varchar` |
+| `fightbackhumandistorynums` | `varchar` |
+| `asdefenderkillcnt` | `varchar` |
+| `asattackerkillcnt` | `varchar` |
+| `asdefendertimes` | `varchar` |
+| `asattackertimes` | `varchar` |
+| `asdefenderwintimes` | `varchar` |
+| `asattackerwintimes` | `varchar` |
+| `totaldamages` | `varchar` |
+| `grenadedamages` | `varchar` |
+| `flashedcount` | `varchar` |
+| `smokedcount` | `varchar` |
+| `burneddamages` | `varchar` |
+| `gainedbioladderscore` | `varchar` |
+| `ratingplus` | `varchar` |
+| `ismaxratingplus` | `varchar` |
+| `kast` | `varchar` |
+| `dd` | `varchar` |
+| `adr` | `varchar` |
+| `impact` | `varchar` |
+| `kpr` | `varchar` |
+| `spr` | `varchar` |
+| `dpr` | `varchar` |
+| `afterdeathmarkcnt` | `varchar` |
+| `isroom` | `varchar` |
+| `zoneroomid` | `varchar` |
+| `mtsxiongshoucount` | `varchar` |
+| `fakeplayerid` | `varchar` |
+| `iskinggift` | `varchar` |
+| `enternotwalkablevolumecnt` | `varchar` |
+| `benotwalkablevolumekilledcnt` | `varchar` |
+| `boxid` | `varchar` |
+| `boxstate` | `varchar` |
+| `matchroomid` | `varchar` |
+| `fightingscore` | `varchar` |
+| `isfightingscorematch` | `varchar` |
+| `needgamematchfeedback` | `varchar` |
+| `isfightingscorematch2` | `varchar` |
+| `needgamematchfeedback2` | `varchar` |
+| `ishalfwayjoindropmatch` | `varchar` |
+| `laddertrueskillmu` | `varchar` |
+| `laddertrueskillsigma` | `varchar` |
+| `laddertrueskillscore` | `varchar` |
+| `laddertoptrueskillmu` | `varchar` |
+| `laddertoptrueskillsigma` | `varchar` |
+| `laddertoptrueskillscore` | `varchar` |
+| `event_time_with_timezone` | `timestamp(6) with time zone` |
+| `folder_date` | `date` |
+| `ds` | `date` |
+| `raw_date` | `varchar` |
+
+### `etl_recharge`
+
+| Column | Type |
+|---|---|
+| `dtstatdate` | `varchar` |
+| `dteventtime` | `timestamp(6) with time zone` |
+| `fofferid` | `varchar` |
+| `spoa_id` | `varchar` |
+| `vgameappid` | `varchar` |
+| `platid` | `varchar` |
+| `vopenid` | `varchar` |
+| `iamount` | `double` |
+| `imoney` | `double` |
+| `login_channel` | `varchar` |
+| `pay_channel` | `varchar` |
+| `fuin` | `varchar` |
+| `zoneid` | `varchar` |
+| `user_type` | `varchar` |
+| `sub_channel_id` | `varchar` |
+| `fextreserve1` | `varchar` |
+| `currency` | `varchar` |
+| `imoney_source` | `double` |
+| `imoney_us` | `double` |
+| `user_ip` | `varchar` |
+| `productid` | `varchar` |
+| `fsequence_no` | `varchar` |
+| `zoneid2` | `varchar` |
+| `requrl` | `varchar` |
+| `event_time_with_timezone` | `timestamp(6) with time zone` |
+| `payment_channel` | `varchar` |
+| `vng_transaction` | `varchar` |
+| `folder_date` | `date` |
+| `raw_date` | `varchar` |
+| `ds` | `date` |
+
+### `etl_moneyflow`
+
+| Column | Type |
+|---|---|
+| `tdbank_imp_date` | `varchar` |
+| `worldid` | `varchar` |
+| `ip` | `varchar` |
+| `__tablename` | `varchar` |
+| `gamesvrid` | `varchar` |
+| `dteventtime` | `timestamp(6) with time zone` |
+| `vgameappid` | `varchar` |
+| `platid` | `varchar` |
+| `izoneareaid` | `varchar` |
+| `vopenid` | `varchar` |
+| `sequence` | `varchar` |
+| `level` | `integer` |
+| `aftermoney` | `double` |
+| `imoney` | `double` |
+| `reason` | `varchar` |
+| `subreason` | `varchar` |
+| `addorreduce` | `varchar` |
+| `imoneytype` | `varchar` |
+| `source` | `varchar` |
+| `serial` | `varchar` |
+| `delta` | `double` |
+| `balance` | `double` |
+| `viplevel` | `varchar` |
+| `transactionid` | `varchar` |
+| `billno` | `varchar` |
+| `subreasonbiguint` | `varchar` |
+| `playerid` | `varchar` |
+| `event_time_with_timezone` | `timestamp(6) with time zone` |
+| `folder_date` | `date` |
+| `ds` | `date` |
+| `raw_date` | `varchar` |
+
+### `etl_appsflyer_installs_datalocker`
+
+| Column | Type |
+|---|---|
+| `account_id` | `varchar` |
+| `app_id` | `varchar` |
+| `file_hour` | `varchar` |
+| `report_name` | `varchar` |
+| `appsflyer_id` | `varchar` |
+| `attributed_touch_type` | `varchar` |
+| `attributed_touch_time` | `timestamp(6) with time zone` |
+| `install_time` | `timestamp(6) with time zone` |
+| `event_time` | `timestamp(6) with time zone` |
+| `install_date` | `date` |
+| `event_name` | `varchar` |
+| `event_value` | `varchar` |
+| `event_revenue` | `varchar` |
+| `event_revenue_currency` | `varchar` |
+| `event_revenue_usd` | `varchar` |
+| `af_cost_model` | `varchar` |
+| `af_cost_value` | `double` |
+| `af_cost_currency` | `varchar` |
+| `event_source` | `varchar` |
+| `is_receipt_validated` | `varchar` |
+| `af_prt` | `varchar` |
+| `media_source` | `varchar` |
+| `af_channel` | `varchar` |
+| `af_keywords` | `varchar` |
+| `install_app_store` | `varchar` |
+| `campaign` | `varchar` |
+| `af_c_id` | `varchar` |
+| `af_adset` | `varchar` |
+| `af_adset_id` | `varchar` |
+| `af_ad` | `varchar` |
+| `af_ad_id` | `varchar` |
+| `af_ad_type` | `varchar` |
+| `af_site_id` | `varchar` |
+| `af_sub_siteid` | `varchar` |
+| `af_sub1` | `varchar` |
+| `af_sub2` | `varchar` |
+| `af_sub3` | `varchar` |
+| `af_sub4` | `varchar` |
+| `af_sub5` | `varchar` |
+| `contributor_1_touch_type` | `varchar` |
+| `contributor_1_touch_time` | `timestamp(6) with time zone` |
+| `contributor_1_af_prt` | `varchar` |
+| `contributor_1_match_type` | `varchar` |
+| `contributor_1_media_source` | `varchar` |
+| `contributor_1_campaign` | `varchar` |
+| `contributor_2_touch_type` | `varchar` |
+| `contributor_2_touch_time` | `timestamp(6) with time zone` |
+| `contributor_2_af_prt` | `varchar` |
+| `contributor_2_media_source` | `varchar` |
+| `contributor_2_campaign` | `varchar` |
+| `contributor_2_match_type` | `varchar` |
+| `contributor_3_touch_type` | `varchar` |
+| `contributor_3_touch_time` | `timestamp(6) with time zone` |
+| `contributor_3_af_prt` | `varchar` |
+| `contributor_3_media_source` | `varchar` |
+| `contributor_3_campaign` | `varchar` |
+| `contributor_3_match_type` | `varchar` |
+| `region` | `varchar` |
+| `country_code` | `varchar` |
+| `state` | `varchar` |
+| `city` | `varchar` |
+| `postal_code` | `varchar` |
+| `dma` | `varchar` |
+| `ip` | `varchar` |
+| `wifi` | `varchar` |
+| `operator` | `varchar` |
+| `carrier` | `varchar` |
+| `language` | `varchar` |
+| `customer_user_id` | `varchar` |
+| `android_id` | `varchar` |
+| `advertising_id` | `varchar` |
+| `imei` | `varchar` |
+| `idfa` | `varchar` |
+| `idfv` | `varchar` |
+| `amazon_aid` | `varchar` |
+| `device_type` | `varchar` |
+| `device_category` | `varchar` |
+| `platform` | `varchar` |
+| `os_version` | `varchar` |
+| `app_version` | `varchar` |
+| `sdk_version` | `varchar` |
+| `app_name` | `varchar` |
+| `bundle_id` | `varchar` |
+| `is_retargeting` | `varchar` |
+| `retargeting_conversion_type` | `varchar` |
+| `is_primary_attribution` | `varchar` |
+| `af_attribution_lookback` | `varchar` |
+| `af_reengagement_window` | `varchar` |
+| `match_type` | `varchar` |
+| `user_agent` | `varchar` |
+| `http_referrer` | `varchar` |
+| `original_url` | `varchar` |
+| `gp_referrer` | `varchar` |
+| `gp_click_time` | `timestamp(6) with time zone` |
+| `gp_install_begin` | `varchar` |
+| `gp_broadcast_referrer` | `varchar` |
+| `custom_data` | `varchar` |
+| `network_account_id` | `varchar` |
+| `keyword_match_type` | `varchar` |
+| `blocked_reason` | `varchar` |
+| `blocked_reason_value` | `varchar` |
+| `blocked_reason_rule` | `varchar` |
+| `blocked_sub_reason` | `varchar` |
+| `af_web_id` | `varchar` |
+| `web_event_type` | `varchar` |
+| `media_type` | `varchar` |
+| `pid` | `varchar` |
+| `utm_source` | `varchar` |
+| `utm_medium` | `varchar` |
+| `utm_term` | `varchar` |
+| `utm_content` | `varchar` |
+| `utm_campaign` | `varchar` |
+| `device_download_time` | `timestamp(6) with time zone` |
+| `deeplink_url` | `varchar` |
+| `oaid` | `varchar` |
+| `media_channel` | `varchar` |
+| `event_url` | `varchar` |
+| `utm_id` | `varchar` |
+| `ad_unit` | `varchar` |
+| `segment` | `varchar` |
+| `placement` | `varchar` |
+| `mediation_network` | `varchar` |
+| `impressions` | `varchar` |
+| `monetization_network` | `varchar` |
+| `conversion_type` | `varchar` |
+| `campaign_type` | `varchar` |
+| `device_model` | `varchar` |
+| `att` | `varchar` |
+| `custom_dimension` | `varchar` |
+| `is_lat` | `varchar` |
+| `app_type` | `varchar` |
+| `keyword_id` | `varchar` |
+| `validation_reason_value` | `varchar` |
+| `rejected_reason` | `varchar` |
+| `fraud_reason` | `varchar` |
+| `fraud_sub_reason` | `varchar` |
+| `is_organic` | `varchar` |
+| `detection_date` | `varchar` |
+| `store_product_page` | `varchar` |
+| `device_id_type` | `varchar` |
+| `ad_placement` | `varchar` |
+| `app_group_id` | `varchar` |
+| `app_store_ids` | `varchar` |
+| `engagement_type` | `varchar` |
+| `contributor_1_engagement_type` | `varchar` |
+| `contributor_2_engagement_type` | `varchar` |
+| `contributor_3_engagement_type` | `varchar` |
+| `gdpr_applies` | `varchar` |
+| `ad_user_data_enabled` | `varchar` |
+| `ad_personalization_enabled` | `varchar` |
+| `raw_consent_data` | `varchar` |
+| `ad_revenue_ad_type` | `varchar` |
+| `ad_revenue_custom_parameters` | `varchar` |
+| `updated_time` | `timestamp(6) with time zone` |
+| `ds` | `date` |
+| `raw_date` | `varchar` |
+
+### `std_master_user_profile`
+
+| Column | Type |
+|---|---|
+| `game_id` | `varchar` |
+| `user_id` | `varchar` |
+| `device_id` | `varchar` |
+| `install_id` | `varchar` |
+| `install_time` | `timestamp(6) with time zone` |
+| `touch_time` | `timestamp(6) with time zone` |
+| `media_source` | `varchar` |
+| `campaign_id` | `varchar` |
+| `adset_id` | `varchar` |
+| `ad_id` | `varchar` |
+| `site_id` | `varchar` |
+| `first_os` | `varchar` |
+| `last_os` | `varchar` |
+| `os_list` | `varchar` |
+| `first_country_code` | `varchar` |
+| `last_country_code` | `varchar` |
+| `countries` | `varchar` |
+| `first_login_channel` | `integer` |
+| `last_login_channel` | `integer` |
+| `login_channels` | `varchar` |
+| `fb_emails` | `varchar` |
+| `create_time` | `timestamp(6) with time zone` |
+| `register_time` | `timestamp(6) with time zone` |
+| `first_login_time` | `timestamp(6) with time zone` |
+| `last_login_time` | `timestamp(6) with time zone` |
+| `last_logout_time` | `timestamp(6) with time zone` |
+| `first_charge_time` | `timestamp(6) with time zone` |
+| `last_charge_time` | `timestamp(6) with time zone` |
+| `total_rev` | `double` |
+| `match_by` | `varchar` |
+| `match_time` | `timestamp(6) with time zone` |
+| `install_app_store` | `varchar` |
+| `ds` | `date` |
+| `vopenid` | `varchar` |
