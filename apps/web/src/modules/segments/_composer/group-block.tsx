@@ -100,9 +100,28 @@ export const GroupBlock = React.memo<Props>(({
             Group {groupIndex + 1}
           </span>
           {' · match '}
-          <span style={{ fontFamily: T.fMono, fontWeight: 600 }}>
-            {isAny ? 'ANY' : 'ALL'}
-          </span>
+          {onSetGroupMode ? (
+            <button
+              type="button"
+              onClick={() => onSetGroupMode(isAny ? 'all' : 'any')}
+              title={isAny ? 'Switch to AND (all rows must match)' : 'Switch to OR (any row matches)'}
+              style={{
+                fontFamily: T.fMono, fontSize: 11.5, fontWeight: 700,
+                color: ACCENT, background: '#fff2eb',
+                border: `1px solid #f5c8b3`, borderRadius: 4,
+                padding: '1px 7px', cursor: 'pointer', letterSpacing: '0.04em',
+                transition: 'background 120ms, border-color 120ms',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#ffe5d4'; e.currentTarget.style.borderColor = ACCENT; }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#fff2eb'; e.currentTarget.style.borderColor = '#f5c8b3'; }}
+            >
+              {isAny ? 'ANY' : 'ALL'}
+            </button>
+          ) : (
+            <span style={{ fontFamily: T.fMono, fontWeight: 600 }}>
+              {isAny ? 'ANY' : 'ALL'}
+            </span>
+          )}
           {' of these'}
         </span>
 

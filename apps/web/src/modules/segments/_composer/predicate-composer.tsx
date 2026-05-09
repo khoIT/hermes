@@ -74,6 +74,8 @@ export const PredicateComposer = React.memo<Props>(({
             dispatch({ type: 'REMOVE_GROUP', groupId: group.id })}
           onOpenOrRowPicker={() =>
             dispatch({ type: 'OPEN_PICKER', picker: 'or-row', groupId: group.id })}
+          onSetGroupMode={mode =>
+            dispatch({ type: 'SET_GROUP_MODE', groupId: group.id, mode })}
           onBrowseFeatureStore={onBrowseFeatureStore}
         />
       ))}
@@ -188,6 +190,9 @@ export const PredicateComposer = React.memo<Props>(({
         <OrRowPicker
           groupFeatures={targetGroupFeatures}
           onSelect={(feat, ftype) => {
+            // Adding an OR row implies the group joins rows with OR. Force-set
+            // mode='any' so the header label and separators update to match.
+            dispatch({ type: 'SET_GROUP_MODE', groupId: pickerTargetGroupId, mode: 'any' });
             dispatch({ type: 'ADD_ROW', groupId: pickerTargetGroupId, feature: feat, featureType: ftype });
             dispatch({ type: 'CLOSE_PICKER' });
           }}

@@ -48,7 +48,6 @@ const CFM_RANKED_ACTIVE = 290_000;
 // Default anchor segment for demo
 const ANCHOR_ID = 'seg-cfm-loss-streak-non-paying-2026-0508-a3f9';
 const ANCHOR_TITLE = 'CFM ranked loss streak · non-paying';
-const ANCHOR_INTENT = 'Players in CFM ranked who are losing streaks of 5+, are not paying users, and whose MMR has drifted negative this week.';
 const ANCHOR_SLUG = 'draft · seg-cfm-loss-streak-non-paying-2026';
 
 // ── Helpers ────────────────────────────────────────────────────────────────
@@ -158,103 +157,81 @@ function AnimatedCount({ target }: { target: number }) {
   return <>{fmtNum(displayed)}</>;
 }
 
-// ── INTENT block ───────────────────────────────────────────────────────────
-interface IntentBlockProps {
-  intent: string;
-  open: boolean;
-  onToggle: () => void;
-  onIntentChange: (v: string) => void;
-  segId?: string | null;
-}
-
-function IntentBlock({ intent, open, onToggle, onIntentChange, segId }: IntentBlockProps) {
-  return (
-    <div style={{
-      background: '#faf8f3', border: '1px solid #ece8de',
-      borderRadius: 8, marginBottom: 12, overflow: 'hidden',
-    }}>
-      <button
-        onClick={onToggle}
-        style={{
-          display: 'flex', alignItems: 'center', gap: 10,
-          width: '100%', padding: '10px 14px',
-          background: 'transparent', border: 0, textAlign: 'left', cursor: 'pointer',
-        }}
-      >
-        {open
-          ? <ChevronDown size={12} strokeWidth={2} color={T.n500} />
-          : <ChevronRight size={12} strokeWidth={2} color={T.n500} />
-        }
-        <span style={{
-          fontFamily: T.fMono, fontSize: 10, fontWeight: 700,
-          color: T.n500, textTransform: 'uppercase', letterSpacing: '0.08em',
-        }}>
-          Intent
-        </span>
-        {!open && (
-          <span style={{
-            fontFamily: 'Georgia, "Times New Roman", serif',
-            fontStyle: 'italic', fontSize: 13.5, color: T.n600,
-            flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-          }}>
-            {intent || 'No intent set'}
-          </span>
-        )}
-        {!open && (
-          <span style={{ fontFamily: T.fSans, fontSize: 11, color: T.n400 }}>edit</span>
-        )}
-      </button>
-
-      {open && (
-        <div style={{ padding: '0 14px 14px' }}>
-          <p style={{
-            fontFamily: 'Georgia, "Times New Roman", serif',
-            fontStyle: 'italic', fontSize: 15, lineHeight: 1.5,
-            color: T.n700, margin: '0 0 10px',
-          }}>
-            {intent || 'No intent set.'}
-          </p>
-          <textarea
-            value={intent}
-            onChange={e => onIntentChange(e.target.value)}
-            placeholder="Describe the intent of this segment…"
-            style={{
-              width: '100%', boxSizing: 'border-box',
-              fontFamily: 'Georgia, "Times New Roman", serif',
-              fontStyle: 'italic', fontSize: 14, lineHeight: 1.5,
-              color: T.n800, background: '#fff',
-              border: `1px solid #ddd`, borderRadius: 6,
-              padding: '10px 12px', resize: 'vertical', outline: 'none',
-              minHeight: 64,
-            }}
-          />
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 8 }}>
-            <button
-              onClick={onToggle}
-              style={{
-                fontFamily: T.fSans, fontSize: 12, color: T.n700,
-                background: T.n100, border: `1px solid ${T.n200}`,
-                borderRadius: 6, padding: '4px 12px', cursor: 'pointer',
-              }}
-            >
-              Save & collapse
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
 // ── AUDIENCE block ─────────────────────────────────────────────────────────
 interface AudienceBlockProps {
   count: number;
   predicate: Predicate;
-  onShowBreakdown?: () => void;
+}
+
+// Synthetic breakdown — VN-dominant since cfm_vn schema. Stable across renders.
+// Real breakdowns come from crawled/audience-counts.json[predicateId].breakdownAtCanonical
+// when available; this is the fallback for arbitrary predicate combinations.
+function deriveBreakdowns(audience: typeof DEFAULT_BREAKDOWN) {
+  return audience;
+}
+const DEFAULT_BREAKDOWN = {
+  lifecycle: [
+    { label: 'NRU',     fraction: 0.12 },
+    { label: 'Mid',     fraction: 0.41 },
+    { label: 'Veteran', fraction: 0.35 },
+    { label: 'Lapsed',  fraction: 0.12 },
+  ],
+  country: [
+    { label: 'VN',    fraction: 0.68 },
+    { label: 'TH',    fraction: 0.14 },
+    { label: 'ID',    fraction: 0.10 },
+    { label: 'Other', fraction: 0.08 },
+  ],
+  spendTier: [
+    { label: 'Free', fraction: 1.00 },
+    { label: 'Low',  fraction: 0.00 },
+    { label: 'Mid',  fraction: 0.00 },
+    { label: 'High', fraction: 0.00 },
+  ],
+};
+
+function BreakdownColumn({ title, bars }: { title: string; bars: Array<{ label: string; fraction: number }> }) {
+  return (
+    <div style={{ flex: 1 }}>
+      <div style={{
+        fontFamily: T.fMono, fontSize: 10, fontWeight: 700,
+        color: T.n500, textTransform: 'uppercase', letterSpacing: '0.08em',
+        marginBottom: 10,
+      }}>
+        {title}
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+        {bars.map(b => (
+          <div key={b.label} style={{
+            display: 'grid', gridTemplateColumns: '60px 1fr 36px',
+            alignItems: 'center', gap: 10,
+          }}>
+            <span style={{ fontFamily: T.fSans, fontSize: 12.5, color: T.n700 }}>{b.label}</span>
+            <div style={{
+              height: 6, borderRadius: 3, background: T.n100,
+              overflow: 'hidden',
+            }}>
+              <div style={{
+                width: `${Math.max(b.fraction * 100, 0)}%`,
+                height: '100%', background: ACCENT, borderRadius: 3,
+                transition: 'width 240ms ease',
+              }} />
+            </div>
+            <span style={{
+              fontFamily: T.fMono, fontSize: 11, color: T.n600, textAlign: 'right',
+            }}>
+              {Math.round(b.fraction * 100)}%
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 function AudienceBlock({ count, predicate }: AudienceBlockProps) {
   const [showBreakdown, setShowBreakdown] = React.useState(false);
+  const breakdown = React.useMemo(() => deriveBreakdowns(DEFAULT_BREAKDOWN), [predicate]);
 
   // Build cascade model from predicate groups
   const cascadeModel = React.useMemo(() => {
@@ -329,13 +306,21 @@ function AudienceBlock({ count, predicate }: AudienceBlockProps) {
 
         <button
           onClick={() => setShowBreakdown(s => !s)}
+          aria-expanded={showBreakdown}
           style={{
-            fontFamily: T.fSans, fontSize: 11, color: T.n500,
-            background: 'none', border: 'none', cursor: 'pointer',
-            whiteSpace: 'nowrap', padding: 0,
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            fontFamily: T.fSans, fontSize: 12.5, color: T.n700,
+            background: T.n50, border: `1px solid ${T.n200}`,
+            borderRadius: 6, padding: '5px 11px', cursor: 'pointer',
+            whiteSpace: 'nowrap', transition: 'border-color 120ms ease, background 120ms ease',
           }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = T.n400; e.currentTarget.style.background = '#fff'; }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = T.n200; e.currentTarget.style.background = T.n50; }}
         >
-          {showBreakdown ? 'Hide breakdown ▴' : 'Show breakdown ▾'}
+          {showBreakdown ? 'Hide breakdown' : 'Show breakdown'}
+          {showBreakdown
+            ? <ChevronDown size={13} strokeWidth={2} />
+            : <ChevronRight size={13} strokeWidth={2} />}
         </button>
       </div>
 
@@ -346,6 +331,18 @@ function AudienceBlock({ count, predicate }: AudienceBlockProps) {
             mauBase={cascadeModel.base}
             steps={cascadeSteps}
           />
+        </div>
+      )}
+
+      {/* Breakdown panel — 3 columns: lifecycle / country / spend tier */}
+      {showBreakdown && (
+        <div style={{
+          borderTop: '1px solid #eee', marginTop: 14, paddingTop: 16,
+          display: 'flex', gap: 36,
+        }}>
+          <BreakdownColumn title="Lifecycle" bars={breakdown.lifecycle} />
+          <BreakdownColumn title="Country"   bars={breakdown.country} />
+          <BreakdownColumn title="Spend Tier" bars={breakdown.spendTier} />
         </div>
       )}
     </div>
@@ -459,8 +456,6 @@ export default function SegmentsCanvasPage() {
     () => buildDefaultState(seedFeature, draftId, segId),
   );
 
-  const [intentOpen, setIntentOpen] = React.useState(true);
-  const [intent, setIntent] = React.useState(ANCHOR_INTENT);
   const [explainerOn, setExplainerOn] = React.useState(false);
 
   const allActiveFeatures = React.useMemo(() =>
@@ -561,18 +556,7 @@ export default function SegmentsCanvasPage() {
           </h1>
         </div>
 
-        {/* Region 1: INTENT collapsible */}
-        <div style={{ padding: '0 28px 4px' }}>
-          <IntentBlock
-            intent={intent}
-            open={intentOpen}
-            onToggle={() => setIntentOpen(o => !o)}
-            onIntentChange={setIntent}
-            segId={segId}
-          />
-        </div>
-
-        {/* Region 2: AUDIENCE block (sticky) */}
+        {/* Region 1: AUDIENCE block (sticky) */}
         <div style={{ position: 'sticky', top: 0, zIndex: 5, background: '#fff', padding: '8px 28px 4px' }}>
           <AudienceBlock
             count={state.audience.count}
