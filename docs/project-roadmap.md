@@ -44,12 +44,27 @@
 
 ### 2.1 Backend Wiring (Week 1–2)
 
-**Catalog-api:**
-- [ ] Trim Bedrock-only modules (mappings, master-tables)
-- [ ] Replace Drizzle schema with Hermes Feature Store registry
-- [ ] Add endpoints: `GET /api/v1/features`, `POST /api/v1/features`, etc.
-- [ ] Run new migrations
-- [ ] Verify health check green with Hermes schema
+**Catalog-api Feature Store slice — DELIVERED 2026-05-09**
+(plan `260509-2032-real-trino-feature-pipeline`):
+- [x] Add `feature_pipeline` Drizzle schema (raw_event_aggregates,
+      feature_values, feature_distributions_daily, feature_analytics_180d)
+- [x] Trino crawler: 7d real aggregate pull (step 06), 23d synth backfill
+      (step 07), 48-feature derivations (step 08), 30d distributions +
+      180d rollup (step 09)
+- [x] FeaturesModule with `GET /api/v1/features`, `/features/:name`,
+      `/features/:name/distribution?days=N`, `/features/:name/used-by`
+- [x] Web Feature Store hard-cut to API (env-gated path replaced by
+      hard cut per Q4 decision); static `feature-analytics-180d.json`
+      deleted from web bundle; postbuild guard prevents reintroduction
+- [x] Validation: 19/19 assertions pass via
+      `node scripts/validate-feature-pipeline.cjs`
+
+**Catalog-api remaining:**
+- [ ] Trim Bedrock-only modules (mappings, master-tables) — deferred to
+      separate cleanup plan
+- [ ] Replace remaining Bedrock metric/segment Drizzle schema with
+      Hermes equivalents (if needed when Segments wires live)
+- [ ] Re-seed catalog-api segments + campaigns from `apps/web/src/data/catalog`
 
 **Query-svc:**
 - [ ] Add `src/audience/` module
@@ -59,8 +74,8 @@
 
 **Web app:**
 - [ ] Update `audience-lookup.ts` to call live query-svc
-- [ ] Add `VITE_USE_API=true` feature flag
-- [ ] Wire Vite proxy for `/api/catalog` and `/api/query`
+- [ ] Wire Vite proxy for query-svc (catalog-api proxy already wired
+      `/api → 127.0.0.1:3001` in 06)
 - [ ] Test threshold playground reading live counts
 
 **Success metric:** Threshold playground audience count updates via live HTTP call (not static JSON).

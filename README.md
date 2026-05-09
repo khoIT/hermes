@@ -42,8 +42,27 @@ pnpm start
 
 ```bash
 # Requires VPN + credentials in .env
-pnpm refresh-cfm-data
+# Probe reachability first (writes infra/trino-crawler/trino-diagnostic.md):
+pnpm --filter @hermes/trino-crawler diagnose
+
+# Then run the pipeline (Trino → Postgres → catalog-api):
+pnpm dev:db                 # boot local Postgres (Docker)
+pnpm migrate                # apply drizzle migrations
+pnpm refresh-cfm-data       # 7d real → 23d synth → 48 derivations → /features
+node scripts/validate-feature-pipeline.cjs   # asserts 19 properties
+
+# Step-specific re-runs:
+pnpm refresh-cfm-data --raw-events-only --days=7
+pnpm refresh-cfm-data --synth-backfill-only
+pnpm refresh-cfm-data --feature-values-only
+pnpm refresh-cfm-data --feature-analytics-only
 ```
+
+**As of plan `260509-2032-real-trino-feature-pipeline`** the Feature Store
+module reads from `catalog-api` live (76 features, 48 real + 28 synth).
+Static `feature-analytics-180d.json` is deleted from the web bundle.
+`pnpm dev` requires `pnpm --filter @hermes/catalog-api dev` running, or
+the Feature Store routes will render `<FeaturesUnavailable />`.
 
 ---
 

@@ -61,37 +61,73 @@ pnpm dev
 - Database: `hermes_dev`
 - Password: (empty, or use `.env` from root)
 
-**Note:** Catalog-api and query-svc boot but are not wired to the web app in v1. All data flows from static JSON fixtures.
+**Note:** As of plan `260509-2032-real-trino-feature-pipeline`, the Feature Store
+slice of the web app is **wired live** to `catalog-api`. Segments + Campaigns
+still flow from static fixtures. Run `pnpm dev:db` and the catalog-api dev
+server before opening the web app, or the Feature Store routes will render
+`<FeaturesUnavailable />`.
 
-### 2.3 Refreshing Crawler Fixtures (Real Trino Data)
+### 2.3 Refreshing Feature Pipeline (Real Trino Data → Postgres → API)
 
 ```bash
 # Requires VPN + credentials in .env
 pnpm refresh-cfm-data
 ```
 
-**Expected output:**
+This runs ALL crawler steps: schema audit → 7d real Trino aggregates → 23d
+synth backfill → 48 feature derivations → 30 daily distributions per feature
+→ 76-row `feature_analytics_180d` rollup → legacy synth fixtures (kept for
+Segments / Campaigns until they are wired live in a follow-up plan).
+
+**Step-specific re-runs:**
+
+```bash
+pnpm refresh-cfm-data --schema-only           # rewrite trino-mock schema-audit.md
+pnpm refresh-cfm-data --raw-events-only       # 7d Trino → raw_event_aggregates
+pnpm refresh-cfm-data --raw-events-only --days=14 --cap=300000   # custom window
+pnpm refresh-cfm-data --synth-backfill-only   # 23d synth backfill (idempotent)
+pnpm refresh-cfm-data --feature-values-only   # 48 derivations → feature_values
+pnpm refresh-cfm-data --feature-analytics-only # distributions + 180d rollup
 ```
-✓ Connecting to Trino @ 10.164.54.181:8080
-✓ Schema audit complete (table coverage 95%)
-✓ Step 1: Feature distributions → infra/trino-crawler/fixtures/
-✓ Step 2: Audience counts → apps/web/src/data/crawled/
-✓ Step 3: Sample players → apps/web/src/data/crawled/
-✓ Step 4: Event volumes → apps/web/src/data/crawled/
-✓ Fixtures committed to git
+
+**Diagnostic:**
+
+```bash
+pnpm --filter @hermes/trino-crawler diagnose
+# probes 7 cfm_vn tables via direct SELECT count(*) WHERE date >= current_date - 7d.
+# Writes infra/trino-crawler/trino-diagnostic.md.
+# Exit 0 = at least one table reachable; exit 2 = total VPN/auth blocker.
 ```
+
+**Validation:**
+
+```bash
+pnpm --filter @hermes/catalog-api dev   # in another terminal
+node scripts/validate-feature-pipeline.cjs
+# Asserts 19 properties (DB rowcounts, /features endpoints, 30d distribution).
+# Writes plans/.../reports/feature-provenance-audit.md.
+```
+
+**Postgres tables populated by the pipeline:**
+
+| Table | Rows (2026-05-09) | Purpose |
+|-------|-------------------|---------|
+| `raw_event_aggregates` | 22M | Per-day per-uid rollup (7d real + 23d synth) |
+| `feature_values` | 6.35M | Latest snapshot per (feature, uid) |
+| `feature_distributions_daily` | 1,440 | 48 features × 30 days · numeric or categorical |
+| `feature_analytics_180d` | 76 | UI-shape rollup served by `/api/v1/features` |
 
 **If fails:**
 ```bash
 # Check credentials
 cat .env | grep TRINO
 
-# Check VPN
-ping 10.164.54.181
+# Check VPN reachability
+pnpm --filter @hermes/trino-crawler diagnose
 
-# Fallback: use fixtures from git
-git checkout apps/web/src/data/crawled/
-pnpm dev  # will use old fixtures offline
+# Fallback: synth-only path (legacy commands; works without VPN)
+pnpm refresh-cfm-data --features-only
+pnpm refresh-cfm-data --distributions-only
 ```
 
 ---
@@ -431,6 +467,8 @@ const { data } = useQuery({
 | Run locally (prod) | `pnpm start` |
 | Preview web build | `pnpm --filter @hermes/web preview` |
 | Refresh Trino data | `pnpm refresh-cfm-data` |
+| Trino reachability probe | `pnpm --filter @hermes/trino-crawler diagnose` |
+| Validate feature pipeline | `node scripts/validate-feature-pipeline.cjs` |
 | Lint | `pnpm lint` (partial; web lint TBD) |
 | Clean + reinstall | `pnpm clean && pnpm install` |
 

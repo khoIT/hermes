@@ -139,15 +139,33 @@ Launch: Immediate
 
 | Concept | Definition |
 |---------|-----------|
-| **Feature** | Atomic dimension, count, or predictive score (e.g., `account_age_days`, `purchase_count_7d`, `churn_risk_score`) |
+| **Feature** | Atomic dimension, count, or predictive score (e.g., `account_age_days`, `purchase_count_7d`, `pltv_30d_score`) |
 | **Lineage** | Which substrate(s) consume the feature (Substrate A, B, or both) |
-| **Tier** | Hot (sub-second), Warm (minutes), Cold (hours) — determines appropriate substrate |
-| **Latency Badge** | Visual label: `<1s · A`, `<1h · B`, `<1d · B` |
-| **Definition** | Plain-English intent + technical spec (both shown on feature detail page) |
+| **Tier** | Realtime (sub-second), Batch warm (hourly), Batch cold (daily) — see latency badge policy below |
+| **Games attribution (v2)** | `games[]` — every feature is wired into ≥1 game's campaigns; cross-game GDS features carry `platform: true` |
+| **Propensity model (v2)** | Optional `propensityModel` meta block on platform features (family · target · AUC · cadence) |
+| **Analytics (v2)** | 180-day rollup: drift score, freshness SLA, null rate, top-3 consuming campaigns, request-rate sparkline, p99 latency |
+| **Definition** | expr-lang (Substrate A) + dbt SQL (Substrate B); one definition compiles to both materializations |
 
-**Feature registry:** 67 features across 9 domains.
-- **Tiers:** 38 hot (Substrate A), 56 warm (Substrate A/B hybrid), 33 cold (Substrate B)
-- **Coverage:** ~50–60% from real cfm_vn Trino tables; ~10–15% synthesised (marked `synthesised: true` on card)
+**Feature registry (v2):** 76 features = 73 game features + 3 platform propensity features.
+- **Tiers:** Realtime (Substrate A · TEE), Batch warm (`<1h` · Iceberg), Batch cold (`<1d` · Iceberg)
+- **Coverage:** CFM features anchored to real `iceberg.cfm_vn` Trino fixtures; non-CFM games use deterministically-synthesised analytics (seeded by feature name).
+- **Platform features:** `pltv_30d_score`, `churn_7d_propensity`, `reactivation_propensity`. Cross-game, GDS-owned, served from offline cache.
+
+### 4.1 Latency badge policy (two-audience contract)
+
+PMs see plain-English copy: `Realtime` / `Batch warm` / `Batch cold`. Engineers see
+the architecture identifier verbatim: `Substrate A · Apollo TEE + Temporal` /
+`Substrate B · Hatchet + Trino + Iceberg`. The two-audience contract is enforced
+through a single source of truth at `apps/web/src/components/_logic/latency-labels.ts`.
+
+| Surface                         | Audience  | Label                              |
+|---------------------------------|-----------|------------------------------------|
+| Library row · Detail header     | PM        | Realtime / Batch warm / Batch cold |
+| Picker / Swap / Predicate row   | PM        | Realtime / Batch warm / Batch cold |
+| Handoff modal · substrate line  | Engineer  | Substrate A/B verbatim             |
+| Definition pane · pane headers  | Engineer  | Substrate A/B verbatim             |
+| Lineage tab · source sublabels  | Engineer  | Substrate A/B verbatim             |
 
 ---
 
@@ -253,7 +271,39 @@ Launch: Immediate
 
 ## 9. Post-May-12 Live Integration Path (SP-4)
 
-### 9.1 Current Backend Status (Phase 12 Verification)
+### 9.0 Feature Store wiring — DELIVERED (2026-05-09)
+
+The Feature Store slice of Step 1+2 below shipped via plan
+`260509-2032-real-trino-feature-pipeline`. Web → catalog-api is now live
+for `/api/v1/features` (76 features, 48 real + 28 synth). Static
+`feature-analytics-180d.json` is deleted from the web bundle and a
+postbuild guard prevents reintroduction.
+
+Pipeline:
+```
+iceberg.cfm_vn (Trino)
+  ↓ pnpm refresh-cfm-data --raw-events-only [step 06] (7d × 7 tables, GROUP BY uid)
+raw_event_aggregates  (1.09M real rows)
+  ↓ pnpm refresh-cfm-data --synth-backfill-only [step 07] (23d projection)
+raw_event_aggregates  (+ 20.98M synth rows)
+  ↓ pnpm refresh-cfm-data --feature-values-only [step 08] (48 derivations)
+feature_values  (6.35M rows)
+  ↓ pnpm refresh-cfm-data --feature-analytics-only [step 09] (histograms + drift)
+feature_distributions_daily (1440 rows · 48 features × 30 days)
+feature_analytics_180d (76 rows · 48 real + 28 synth)
+  ↓ catalog-api FeaturesModule
+GET /api/v1/features        → HermesFeature[]
+GET /api/v1/features/:name  → single feature
+GET /api/v1/features/:name/distribution?days=N
+GET /api/v1/features/:name/used-by
+  ↓ web bootFeatureLoader (main.tsx)
+useSyncExternalStore snapshot → library, detail, segments composer, …
+```
+
+Hard dependency: catalog-api MUST be running for the Feature Store
+module to render. Other modules unaffected.
+
+### 9.1 Current Backend Status
 
 | Check | Result |
 |-------|--------|
@@ -263,9 +313,10 @@ Launch: Immediate
 | `query-svc` build | PASS (`dist/main.js` produced) |
 | `catalog-api` health check | 200 `{"ok":true,"db":"connected"}` |
 | `query-svc` health check | 200 `{"ok":true,"driver":"mock"}` |
-| `@bedrock` refs removed | CLEAN · all renamed to `@hermes` |
+| `catalog-api` Feature Store wired | LIVE (`GET /api/v1/features` → 76) |
+| `query-svc` audience-count wired | PENDING (Step 3 below) |
 
-**Conclusion:** Both backends are production-ready for wiring phase. Not connected to web in v1; all data flows via static JSON.
+**Conclusion:** Feature Store is live-wired. Segments + Campaigns audience-count path through query-svc remains the next slice.
 
 ### 9.2 Five-Step Wiring Plan
 

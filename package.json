@@ -26,10 +26,15 @@
     "serve": "^14.2.6"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["@nestjs/core", "esbuild", "unrs-resolver"]
+    "onlyBuiltDependencies": [
+      "@nestjs/core",
+      "esbuild",
+      "unrs-resolver"
+    ]
   },
   "devDependencies": {
     "@types/node": "^22.9.0",
+    "pg": "^8.20.0",
     "prettier": "^3.3.3",
     "rimraf": "^6.0.1",
     "tsx": "^4.21.0",
