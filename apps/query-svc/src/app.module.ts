@@ -10,6 +10,7 @@ import { QueryModule } from './query/query.module';
 import { TrinoExplorerModule } from './trino-explorer/trino-explorer.module';
 import { MetricMaterializerModule } from './metric-materializer/metric-materializer.module';
 import { HealthModule } from './health/health.module';
+import { AudienceModule } from './audience/audience.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { HealthModule } from './health/health.module';
     TrinoExplorerModule,
     MetricMaterializerModule,
     HealthModule,
+    AudienceModule,
   ],
   providers: [{ provide: APP_FILTER, useClass: HttpErrorFilter }],
 })
