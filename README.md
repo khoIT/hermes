@@ -64,6 +64,10 @@ Static `feature-analytics-180d.json` is deleted from the web bundle.
 `pnpm dev` requires `pnpm --filter @hermes/catalog-api dev` running, or
 the Feature Store routes will render `<FeaturesUnavailable />`.
 
+**One-shot alternative:** `pnpm dev:full` boots Postgres, catalog-api, and
+web together (Postgres detached + catalog-api/web in parallel with prefixed
+output). Use it when you want a single command instead of three terminals.
+
 ---
 
 ## Repository Layout

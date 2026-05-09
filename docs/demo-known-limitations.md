@@ -136,7 +136,19 @@
 
 ## Performance Notes (Not Blockers)
 
-### 10. Web Bundle Size Warning
+### 10. catalog-api `path-to-regexp` Deprecation Warnings on Boot
+
+**Impact:** Three `Unsupported route path: "/api/v1/*"` warnings printed by Nest's `LegacyRouteConverter` when catalog-api boots. Auto-converted; service runs correctly.
+
+**Source:** Nest 11 upgraded `path-to-regexp` and now requires named wildcard params (`/users/*path` instead of `/users/*`). Triggered by the global prefix + a wildcard route handler.
+
+**Status:** ⚠️ Warning only. Health check, all routes, and `/api/v1/features` work. Not a blocker.
+
+**Fix (deferred):** Replace the wildcard route registration(s) with named-param form, e.g. `@All('*path')`. Tracked for Phase 2 catalog-api hardening.
+
+---
+
+### 11. Web Bundle Size Warning
 
 **Build output:**
 ```

@@ -69,6 +69,11 @@ export async function bootFeatureLoader(opts: {
           throw new Error('503 · backend unavailable');
         }
       }
+      // 502/504 from the Vite proxy means the upstream catalog-api wasn't
+      // listening on :3001 (process not running, crashed, or wrong port).
+      if (res.status === 502 || res.status === 504) {
+        throw new Error(`${res.status} · catalog-api not reachable on :3001 · run \`pnpm --filter @hermes/catalog-api dev\``);
+      }
       throw new Error(`HTTP ${res.status}`);
     }
     const json = await res.json();
@@ -79,10 +84,27 @@ export async function bootFeatureLoader(opts: {
     opts.onReady?.(json as HermesFeature[]);
   } catch (err) {
     clearTimeout(timer);
-    const reason = err instanceof Error ? err.message : String(err);
+    const reason = describeFetchFailure(err);
     // eslint-disable-next-line no-console
     console.error(`[features] boot fetch failed: ${reason}`);
     setStatus('error', reason);
     opts.onError?.(reason);
   }
+}
+
+/**
+ * Translate raw fetch failures into actionable reasons. The browser throws
+ * TypeError for network-level failures (DNS, ECONNREFUSED, proxy refused) —
+ * the default message ("Failed to fetch") hides the actual cause, which is
+ * almost always "catalog-api isn't running".
+ */
+function describeFetchFailure(err: unknown): string {
+  if (!(err instanceof Error)) return String(err);
+  if (err.name === 'AbortError') {
+    return 'timed out · is `pnpm --filter @hermes/catalog-api dev` running?';
+  }
+  if (err.name === 'TypeError') {
+    return `${err.message} · catalog-api not reachable on :3001 · run \`pnpm --filter @hermes/catalog-api dev\``;
+  }
+  return err.message;
 }
