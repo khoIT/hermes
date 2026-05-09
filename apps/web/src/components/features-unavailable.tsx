@@ -69,7 +69,8 @@ export const FeaturesUnavailable: React.FC = () => {
               }}
             >
               # In a separate terminal:
-              {'\n'}pnpm dev:db
+              {'\n'}pnpm dev               # Postgres + catalog-api + web
+              {'\n'}# or, to restart only catalog-api:
               {'\n'}pnpm --filter @hermes/catalog-api dev
             </div>
             {error ? (

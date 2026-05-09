@@ -41,15 +41,12 @@ The threshold playground only renders meaningfully when a feature has real-data 
 ## Setup (60 sec, before starting)
 
 ```bash
-pnpm dev:db                                    # postgres
-pnpm --filter @hermes/catalog-api start:dev    # 3001
-pnpm --filter @hermes/query-svc  start:dev    # 3002
-pnpm dev                                        # web :5173
+pnpm dev    # postgres + catalog-api :3001 + query-svc :3002 + web :5173
 ```
 
-Open `http://localhost:5173/feature-store` in a browser. Everything below assumes those four are running.
+Open `http://localhost:5173/feature-store` in a browser. Everything below assumes that command is running.
 
-If the page shows **Feature Store unavailable**, check `pnpm dev:db` is up and `curl http://127.0.0.1:3001/api/v1/health` returns 200.
+If the page shows **Feature Store unavailable**, the catalog-api process likely crashed (Vite kept running). Restart just it with `pnpm --filter @hermes/catalog-api dev`, or re-run `pnpm dev`. Health check: `curl http://127.0.0.1:3001/api/v1/health` should return 200.
 
 ---
 

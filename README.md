@@ -20,11 +20,15 @@
 # Install dependencies
 pnpm install
 
-# Start web + latent backends
+# Start everything with one command (Postgres + all three services)
 pnpm dev
-# → Web: http://localhost:5173
-# → catalog-api: http://localhost:3001/api/v1/health (latent)
-# → query-svc: http://localhost:3002/api/v1/health (latent)
+# → Postgres: docker hermes_pg on :5432 (boots first, detached)
+# → catalog-api: http://localhost:3001/api/v1/health
+# → query-svc:  http://localhost:3002/api/v1/health (latent)
+# → web:        http://localhost:5173
+
+# Skip the Postgres step (e.g., DB already running, or you don't need it):
+pnpm dev:turbo
 ```
 
 ### Build for Production
@@ -61,12 +65,13 @@ pnpm refresh-cfm-data --feature-analytics-only
 **As of plan `260509-2032-real-trino-feature-pipeline`** the Feature Store
 module reads from `catalog-api` live (76 features, 48 real + 28 synth).
 Static `feature-analytics-180d.json` is deleted from the web bundle.
-`pnpm dev` requires `pnpm --filter @hermes/catalog-api dev` running, or
-the Feature Store routes will render `<FeaturesUnavailable />`.
+**`pnpm dev` now boots Postgres + catalog-api + web together**, so the
+Feature Store routes render against live data without extra terminals.
 
-**One-shot alternative:** `pnpm dev:full` boots Postgres, catalog-api, and
-web together (Postgres detached + catalog-api/web in parallel with prefixed
-output). Use it when you want a single command instead of three terminals.
+**Recovery commands** (if a single service crashes mid-session):
+- `pnpm --filter @hermes/catalog-api dev` — restart only catalog-api
+- `pnpm --filter @hermes/web dev` — restart only the web dev server
+- `pnpm dev:full` — alternative one-shot boot of just Postgres + catalog-api + web (skips query-svc)
 
 ---
 
