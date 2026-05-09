@@ -1,0 +1,15 @@
+# Dokploy / Nixpacks build for the Hermes monorepo.
+# Ships apps/web for now. Catalog API + Query Service get own pipelines
+# once their endpoints land.
+
+[phases.setup]
+nixPkgs = ["nodejs_22", "pnpm-9_x"]
+
+[phases.install]
+cmds = ["pnpm install --frozen-lockfile"]
+
+[phases.build]
+cmds = ["pnpm --filter @hermes/web build"]
+
+[start]
+cmd = "pnpm start"

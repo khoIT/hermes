@@ -1,0 +1,4 @@
+
+> @hermes/contracts@0.0.0 build C:\Users\CPU12830-local\code\hermes\packages\contracts
+> tsc -p tsconfig.json
+

@@ -1,0 +1,24 @@
+# Local dev: Postgres only. Nest apps + Vite run natively for hot
+# reload. Full-stack-in-containers profile lives in
+# docker-compose.fullstack.yml for CI / staging-parity testing.
+services:
+  postgres:
+    image: postgres:16
+    container_name: hermes_pg
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: hermes
+      POSTGRES_USER: hermes
+      POSTGRES_PASSWORD: dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - hermes_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hermes -d hermes"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  hermes_pg: {}

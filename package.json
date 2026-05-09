@@ -1,0 +1,39 @@
+{
+  "name": "hermes",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@10.32.1",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "turbo run dev",
+    "dev:db": "docker compose -f infra/docker-compose.yml up -d postgres",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "clean": "turbo run clean && rimraf node_modules .turbo",
+    "start": "serve -s apps/web/dist -l tcp://0.0.0.0:${PORT:-3000}",
+    "migrate": "pnpm --filter @hermes/catalog-api db:migrate",
+    "seed": "pnpm --filter @hermes/catalog-api db:seed",
+    "sim:drip": "pnpm --filter @hermes/catalog-api sim:drip",
+    "reset-db": "node scripts/reset-db.cjs",
+    "demo:reset": "node scripts/demo-reset.cjs --confirm",
+    "refresh-cfm-data": "tsx infra/trino-mock/refresh.ts"
+  },
+  "dependencies": {
+    "serve": "^14.2.6"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["@nestjs/core", "esbuild", "unrs-resolver"]
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "prettier": "^3.3.3",
+    "rimraf": "^6.0.1",
+    "tsx": "^4.21.0",
+    "turbo": "^2.5.0",
+    "typescript": "^5.6.3"
+  }
+}
