@@ -156,51 +156,9 @@ export const sources = pgTable('sources', {
   path: text('path').notNull(),
 });
 
-// Mapping rows — one per saved (game, template) instance. `spec` is the
-// full MappingSpec JSON; phase 04b adds builds on top of this.
-export const mappings = pgTable('mappings', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  name: text('name').notNull(),
-  gameId: text('game_id').notNull().references(() => games.id),
-  templateId: text('template_id').notNull(),
-  spec: jsonb('spec').notNull(),
-  owner: text('owner').notNull(),
-  version: integer('version').notNull().default(1),
-  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
-}, (t) => ({
-  byGame: index('mappings_by_game').on(t.gameId),
-}));
-
-// Master-table registry — one row per built master. Physical rows live
-// in per-template wide tables (see schema-master.ts in phase 04b).
-export const masterTables = pgTable('master_tables', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  name: text('name').notNull(),
-  gameId: text('game_id').references(() => games.id),
-  mappingId: uuid('mapping_id').references(() => mappings.id),
-  templateId: text('template_id').notNull(),
-  status: text('status').notNull().default('never_built'),
-  lastBuildAt: timestamp('last_build_at', { withTimezone: true }),
-  lastBuildMs: integer('last_build_ms'),
-  rowCount: integer('row_count').notNull().default(0),
-  columns: jsonb('columns'),
-  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
-});
-
-export const buildJobs = pgTable('build_jobs', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  masterTableId: uuid('master_table_id').notNull().references(() => masterTables.id, { onDelete: 'cascade' }),
-  status: text('status').notNull(),                   // pending|running|completed|failed
-  processedRows: integer('processed_rows').notNull().default(0),
-  totalRows: integer('total_rows'),
-  error: text('error'),
-  startedAt: timestamp('started_at', { withTimezone: true }).notNull().defaultNow(),
-  finishedAt: timestamp('finished_at', { withTimezone: true }),
-}, (t) => ({
-  byMaster: index('jobs_by_master').on(t.masterTableId, t.startedAt),
-}));
+// Bedrock mappings/master-tables removed in Phase 06 of plan
+// 260509-2223-feature-store-v3-platform-completion. Migration
+// 0010_drop_bedrock_tables.sql drops the corresponding tables.
 
 export const freshness = pgTable('freshness_records', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -304,41 +262,7 @@ export const columnProfiles = pgTable('column_profiles', {
   pk: primaryKey({ columns: [t.tableId, t.columnName] }),
 }));
 
-// ─── Per-template master physical tables (phase 04b uses these) ──────
-// Common columns: master_table_id (FK), composite PK (master_table_id, vopenid).
-// Wide columns mirror MappingTemplate.outputColumns. Rebuilt every build.
-export const masterUserProfileDx = pgTable('master_user_profile_dx', {
-  masterTableId: uuid('master_table_id').notNull().references(() => masterTables.id, { onDelete: 'cascade' }),
-  vopenid: text('vopenid').notNull(),
-  roleid: text('roleid'),
-  gameId: text('game_id'),
-  installDate: date('install_date'),
-  mediaSource: text('media_source'),
-  countryCode: text('country_code'),
-  platform: text('platform'),
-  loginRowsD7: integer('login_rows_d7'),
-  daysActiveD7: integer('days_active_d7'),
-  matchesD7: integer('matches_d7'),
-  killsD7: bigint('kills_d7', { mode: 'number' }),
-  revUsdD1: doublePrecision('rev_usd_d1'),
-  ordersD1: integer('orders_d1'),
-  isPayerD1: boolean('is_payer_d1'),
-  revUsdD7: doublePrecision('rev_usd_d7'),
-  ordersD7: integer('orders_d7'),
-  isPayerD7: boolean('is_payer_d7'),
-  bpOrdersD7: integer('bp_orders_d7'),
-  isBpD7: boolean('is_bp_d7'),
-  revUsdD30: doublePrecision('rev_usd_d30'),
-  ordersD30: integer('orders_d30'),
-  isPayerD30: boolean('is_payer_d30'),
-}, (t) => ({
-  pk: primaryKey({ columns: [t.masterTableId, t.vopenid] }),
-  byInstall: index('mupdx_install').on(t.masterTableId, t.installDate),
-  byMedia: index('mupdx_media').on(t.masterTableId, t.mediaSource),
-}));
-
-// The other 5 templates' physical tables get added in phase 04b when
-// they're actually wired to the build pipeline. KISS — add as needed.
+// master_user_profile_dx removed in Phase 06 (Bedrock cleanup).
 
 // ─── Connectors (P2: Sources redesign) ──────────────────────────────
 // Mock connector registry. pass_encrypted = base64(plaintext) — MOCK ONLY.

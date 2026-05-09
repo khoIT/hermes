@@ -1,11 +1,9 @@
 import 'dotenv/config';
 import { Pool } from 'pg';
 import { drizzle } from 'drizzle-orm/node-postgres';
-import { eq } from 'drizzle-orm';
 import * as schema from '../db/schema';
 import { GAMES, SOURCES, METRICS, FRESHNESS, SEGMENTS } from './fixtures';
 import { REAL_CFM_BINDINGS, REAL_BINDING_KEYS } from './real-trino-bindings';
-import { MAPPING_TEMPLATE_BY_ID, MappingSpec } from '@hermes/contracts';
 import { seedDataCatalog } from './data-catalog/orchestrator';
 import { seedDemoMetricPipelines } from './metric-pipelines/demo-pipelines';
 
@@ -72,63 +70,8 @@ async function main() {
     await db.insert(schema.segments).values(s as never).onConflictDoNothing();
   }
 
-  // ── Mappings + master_tables: persist one canonical mapping per game
-  // (cloned from tpl_user_profile_dx) and a master_tables row that
-  // points at it. Frontend MasterTables page reads these immediately;
-  // first build trigger materialises rows into master_user_profile_dx.
-  const tpl = MAPPING_TEMPLATE_BY_ID['tpl_user_profile_dx'];
-  if (tpl) {
-    // eslint-disable-next-line no-console
-    console.log('[seed] persisting default mapping + master_table per game');
-    for (const game of GAMES) {
-      const trinoSchema = game.trinoSchema ?? `${game.id}_vn`;
-      const spec = JSON.parse(JSON.stringify(tpl.defaultSpec));
-      spec.game = trinoSchema;
-      // Resolve placeholder cohort filter values to a sensible default.
-      for (const f of spec.cohort?.filters ?? []) {
-        if (f.value === '__cohortStart__') f.value = '2025-12-15';
-        if (f.value === '__cohortEnd__') f.value = '2026-02-22';
-      }
-      MappingSpec.parse(spec);
-
-      const mappingName = `${game.code} user-profile-dx (default)`;
-      const existing = await db
-        .select()
-        .from(schema.mappings)
-        .where(eq(schema.mappings.name, mappingName))
-        .limit(1);
-      let mappingId: string;
-      if (existing.length) {
-        mappingId = existing[0].id;
-      } else {
-        const [row] = await db.insert(schema.mappings).values({
-          name: mappingName,
-          gameId: game.id,
-          templateId: tpl.id,
-          spec: spec as never,
-          owner: 'data.liveops',
-        }).returning();
-        mappingId = row.id;
-      }
-
-      const masterName = `${game.code} master.user_profile_dx`;
-      const existingMaster = await db
-        .select()
-        .from(schema.masterTables)
-        .where(eq(schema.masterTables.name, masterName))
-        .limit(1);
-      if (!existingMaster.length) {
-        await db.insert(schema.masterTables).values({
-          name: masterName,
-          gameId: game.id,
-          mappingId,
-          templateId: tpl.id,
-          status: 'never_built',
-          columns: spec.outputColumns as never,
-        });
-      }
-    }
-  }
+  // Bedrock mappings + master_tables seed removed in Phase 06 of plan
+  // 260509-2223-feature-store-v3-platform-completion.
 
   await seedDataCatalog(db, pool);
 

@@ -13,8 +13,6 @@ import { CatalogModule } from './catalog/catalog.module';
 import { MetricsModule } from './metrics/metrics.module';
 import { SegmentsModule } from './segments/segments.module';
 import { PinsModule } from './pins/pins.module';
-import { MappingsModule } from './mappings/mappings.module';
-import { MasterTablesModule } from './master-tables/master-tables.module';
 import { PipelinesModule } from './pipelines/pipelines.module';
 import { SchedulerModule } from './scheduler/scheduler.module';
 import { ConnectorsModule } from './connectors/connectors.module';
@@ -40,8 +38,6 @@ import { FeaturesModule } from './features/features.module';
     MetricsModule,
     SegmentsModule,
     PinsModule,
-    MappingsModule,
-    MasterTablesModule,
     PipelinesModule,
     SchedulerModule,
     ConnectorsModule,

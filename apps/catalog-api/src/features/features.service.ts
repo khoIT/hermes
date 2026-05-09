@@ -313,8 +313,285 @@ export class FeaturesService {
     };
   }
 
+  /**
+   * DA outliers — top-K uids whose value is most extreme relative to the
+   * feature distribution. Uses zScore against the mean+stddev of
+   * value_numeric. Numeric features only.
+   */
+  async getOutliers(name: string, topK: number): Promise<{ feature: string; outliers: unknown[] }> {
+    const catalog = this.loader.read() as CatalogRow[];
+    if (!catalog.some((f) => f.name === name)) {
+      throw new NotFoundException(`feature ${name} not found`);
+    }
+    const cap = Math.min(Math.max(topK, 1), 50);
+    const result = await this.db.execute(sql`
+      WITH stats AS (
+        SELECT avg(value_numeric)::double precision AS mean,
+               stddev_pop(value_numeric)::double precision AS sd
+        FROM feature_values
+        WHERE feature_name = ${name} AND value_numeric IS NOT NULL
+      )
+      SELECT uid,
+             value_numeric AS value,
+             abs((value_numeric - stats.mean) / NULLIF(stats.sd, 0)) AS z_score
+      FROM feature_values, stats
+      WHERE feature_name = ${name} AND value_numeric IS NOT NULL
+      ORDER BY z_score DESC NULLS LAST
+      LIMIT ${cap}
+    `);
+    const rows = (result as unknown as { rows: { uid: string; value: number; z_score: number | null }[] }).rows;
+    return {
+      feature: name,
+      outliers: rows.map((r) => ({
+        uidAnonymized: r.uid.length > 4 ? `…${r.uid.slice(-4)}` : r.uid,
+        value: Number(r.value),
+        zScore: r.z_score === null ? 0 : Number(r.z_score),
+      })),
+    };
+  }
+
+  /**
+   * DA coverage segmentation — joins feature_values × player_lifecycle_stage,
+   * × region_code, × spend_tier_lifetime to show how this feature's
+   * coverage breaks down across cohorts. Each cohort returns count + pct.
+   */
+  async getCoverageSegmentation(name: string): Promise<{
+    feature: string;
+    byLifecycle: Record<string, number>;
+    byRegion: Record<string, number>;
+    bySpendTier: Record<string, number>;
+  }> {
+    const catalog = this.loader.read() as CatalogRow[];
+    if (!catalog.some((f) => f.name === name)) {
+      throw new NotFoundException(`feature ${name} not found`);
+    }
+    // Three independent group-bys (joined via uid). LEFT JOIN so uids
+    // without a cohort tag still count under '__unknown'.
+    const buildBreakdown = async (cohortFeature: string): Promise<Record<string, number>> => {
+      const result = await this.db.execute(sql`
+        SELECT COALESCE(c.value_text, '__unknown') AS bucket,
+               COUNT(*)::bigint AS c
+        FROM feature_values f
+        LEFT JOIN feature_values c
+          ON c.uid = f.uid AND c.feature_name = ${cohortFeature}
+        WHERE f.feature_name = ${name}
+        GROUP BY 1
+        ORDER BY 2 DESC
+        LIMIT 20
+      `);
+      const out: Record<string, number> = {};
+      for (const r of (result as unknown as { rows: { bucket: string; c: number }[] }).rows) {
+        out[r.bucket] = Number(r.c);
+      }
+      return out;
+    };
+    const [byLifecycle, byRegion, bySpendTier] = await Promise.all([
+      buildBreakdown('player_lifecycle_stage'),
+      buildBreakdown('region_code'),
+      buildBreakdown('spend_tier_lifetime'),
+    ]);
+    return { feature: name, byLifecycle, byRegion, bySpendTier };
+  }
+
+  /**
+   * LM top-5 segments using this feature. Reads the static segments
+   * catalog (loaded via loader extension) — joins by feature reference
+   * in the segment's predicate AST.
+   */
+  async getTopSegmentsUsing(name: string): Promise<{
+    feature: string;
+    segments: { segmentId: string; displayName: string; audienceSize: number; game: string }[];
+  }> {
+    const catalog = this.loader.read() as CatalogRow[];
+    if (!catalog.some((f) => f.name === name)) {
+      throw new NotFoundException(`feature ${name} not found`);
+    }
+    const segments = await this.loadSegmentsCatalog();
+    const matching = segments
+      .filter((s) => featureReferencedInSpec(s, name))
+      .map((s) => ({
+        segmentId: s.id,
+        displayName: s.displayName ?? s.id,
+        audienceSize: Number(s.size ?? 0),
+        game: String(s.game ?? 'cfm'),
+      }))
+      .sort((a, b) => b.audienceSize - a.audienceSize)
+      .slice(0, 5);
+    return { feature: name, segments: matching };
+  }
+
+  /**
+   * DA correlations — top-K Pearson on standardized 5k uid sample,
+   * computed lazily and cached in-process. First call returns empty
+   * + warms the cache; subsequent calls return the precomputed value.
+   * Cache key: feature name. TTL: 1h.
+   */
+  async getCorrelations(name: string, topK: number): Promise<{
+    feature: string;
+    correlations: { feature: string; pearson: number; sampleSize: number }[];
+    cacheStatus: 'warm' | 'cold' | 'computing';
+  }> {
+    const catalog = this.loader.read() as CatalogRow[];
+    if (!catalog.some((f) => f.name === name)) {
+      throw new NotFoundException(`feature ${name} not found`);
+    }
+    const cap = Math.min(Math.max(topK, 1), 20);
+    const cached = correlationCache.get(name);
+    if (cached && cached.expiresAt > Date.now()) {
+      return { feature: name, correlations: cached.results.slice(0, cap), cacheStatus: 'warm' };
+    }
+    // Schedule an async warm-up; return empty so the request is fast.
+    if (!correlationInflight.has(name)) {
+      correlationInflight.add(name);
+      void this.computeCorrelations(name).finally(() => correlationInflight.delete(name));
+      return { feature: name, correlations: [], cacheStatus: 'computing' };
+    }
+    return { feature: name, correlations: [], cacheStatus: 'cold' };
+  }
+
+  private async loadSegmentsCatalog(): Promise<SegmentCatalogRow[]> {
+    if (segmentsCatalogCache) return segmentsCatalogCache;
+    // Reuse the FeatureCatalogLoader's path-walking trick to find the
+    // segments TS file and import it via dynamic require (NestJS uses CJS
+    // so this works). YAGNI vs. exporting another _catalog.json — single
+    // file, cached after first read.
+    const fs = await import('node:fs');
+    const path = await import('node:path');
+    const candidates: string[] = [];
+    let cursor = __dirname;
+    for (let i = 0; i < 8; i++) {
+      candidates.push(path.resolve(cursor, 'apps/web/src/data/catalog/segments.ts'));
+      cursor = path.dirname(cursor);
+    }
+    for (const candidate of candidates) {
+      if (fs.existsSync(candidate)) {
+        // Read raw text, scrape predicate refs (avoids cross-workspace TS import).
+        const text = fs.readFileSync(candidate, 'utf-8');
+        segmentsCatalogCache = parseSegmentsCatalog(text);
+        return segmentsCatalogCache;
+      }
+    }
+    segmentsCatalogCache = [];
+    return segmentsCatalogCache;
+  }
+
+  private async computeCorrelations(feature: string): Promise<void> {
+    const SAMPLE = 5_000;
+    // Pull SAMPLE uids that have a numeric value for `feature`.
+    const baseRows = await this.db.execute(sql`
+      SELECT uid, value_numeric AS v
+      FROM feature_values
+      WHERE feature_name = ${feature} AND value_numeric IS NOT NULL
+      LIMIT ${SAMPLE}
+    `);
+    const baseList = (baseRows as unknown as { rows: { uid: string; v: number }[] }).rows;
+    if (baseList.length < 50) {
+      correlationCache.set(feature, { results: [], expiresAt: Date.now() + 5 * 60_000 });
+      return;
+    }
+    const baseMap = new Map<string, number>(baseList.map((r) => [r.uid, Number(r.v)]));
+
+    // Other numeric features to correlate against.
+    const others = await this.db.execute(sql`
+      SELECT DISTINCT feature_name
+      FROM feature_values
+      WHERE value_numeric IS NOT NULL AND feature_name <> ${feature}
+    `);
+    const otherFeatures = (others as unknown as { rows: { feature_name: string }[] }).rows
+      .map((r) => r.feature_name);
+
+    const out: { feature: string; pearson: number; sampleSize: number }[] = [];
+    for (const other of otherFeatures) {
+      const co = await this.db.execute(sql`
+        SELECT uid, value_numeric AS v
+        FROM feature_values
+        WHERE feature_name = ${other} AND value_numeric IS NOT NULL AND uid IN (
+          SELECT uid FROM feature_values
+          WHERE feature_name = ${feature} AND value_numeric IS NOT NULL
+          LIMIT ${SAMPLE}
+        )
+      `);
+      const coRows = (co as unknown as { rows: { uid: string; v: number }[] }).rows;
+      if (coRows.length < 50) continue;
+      const xs: number[] = [];
+      const ys: number[] = [];
+      for (const r of coRows) {
+        const bv = baseMap.get(r.uid);
+        if (bv === undefined) continue;
+        xs.push(bv);
+        ys.push(Number(r.v));
+      }
+      if (xs.length < 50) continue;
+      out.push({ feature: other, pearson: pearson(xs, ys), sampleSize: xs.length });
+    }
+    out.sort((a, b) => Math.abs(b.pearson) - Math.abs(a.pearson));
+    correlationCache.set(feature, { results: out, expiresAt: Date.now() + 60 * 60_000 });
+  }
+
   /** Health probe — returns the count loaded from the static catalog. */
   count(): number {
     return this.loader.read().length;
   }
+}
+
+// ── In-process caches (correlations + segments) ────────────────────────────
+type SegmentCatalogRow = {
+  id: string;
+  displayName?: string;
+  game?: string;
+  size?: number;
+  predicateText?: string;
+};
+let segmentsCatalogCache: SegmentCatalogRow[] | null = null;
+
+const correlationCache = new Map<string, { results: { feature: string; pearson: number; sampleSize: number }[]; expiresAt: number }>();
+const correlationInflight = new Set<string>();
+
+function pearson(xs: number[], ys: number[]): number {
+  const n = xs.length;
+  if (n === 0) return 0;
+  let sx = 0, sy = 0, sxx = 0, syy = 0, sxy = 0;
+  for (let i = 0; i < n; i++) {
+    sx += xs[i];
+    sy += ys[i];
+    sxx += xs[i] * xs[i];
+    syy += ys[i] * ys[i];
+    sxy += xs[i] * ys[i];
+  }
+  const denom = Math.sqrt(n * sxx - sx * sx) * Math.sqrt(n * syy - sy * sy);
+  return denom === 0 ? 0 : (n * sxy - sx * sy) / denom;
+}
+
+/**
+ * Cheap text scrape over apps/web/src/data/catalog/segments.ts to extract
+ * each segment's id, displayName, game, size, and a flattened predicate
+ * blob (used for feature-name reference checks). Avoids workspace import.
+ */
+function parseSegmentsCatalog(text: string): SegmentCatalogRow[] {
+  const out: SegmentCatalogRow[] = [];
+  // Each segment = `const segXxx: HermesSegment = { id: 'seg-...', displayName: '...', ... };`
+  // We do a permissive multi-line regex per object.
+  const objRegex = /\{[\s\S]*?id:\s*['"]([^'"]+)['"][\s\S]*?\}/g;
+  let m: RegExpExecArray | null;
+  while ((m = objRegex.exec(text)) !== null) {
+    const block = m[0];
+    const id = m[1];
+    const displayName = block.match(/displayName:\s*['"]([^'"]+)['"]/)?.[1];
+    const game = block.match(/\bgame:\s*['"]([^'"]+)['"]/)?.[1];
+    const sizeStr = block.match(/\bsize:\s*(\d+)/)?.[1];
+    out.push({
+      id,
+      displayName,
+      game,
+      size: sizeStr ? Number(sizeStr) : 0,
+      predicateText: block,
+    });
+  }
+  return out;
+}
+
+function featureReferencedInSpec(seg: SegmentCatalogRow, featureName: string): boolean {
+  if (!seg.predicateText) return false;
+  // Look for the feature name as a quoted string anywhere in the segment block.
+  return seg.predicateText.includes(`'${featureName}'`) || seg.predicateText.includes(`"${featureName}"`);
 }

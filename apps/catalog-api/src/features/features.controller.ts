@@ -63,4 +63,30 @@ export class FeaturesController {
   ) {
     return this.svc.getPipelineHealth(name, Math.min(Math.max(days, 1), 180));
   }
+
+  @Get(':name/outliers')
+  getOutliers(
+    @Param('name') name: string,
+    @Query('topK', new DefaultValuePipe(5), ParseIntPipe) topK: number,
+  ) {
+    return this.svc.getOutliers(name, topK);
+  }
+
+  @Get(':name/coverage-segmentation')
+  getCoverageSegmentation(@Param('name') name: string) {
+    return this.svc.getCoverageSegmentation(name);
+  }
+
+  @Get(':name/top-segments-using')
+  getTopSegmentsUsing(@Param('name') name: string) {
+    return this.svc.getTopSegmentsUsing(name);
+  }
+
+  @Get(':name/correlations')
+  getCorrelations(
+    @Param('name') name: string,
+    @Query('topK', new DefaultValuePipe(5), ParseIntPipe) topK: number,
+  ) {
+    return this.svc.getCorrelations(name, topK);
+  }
 }

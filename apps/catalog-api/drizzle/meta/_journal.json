@@ -71,6 +71,13 @@
       "when": 1778425000000,
       "tag": "0009_feature_pipeline_game_id",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1778430000000,
+      "tag": "0010_drop_bedrock_tables",
+      "breakpoints": true
     }
   ]
 }

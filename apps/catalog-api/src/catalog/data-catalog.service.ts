@@ -2,7 +2,6 @@ import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { sql, eq, and, or, asc, ilike, inArray, type SQL } from 'drizzle-orm';
 import {
   catalogTables, catalogColumns, metricSourceBindings, metrics, segments,
-  masterTables,
 } from '../db/schema';
 import type { Db } from '../db/client';
 import { InjectDb } from '../db/client';
@@ -27,61 +26,8 @@ export class DataCatalogService {
 
   private bustListCache() { this.listCache.clear(); }
 
-  // Upsert a catalog_tables row for a built master_table. Called by the
-  // BuildOrchestrator after a successful build so the new artefact
-  // shows up in the Data Catalog page automatically.
-  async upsertFromMasterTable(masterTableId: string): Promise<void> {
-    const [mt] = await this.db.select().from(masterTables).where(eq(masterTables.id, masterTableId)).limit(1);
-    if (!mt) {
-      this.log.warn(`upsertFromMasterTable: master_table ${masterTableId} not found`);
-      return;
-    }
-    // Path-safe id: hyphens (UUID) → underscores. Prefixed `mt_` to
-    // namespace under master-build artefacts (vs. seeded synthetic).
-    const id = `mt_${masterTableId.replace(/-/g, '_')}`;
-    const cols = ((mt.columns as Array<{ name: string; type?: string }>) ?? []);
-    const game = mt.gameId ? mt.gameId.toUpperCase() : null;
-
-    await this.db.insert(catalogTables).values({
-      id,
-      name: mt.name,
-      game,
-      category: 'master',
-      layer: 'master',
-      partitionKeys: [] as never,
-      rowCount: mt.rowCount ?? 0,
-      lastRefreshAt: mt.lastBuildAt ?? new Date(),
-      sourceKind: 'master-build',
-      sourceRef: mt.id,
-      description: `Built master table from ${mt.templateId} template.`,
-    }).onConflictDoUpdate({
-      target: catalogTables.id,
-      set: {
-        name: mt.name,
-        layer: 'master',
-        rowCount: mt.rowCount ?? 0,
-        lastRefreshAt: mt.lastBuildAt ?? new Date(),
-        updatedAt: new Date(),
-      },
-    });
-
-    // Replace columns wholesale — outputColumns evolve with the spec.
-    await this.db.execute(sql`DELETE FROM catalog_columns WHERE table_id = ${id}`);
-    for (let i = 0; i < cols.length; i++) {
-      const c = cols[i];
-      await this.db.insert(catalogColumns).values({
-        tableId: id,
-        name: c.name,
-        type: (c.type ?? 'string') as never,
-        ordinal: i,
-        isPii: false,
-      });
-    }
-    // Bust lineage cache for this id + the coarse list cache.
-    this.lineageCache.delete(id);
-    this.bustListCache();
-    this.log.log(`upsertFromMasterTable: ${id} (${cols.length} cols, ${mt.rowCount} rows)`);
-  }
+  // upsertFromMasterTable() removed in Phase 06 (Bedrock cleanup). Master
+  // tables are no longer tracked in this catalog.
 
   async list(filters: { game?: string; category?: string; search?: string }): Promise<{ items: CatalogTable[]; total: number }> {
     const cacheKey = `list|${filters.game ?? ''}|${filters.category ?? ''}|${filters.search ?? ''}`;
