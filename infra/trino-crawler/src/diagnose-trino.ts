@@ -31,6 +31,12 @@ const _dirname: string =
 dotenv.config({ path: path.resolve(_dirname, '../../../.env') });
 
 const OUTPUT_FILE = path.resolve(_dirname, '../trino-diagnostic.md');
+const MULTI_GAME_OUTPUT = path.resolve(_dirname, '../multi-game-diagnostic.md');
+
+// Game schemas to probe in --all-games mode. cfm_vn is the known-good
+// baseline; others are unverified. The crawler degrades per-game on
+// access-denied so a single inaccessible schema doesn't block the rest.
+const GAME_SCHEMAS: readonly string[] = ['cfm_vn', 'ptg_vn', 'nth_vn', 'tf_vn', 'cos_vn'];
 
 // Tables we expect in iceberg.cfm_vn. Each entry encodes the date column
 // to use for the bounded count, so we never do an unbounded SELECT.
@@ -58,8 +64,14 @@ type ProbeResult = {
   error: string | null;
 };
 
-async function probe(client: ReturnType<typeof createTrinoClient>, cfg: TrinoConfig, p: TableProbe): Promise<ProbeResult> {
-  const sql = `SELECT count(*) AS c FROM ${cfg.catalog}.${cfg.schema}.${p.table} WHERE ${p.dateColumn} >= current_date - INTERVAL '7' DAY`;
+async function probe(
+  client: ReturnType<typeof createTrinoClient>,
+  cfg: TrinoConfig,
+  p: TableProbe,
+  schemaOverride?: string,
+): Promise<ProbeResult> {
+  const schema = schemaOverride ?? cfg.schema;
+  const sql = `SELECT count(*) AS c FROM ${cfg.catalog}.${schema}.${p.table} WHERE ${p.dateColumn} >= current_date - INTERVAL '7' DAY`;
   const start = Date.now();
   try {
     const res = await runQuery(client, sql, 1);
@@ -118,6 +130,79 @@ function writeMarkdown(cfg: TrinoConfig, results: ProbeResult[]): void {
   fs.writeFileSync(OUTPUT_FILE, lines.join('\n'), 'utf-8');
 }
 
+// ── Multi-game probe ───────────────────────────────────────────────────
+type GameProbeResult = {
+  schema: string;
+  tables: ProbeResult[];
+  reachableCount: number;
+};
+
+async function probeAllGames(
+  client: ReturnType<typeof createTrinoClient>,
+  cfg: TrinoConfig,
+): Promise<GameProbeResult[]> {
+  const out: GameProbeResult[] = [];
+  for (const schema of GAME_SCHEMAS) {
+    console.log(`\n[diagnose] schema = ${schema}`);
+    const tables: ProbeResult[] = [];
+    for (const p of PROBES) {
+      process.stdout.write(`  ${p.table.padEnd(40)} … `);
+      const r = await probe(client, cfg, p, schema);
+      tables.push(r);
+      if (r.ok) {
+        console.log(`OK (${r.latencyMs}ms · ${r.rowsLast7d?.toLocaleString('en-US') ?? '?'} rows)`);
+      } else {
+        console.log(`FAIL (${r.error?.slice(0, 100) ?? 'unknown'})`);
+      }
+    }
+    out.push({ schema, tables, reachableCount: tables.filter((t) => t.ok).length });
+  }
+  return out;
+}
+
+function writeMultiGameMarkdown(cfg: TrinoConfig, games: GameProbeResult[]): void {
+  const ts = new Date().toISOString();
+  const lines: string[] = [
+    `# Multi-Game Trino Reachability Diagnostic`,
+    ``,
+    `Generated: ${ts}  ·  Host: ${cfg.host}:${cfg.port}  ·  Catalog: ${cfg.catalog}`,
+    ``,
+    `## Summary`,
+    ``,
+    `| Game schema | Tables reachable | Status |`,
+    `|---|---|---|`,
+    ...games.map((g) => {
+      const status = g.reachableCount === g.tables.length
+        ? '✓ all reachable'
+        : g.reachableCount === 0 ? '✗ all blocked' : '⚠ partial';
+      return `| \`${g.schema}\` | ${g.reachableCount} / ${g.tables.length} | ${status} |`;
+    }),
+    ``,
+  ];
+
+  for (const g of games) {
+    lines.push(`## \`${g.schema}\``, ``);
+    lines.push(`| Table | OK | Rows last 7d | Latency | Error |`);
+    lines.push(`|---|---|---|---|---|`);
+    for (const r of g.tables) {
+      const fmt = r.rowsLast7d === null ? '—' : r.rowsLast7d.toLocaleString('en-US');
+      lines.push(`| \`${r.table}\` | ${r.ok ? '✓' : '✗'} | ${fmt} | ${r.latencyMs}ms | ${r.error ? r.error.slice(0, 120) : '—'} |`);
+    }
+    lines.push(``);
+  }
+
+  const fullyReachable = games.filter((g) => g.reachableCount === g.tables.length).map((g) => g.schema);
+  const partial        = games.filter((g) => g.reachableCount > 0 && g.reachableCount < g.tables.length).map((g) => g.schema);
+  const blocked        = games.filter((g) => g.reachableCount === 0).map((g) => g.schema);
+
+  lines.push(`## Phase 02 scope decision`, ``);
+  if (fullyReachable.length > 0) lines.push(`- **Fully reachable:** ${fullyReachable.map((s) => `\`${s}\``).join(', ')} → wire into Phase 02 multi-game crawler.`);
+  if (partial.length > 0)         lines.push(`- **Partial:** ${partial.map((s) => `\`${s}\``).join(', ')} → wire only the reachable tables; mark missing-table features synth.`);
+  if (blocked.length > 0)         lines.push(`- **Blocked:** ${blocked.map((s) => `\`${s}\``).join(', ')} → keep on synth path entirely.`);
+
+  fs.writeFileSync(MULTI_GAME_OUTPUT, lines.join('\n'), 'utf-8');
+}
+
 async function main(): Promise<void> {
   let cfg: TrinoConfig;
   try {
@@ -127,8 +212,22 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
-  console.log(`[diagnose] Probing ${cfg.catalog}.${cfg.schema} @ ${cfg.host}:${cfg.port}`);
+  const allGames = process.argv.includes('--all-games');
+  console.log(`[diagnose] Probing ${cfg.catalog}.${allGames ? '<all games>' : cfg.schema} @ ${cfg.host}:${cfg.port}`);
   const client = createTrinoClient(cfg);
+
+  if (allGames) {
+    const games = await probeAllGames(client, cfg);
+    writeMultiGameMarkdown(cfg, games);
+    console.log('');
+    console.log(`[diagnose] Multi-game report → ${MULTI_GAME_OUTPUT}`);
+    const totalReachable = games.reduce((s, g) => s + g.reachableCount, 0);
+    if (totalReachable === 0) {
+      console.error(`[diagnose] BLOCKER: zero tables reachable across any game.`);
+      process.exit(2);
+    }
+    return;
+  }
 
   const results: ProbeResult[] = [];
   for (const p of PROBES) {
