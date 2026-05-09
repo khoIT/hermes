@@ -1,9 +1,12 @@
 /**
- * Feature Store filter predicate factory.
- * All active filters compose with AND semantics between categories.
- * Within a category (e.g. multiple type chips), OR semantics apply.
+ * Feature Store filter predicate factory (Phase 5 v2).
+ * AND semantics between categories; OR within each multi-select category.
+ *
+ * v2 changes:
+ *   - Removed `owners` filter (replaced by games attribution)
+ *   - Added `games` multi-select + `platformOnly` toggle
  */
-import type { HermesFeature, HermesLatencyTier } from '@hermes/contracts';
+import type { HermesFeature, HermesGame, HermesLatencyTier } from '@hermes/contracts';
 
 export interface FilterState {
   /** Selected feature types — empty means "all" */
@@ -12,8 +15,14 @@ export interface FilterState {
   latencyTiers: HermesLatencyTier[];
   /** Selected statuses — empty means "all" */
   statuses: string[];
-  /** Selected owners — empty means "all" */
-  owners: string[];
+  /** Selected games — empty means "all" */
+  games: HermesGame[];
+  /** Restrict to platform features only */
+  platformOnly: boolean;
+  /** Restrict to features with drift score >= 0.4 (Drift detected entry-point) */
+  driftedOnly: boolean;
+  /** Restrict by analytics provenance — empty = all */
+  sources: ('real' | 'hybrid' | 'synth')[];
   /** Text search query */
   query: string;
 }
@@ -22,7 +31,10 @@ export const EMPTY_FILTER: FilterState = {
   types: [],
   latencyTiers: [],
   statuses: [],
-  owners: [],
+  games: [],
+  platformOnly: false,
+  driftedOnly: false,
+  sources: [],
   query: '',
 };
 
@@ -32,46 +44,44 @@ export function isFilterEmpty(state: FilterState): boolean {
     state.types.length === 0 &&
     state.latencyTiers.length === 0 &&
     state.statuses.length === 0 &&
-    state.owners.length === 0 &&
+    state.games.length === 0 &&
+    !state.platformOnly &&
+    !state.driftedOnly &&
+    state.sources.length === 0 &&
     state.query.trim() === ''
   );
 }
 
-/**
- * Factory: returns a predicate function that tests a single HermesFeature
- * against the given FilterState. Filters compose with AND between categories.
- */
 export function buildFilterPredicate(
   state: FilterState,
 ): (feature: HermesFeature) => boolean {
   const query = state.query.trim().toLowerCase();
 
   return (feature: HermesFeature): boolean => {
-    // Type filter (OR within category)
-    if (state.types.length > 0 && !state.types.includes(feature.type)) {
-      return false;
-    }
+    if (state.types.length > 0 && !state.types.includes(feature.type)) return false;
 
-    // Latency tier filter — dual-tier features match if either tier matches
     if (state.latencyTiers.length > 0) {
       const featureTiers = feature.dualTier
         ? [feature.latencyTier, '<1h' as HermesLatencyTier]
         : [feature.latencyTier];
-      const matches = featureTiers.some((t) => state.latencyTiers.includes(t));
-      if (!matches) return false;
+      if (!featureTiers.some((t) => state.latencyTiers.includes(t))) return false;
     }
 
-    // Status filter (OR within category)
-    if (state.statuses.length > 0 && !state.statuses.includes(feature.status)) {
-      return false;
+    if (state.statuses.length > 0 && !state.statuses.includes(feature.status)) return false;
+
+    if (state.platformOnly && !feature.platform) return false;
+
+    if (state.games.length > 0) {
+      if (!state.games.some((g) => feature.games.includes(g))) return false;
     }
 
-    // Owner filter (OR within category)
-    if (state.owners.length > 0 && !state.owners.includes(feature.owner)) {
-      return false;
+    if (state.driftedOnly && feature.analytics.driftScore < 0.4) return false;
+
+    if (state.sources.length > 0) {
+      const src = (feature.analytics as unknown as { source?: 'real' | 'hybrid' | 'synth' }).source ?? 'synth';
+      if (!state.sources.includes(src)) return false;
     }
 
-    // Text search — matches name or displayName
     if (query) {
       const nameMatch = feature.name.toLowerCase().includes(query);
       const displayMatch = feature.displayName.toLowerCase().includes(query);
@@ -83,11 +93,7 @@ export function buildFilterPredicate(
   };
 }
 
-/** Apply filter to a features array */
-export function applyFilter(
-  features: HermesFeature[],
-  state: FilterState,
-): HermesFeature[] {
+export function applyFilter(features: HermesFeature[], state: FilterState): HermesFeature[] {
   if (isFilterEmpty(state)) return features;
   const predicate = buildFilterPredicate(state);
   return features.filter(predicate);

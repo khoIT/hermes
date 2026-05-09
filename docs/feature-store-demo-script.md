@@ -7,6 +7,37 @@ A walkthrough that shows what the Feature Store does for each persona using real
 
 ---
 
+## Curated demo features — pick by what you want to show
+
+The threshold playground only renders meaningfully when a feature has real-data distribution rows. **Provenance signals** in the UI:
+- 🟢 dot in the library row · green REAL badge in LiveOps tab
+- ⚪ gray dot · red SYNTHETIC card · empty playground
+
+**For the slider experience** (numeric, real, lots of uids — pick from these):
+
+| Feature | Range | Why it demos well |
+|---|---|---|
+| `account_age_days` | 1–7831 days | Long-tail; 155k uids; the canonical demo feature |
+| `lifetime_revenue_local` | 0–25M VND | Whale tail; only 21k uids; nice power-law |
+| `mmr_current` | 800–3500 | 153k uids; PVP-relevant for CFM |
+| `ranked_match_count_30d` | 0–300 | Engagement signal; tight distribution |
+| `session_count_7d` | 0–30 | Stickiness; tiny range = fast slider |
+| `consecutive_ranked_losses_streak` | 0–20 | The CFM-13 anchor feature; small numbers, narrative payoff |
+
+**For the categorical picker** (real, dropdown of labels with counts):
+
+| Feature | Labels | Notes |
+|---|---|---|
+| `vip_status` | `none` / `vip_max` | 199k uids; pick `vip_max` → 75k whales |
+| `player_lifecycle_stage` | `nru`/`mid`/`veteran`/`lapsed` | 200k uids |
+| `region_code` | `VN`/`TH`/`ID`/`PH`/`Other` | regional breakdown |
+| `dominant_playstyle` | `pvp`/`pve`/`housing`/`fishing`/`social` | 153k uids |
+| `spend_tier_lifetime` | `free`/`low`/`mid`/`high`/`whale` | only payers (21k uids) |
+
+**Synth features (DON'T use for playground demo)** — open one of these to demonstrate the empty state + red badge instead. Examples: `iam_received_count_24h`, `weapon_count_owned`, `pltv_30d_score`, `pass_owned_current`. These are all features with no upstream Trino source (T5 in the original derivation coverage), so the playground correctly shows "No distribution available — feature may have no real data yet."
+
+---
+
 ## Setup (60 sec, before starting)
 
 ```bash
@@ -24,13 +55,17 @@ If the page shows **Feature Store unavailable**, check `pnpm dev:db` is up and `
 
 ## Beat 1 — Library landing (20 sec)
 
-**You see:** 76 features grouped by domain, each with a sparkline + health badge.
+**You see:** 76 features grouped by domain. Each row has a small **colored dot** before the feature name:
+
+- 🟢 **Green** = real (Trino-derived from cfm_vn raw events)
+- 🟠 **Amber** = hybrid (proxy SQL approximation — still real-data-anchored)
+- ⚪ **Gray** = synth (no upstream source · preview only)
 
 **Talking points:**
 
-> "This is computed from 22 million rows of real cfm_vn data we pull from Trino. Group by domain, filter by latency tier, sort by drift. Notice some have a green badge, some red — that's the provenance signal. Some features are fully derived from real Trino aggregates, others are still synthetic because they don't have a Trino source mapping yet."
+> "Computed from 22M rows of real cfm_vn data. The dot before each feature name tells you provenance at a glance — green is safe to bet a campaign on, gray is preview-only. Use the **Data source** filter on the left to show only real features if you want to skip the synth ones."
 
-Click **`account_age_days`**.
+Click **Data source → Real** in the filter rail to narrow to the 48 fully-real features. Then click **`account_age_days`**.
 
 ---
 

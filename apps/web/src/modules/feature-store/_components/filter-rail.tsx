@@ -1,12 +1,18 @@
 /**
- * FilterRail — left sidebar filter panel for Feature Store library.
- * Renders chip groups for: type, latency tier, status, owner.
+ * FilterRail — left sidebar filter panel (Phase 5 v2).
+ * Renders chip groups for: type · latency · games · platform-only · status.
  * State is lifted to parent; this component is purely presentational.
+ *
+ * v2 changes:
+ *   - Removed Owner section (replaced by Games + Platform-only)
+ *   - Added Games multi-select (CFM/PT/NTH/TF/COS/PG)
+ *   - Added Platform-only toggle
  */
 import React from 'react';
 import { T } from '../../../theme';
 import type { FilterState } from '../_logic/filter';
-import type { HermesFeature } from '@hermes/contracts';
+import type { HermesFeature, HermesGame } from '@hermes/contracts';
+import { GAME_ORDER, GAME_TINT } from '../../../components/_logic/game-colors';
 
 interface FilterRailProps {
   features: HermesFeature[];
@@ -26,9 +32,9 @@ const TYPE_LABELS: Record<string, string> = {
 };
 
 const LATENCY_OPTIONS: { tier: string; label: string; color: string }[] = [
-  { tier: '<1s', label: '[<1s] hot', color: T.green600 },
-  { tier: '<1h', label: '[<1h] warm', color: T.amber500 },
-  { tier: '<1d', label: '[<1d] cold', color: T.n500 },
+  { tier: '<1s', label: 'Realtime', color: T.green600 },
+  { tier: '<1h', label: 'Batch warm', color: T.amber500 },
+  { tier: '<1d', label: 'Batch cold', color: T.n500 },
 ];
 
 const STATUS_OPTIONS = ['active', 'beta', 'deprecated'] as const;
@@ -83,28 +89,33 @@ function toggle<T>(arr: T[], val: T): T[] {
 }
 
 export const FilterRail: React.FC<FilterRailProps> = ({ features, state, onChange }) => {
-  // Compute owner options from the features list
-  const owners = React.useMemo(() => {
-    const set = new Set(features.map((f) => f.owner));
-    return [...set].sort();
-  }, [features]);
-
-  // Count per type
   const typeCounts = React.useMemo(() => {
     const map: Record<string, number> = {};
     for (const f of features) map[f.type] = (map[f.type] ?? 0) + 1;
     return map;
   }, [features]);
 
-  // Count per owner
-  const ownerCounts = React.useMemo(() => {
-    const map: Record<string, number> = {};
-    for (const f of features) map[f.owner] = (map[f.owner] ?? 0) + 1;
+  const gameCounts = React.useMemo(() => {
+    const map: Record<HermesGame, number> = { cfm: 0, pt: 0, nth: 0, tf: 0, cos: 0, ptg: 0 };
+    for (const f of features) {
+      for (const g of f.games) map[g] = (map[g] ?? 0) + 1;
+    }
     return map;
   }, [features]);
 
-  const hasFilters = state.types.length > 0 || state.latencyTiers.length > 0
-    || state.statuses.length > 0 || state.owners.length > 0;
+  const platformCount = React.useMemo(
+    () => features.filter((f) => f.platform).length,
+    [features],
+  );
+
+  const hasFilters =
+    state.types.length > 0 ||
+    state.latencyTiers.length > 0 ||
+    state.statuses.length > 0 ||
+    state.games.length > 0 ||
+    state.platformOnly ||
+    state.driftedOnly ||
+    state.sources.length > 0;
 
   return (
     <aside style={{
@@ -136,7 +147,18 @@ export const FilterRail: React.FC<FilterRailProps> = ({ features, state, onChang
       {/* Clear filters */}
       {hasFilters && (
         <button
-          onClick={() => onChange({ types: [], latencyTiers: [], statuses: [], owners: [], query: '' })}
+          onClick={() =>
+            onChange({
+              types: [],
+              latencyTiers: [],
+              statuses: [],
+              games: [],
+              platformOnly: false,
+              driftedOnly: false,
+              sources: [],
+              query: state.query,
+            })
+          }
           style={{
             fontFamily: T.fSans, fontSize: 11, color: T.brand,
             background: 'none', border: 'none', cursor: 'pointer',
@@ -176,6 +198,50 @@ export const FilterRail: React.FC<FilterRailProps> = ({ features, state, onChang
         ))}
       </Section>
 
+      {/* Games */}
+      <Section label="Games">
+        {GAME_ORDER.map((g) => {
+          const tint = GAME_TINT[g];
+          return (
+            <Chip
+              key={g}
+              label={tint.label}
+              count={gameCounts[g] ?? 0}
+              active={state.games.includes(g)}
+              color={tint.fg}
+              onClick={() => onChange({ ...state, games: toggle(state.games, g) })}
+            />
+          );
+        })}
+      </Section>
+
+      {/* Platform-only */}
+      <Section label="Platform">
+        <Chip
+          label="Platform features only"
+          count={platformCount}
+          active={state.platformOnly}
+          color="#9c2e10"
+          onClick={() => onChange({ ...state, platformOnly: !state.platformOnly })}
+        />
+      </Section>
+
+      {/* Source provenance */}
+      <Section label="Data source">
+        {(['real', 'hybrid', 'synth'] as const).map((s) => {
+          const colorMap = { real: '#059669', hybrid: '#f59e0b', synth: '#a3a3a3' };
+          return (
+            <Chip
+              key={s}
+              label={s.charAt(0).toUpperCase() + s.slice(1)}
+              active={state.sources.includes(s)}
+              color={colorMap[s]}
+              onClick={() => onChange({ ...state, sources: toggle(state.sources, s) })}
+            />
+          );
+        })}
+      </Section>
+
       {/* Status */}
       <Section label="Status">
         {STATUS_OPTIONS.map((s) => (
@@ -184,19 +250,6 @@ export const FilterRail: React.FC<FilterRailProps> = ({ features, state, onChang
             label={s.charAt(0).toUpperCase() + s.slice(1)}
             active={state.statuses.includes(s)}
             onClick={() => onChange({ ...state, statuses: toggle(state.statuses, s) })}
-          />
-        ))}
-      </Section>
-
-      {/* Owner */}
-      <Section label="Owner">
-        {owners.map((owner) => (
-          <Chip
-            key={owner}
-            label={owner}
-            count={ownerCounts[owner]}
-            active={state.owners.includes(owner)}
-            onClick={() => onChange({ ...state, owners: toggle(state.owners, owner) })}
           />
         ))}
       </Section>
