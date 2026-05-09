@@ -37,10 +37,40 @@ export class HttpErrorFilter implements ExceptionFilter {
         : { code: this.codeForStatus(status), ...(r as Record<string, unknown>) };
     } else if (exception instanceof Error) {
       this.log.error({ err: exception.message, stack: exception.stack, requestId });
-      body = { code: 'INTERNAL', message: 'Internal server error' };
+      // Database-down errors get a clearer 503 envelope so clients can
+      // present "backend unavailable" rather than a generic 500. Triggers
+      // when the Postgres container restarts mid-session and the pool
+      // returns ECONNREFUSED or "Failed query" before reconnecting.
+      if (this.isDbUnavailable(exception)) {
+        status = HttpStatus.SERVICE_UNAVAILABLE;
+        body = {
+          code:    'DB_UNAVAILABLE',
+          message: 'Database temporarily unreachable. Retry shortly.',
+          hint:    'Run `pnpm dev:db` if developing locally.',
+        };
+      } else {
+        body = { code: 'INTERNAL', message: 'Internal server error' };
+      }
     }
 
     res.status(status).json({ ...body, requestId });
+  }
+
+  /**
+   * Heuristic: Postgres-unavailable errors that warrant a 503 (rather
+   * than the default 500). Matches the common patterns from `pg` /
+   * drizzle when the database goes away mid-request.
+   */
+  private isDbUnavailable(err: Error): boolean {
+    const msg = (err.message ?? '').toLowerCase();
+    return (
+      msg.includes('econnrefused') ||
+      msg.includes('failed query') ||
+      msg.includes('connection terminated') ||
+      msg.includes('client has encountered a connection error') ||
+      msg.includes('terminating connection due to administrator command') ||
+      (err as NodeJS.ErrnoException).code === 'ECONNREFUSED'
+    );
   }
 
   private codeForStatus(s: number): string {

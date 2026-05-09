@@ -59,6 +59,16 @@ export async function bootFeatureLoader(opts: {
     const res = await fetch(FEATURES_URL, { signal: controller.signal });
     clearTimeout(timer);
     if (!res.ok) {
+      // Recognised: catalog-api returns 503 with a DB_UNAVAILABLE envelope
+      // when the Postgres container is restarting. Surface a clearer reason.
+      if (res.status === 503) {
+        try {
+          const body = await res.json() as { message?: string };
+          throw new Error(body.message ? `503 · ${body.message}` : '503 · backend unavailable');
+        } catch {
+          throw new Error('503 · backend unavailable');
+        }
+      }
       throw new Error(`HTTP ${res.status}`);
     }
     const json = await res.json();
