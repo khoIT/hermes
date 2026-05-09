@@ -273,11 +273,32 @@ through a single source of truth at `apps/web/src/components/_logic/latency-labe
 
 ### 9.0 Feature Store wiring — DELIVERED (2026-05-09)
 
-The Feature Store slice of Step 1+2 below shipped via plan
-`260509-2032-real-trino-feature-pipeline`. Web → catalog-api is now live
-for `/api/v1/features` (76 features, 48 real + 28 synth). Static
-`feature-analytics-180d.json` is deleted from the web bundle and a
-postbuild guard prevents reintroduction.
+Two plans landed same-day:
+- `260509-2032-real-trino-feature-pipeline` — Trino → Postgres → /features
+  (76 features · 48 real + 28 synth · static JSON deleted from web bundle).
+- `260509-2223-feature-store-v3-platform-completion` — 12 persona endpoints,
+  game_id schema delta, query-svc /audience/count, Bedrock cleanup, 3 LM
+  detail panels (source provenance · health verdict · threshold playground).
+
+12 catalog-api persona endpoints live:
+  GET /features
+  GET /features/:name
+  GET /features/:name/distribution?days=N
+  GET /features/:name/used-by
+  GET /features/:name/audience-count?op=...&value=...   (LM threshold playground)
+  GET /features/:name/quantiles                         (DA quantile strip)
+  GET /features/:name/samples?limit=N                   (DA sample cards)
+  GET /features/:name/pipeline-health?days=N            (DE timeline)
+  GET /features/:name/outliers?topK=N                   (DA outliers)
+  GET /features/:name/coverage-segmentation             (DA cohort split)
+  GET /features/:name/top-segments-using                (LM discovery)
+  GET /features/:name/correlations?topK=N               (DA related features)
+
+query-svc adds:
+  POST /api/v1/audience/count  — Postgres set-algebra over feature_values
+
+Bedrock catalog-api modules (mappings/, master-tables/) deleted; tables
+dropped via migration 0010.
 
 Pipeline:
 ```

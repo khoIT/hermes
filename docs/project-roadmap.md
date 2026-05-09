@@ -59,24 +59,37 @@
 - [x] Validation: 19/19 assertions pass via
       `node scripts/validate-feature-pipeline.cjs`
 
-**Catalog-api remaining:**
-- [ ] Trim Bedrock-only modules (mappings, master-tables) — deferred to
-      separate cleanup plan
-- [ ] Replace remaining Bedrock metric/segment Drizzle schema with
-      Hermes equivalents (if needed when Segments wires live)
-- [ ] Re-seed catalog-api segments + campaigns from `apps/web/src/data/catalog`
+**Catalog-api — DELIVERED 2026-05-09 (plan v3):**
+- [x] Trim Bedrock-only modules (mappings, master-tables)
+- [x] 12 persona endpoints live (audience-count, quantiles, samples,
+      pipeline-health, outliers, coverage-segmentation, top-segments,
+      correlations, plus the v1 four)
+- [x] feature_pipeline_runs table for DE pipeline-health timeline
+- [x] game_id schema delta (multi-game ready, CFM-only data per Phase 00 finding)
+- [ ] Re-seed catalog-api segments + campaigns from `apps/web/src/data/catalog` (deferred)
 
-**Query-svc:**
-- [ ] Add `src/audience/` module
-- [ ] Implement `POST /api/v1/audience/count` endpoint
-- [ ] Translate Hermes predicate AST → SQL via CriteriaTranslator
-- [ ] Test with mock driver (existing JSONL) + Trino driver (live)
+**Query-svc — DELIVERED 2026-05-09 (plan v3):**
+- [x] Audience module with predicate AST → Postgres set-algebra
+- [x] POST /api/v1/audience/count over feature_values
+- [x] Validated: account_age_days > 3000 → 137k uids · 88ms ; AND-of-leaf
+      → 34k uids · 153ms
 
-**Web app:**
-- [ ] Update `audience-lookup.ts` to call live query-svc
-- [ ] Wire Vite proxy for query-svc (catalog-api proxy already wired
-      `/api → 127.0.0.1:3001` in 06)
-- [ ] Test threshold playground reading live counts
+**Web app — partial DELIVERED 2026-05-09 (plan v3):**
+- [x] Vite proxy split: /api/v1/audience → 3002, everything else → 3001
+- [x] audience-live.ts hook (useAudienceCount) + composer adapter
+- [x] 3 LM detail panels live: source provenance, health verdict,
+      threshold playground (live audience via /audience-count)
+- [ ] DA detail panels (5): quantile strip, coverage segmentation,
+      sample cards, correlated features, outliers (endpoints all live)
+- [ ] DE detail panels (4): pipeline timeline, cost & latency,
+      lineage v2, backfill history (endpoints partly live)
+- [ ] Composer wiring: switch threshold-grid logic to useAudienceCount
+      hook (currently sync fixtures still in use)
+
+**Multi-game crawler:**
+- [BLOCKED] Trino access for ptg_vn / nth_vn / tf_vn / cos_vn schemas —
+            Phase 00 of v3 plan found only cfm_vn reachable. Architectural
+            prep landed (game_id everywhere); awaiting VNG IT provisioning.
 
 **Success metric:** Threshold playground audience count updates via live HTTP call (not static JSON).
 

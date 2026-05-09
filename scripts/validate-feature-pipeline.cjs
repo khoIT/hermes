@@ -25,6 +25,7 @@ const path = require('node:path');
 
 const DATABASE_URL = process.env.DATABASE_URL ?? 'postgres://hermes:dev@localhost:5432/hermes';
 const API = process.env.API_URL ?? 'http://127.0.0.1:3001/api/v1';
+const QUERY_API = process.env.QUERY_API_URL ?? 'http://127.0.0.1:3002/api/v1';
 
 const SAMPLE_FEATURES = [
   'account_first_login_ts',     // T1 real
@@ -130,10 +131,99 @@ async function main() {
       apiOk = false;
       assert('distribution endpoint', false, err.message);
     }
+
+    // v3 persona endpoints
+    try {
+      const ac = await fetchJson(`${API}/features/account_age_days/audience-count?op=gt&value=30`);
+      assert('GET /features/:n/audience-count', typeof ac.count === 'number' && ac.count > 0, `count=${ac.count} · ${ac.durationMs}ms`);
+      assert('audience-count under 500ms', ac.durationMs < 500, `actual=${ac.durationMs}ms`);
+
+      const q = await fetchJson(`${API}/features/account_age_days/quantiles`);
+      assert('GET /features/:n/quantiles · 6 percentiles', q.quantiles?.length === 6);
+
+      const s = await fetchJson(`${API}/features/account_age_days/samples?limit=5`);
+      assert('GET /features/:n/samples · returns 5', s.samples?.length === 5);
+
+      const ph = await fetchJson(`${API}/features/account_age_days/pipeline-health`);
+      assert('GET /features/:n/pipeline-health', Array.isArray(ph.runs));
+
+      const ol = await fetchJson(`${API}/features/account_age_days/outliers?topK=3`);
+      assert('GET /features/:n/outliers', ol.outliers?.length > 0, `${ol.outliers?.length} outliers`);
+
+      const cs = await fetchJson(`${API}/features/account_age_days/coverage-segmentation`);
+      assert('GET /features/:n/coverage-segmentation', cs.byLifecycle && cs.byRegion && cs.bySpendTier);
+
+      const ts = await fetchJson(`${API}/features/account_age_days/top-segments-using`);
+      assert('GET /features/:n/top-segments-using', Array.isArray(ts.segments));
+
+      const corr = await fetchJson(`${API}/features/account_age_days/correlations?topK=3`);
+      assert('GET /features/:n/correlations', ['warm','cold','computing'].includes(corr.cacheStatus));
+    } catch (err) {
+      apiOk = false;
+      assert('persona endpoints', false, err.message);
+    }
   } catch (err) {
     apiOk = false;
     assert('GET /features (api up)', false, err.message);
     console.log('  hint: start it with `pnpm --filter @hermes/catalog-api dev`');
+  }
+
+  // ── query-svc audience-count (Phase 07) ────────────────────────────
+  try {
+    const res = await fetch(`${QUERY_API}/audience/count`, {
+      method:  'POST',
+      headers: { 'content-type': 'application/json' },
+      body:    JSON.stringify({ predicate: { leaf: { feature: 'account_age_days', op: 'gt', value: 3000 } } }),
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const body = await res.json();
+    assert('query-svc /audience/count single-leaf', typeof body.count === 'number' && body.count > 0, `count=${body.count} · ${body.durationMs}ms`);
+
+    const r2 = await fetch(`${QUERY_API}/audience/count`, {
+      method:  'POST',
+      headers: { 'content-type': 'application/json' },
+      body:    JSON.stringify({
+        predicate: {
+          all: [
+            { leaf: { feature: 'account_age_days', op: 'gt',  value: 2000 } },
+            { leaf: { feature: 'vip_status',       op: 'eq',  value: 'vip_max' } },
+          ],
+        },
+      }),
+    });
+    const body2 = await r2.json();
+    assert('query-svc /audience/count AND-of-leafs', typeof body2.count === 'number', `count=${body2.count} · ${body2.durationMs}ms`);
+    assert('AND query under 1000ms', body2.durationMs < 1000, `actual=${body2.durationMs}ms`);
+  } catch (err) {
+    apiOk = false;
+    assert('query-svc audience-count', false, err.message);
+    console.log('  hint: start it with `pnpm --filter @hermes/query-svc dev`');
+  }
+
+  // ── Phase 02 game_id schema ───────────────────────────────────────
+  try {
+    const r = await pg.query(`SELECT count(*) FILTER (WHERE game_id = 'cfm') AS cfm FROM feature_values`);
+    assert('feature_values · game_id populated', Number(r.rows[0].cfm) > 0, `cfm rows=${r.rows[0].cfm}`);
+  } catch (err) {
+    assert('feature_values game_id check', false, err.message);
+  }
+
+  // ── Phase 06 Bedrock cleanup ──────────────────────────────────────
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const bedrockDirs = [
+    path.resolve(__dirname, '..', 'apps/catalog-api/src/mappings'),
+    path.resolve(__dirname, '..', 'apps/catalog-api/src/master-tables'),
+  ];
+  for (const dir of bedrockDirs) {
+    assert(`bedrock dir absent: ${path.basename(dir)}`, !fs.existsSync(dir));
+  }
+  try {
+    const r = await pg.query(`SELECT to_regclass('public.mappings') AS t1, to_regclass('public.master_tables') AS t2`);
+    assert('public.mappings dropped', r.rows[0].t1 === null);
+    assert('public.master_tables dropped', r.rows[0].t2 === null);
+  } catch (err) {
+    assert('bedrock tables dropped', false, err.message);
   }
 
   // ── Provenance audit ───────────────────────────────────────────────
