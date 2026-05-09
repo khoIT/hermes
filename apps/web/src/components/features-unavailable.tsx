@@ -7,7 +7,7 @@
 import React from 'react';
 import { T } from '../theme';
 import { useFeatureLoadStatus } from '../data/catalog/features/_use-features';
-import { getLoadStatus } from '../data/catalog/features/index';
+import { bootFeatureLoader, getLoadStatus, _setLoadedFeatures } from '../data/catalog/features/index';
 
 export const FeaturesUnavailable: React.FC = () => {
   const status = useFeatureLoadStatus();
@@ -15,6 +15,14 @@ export const FeaturesUnavailable: React.FC = () => {
 
   const { error } = getLoadStatus();
   const isLoading = status === 'loading';
+
+  // Re-run the boot fetch. The loader updates status to 'loading' → 'ready'
+  // or 'error', which this component re-renders against via useFeatureLoadStatus.
+  // Lets the user recover from a transient catalog-api outage without a
+  // full page reload (which would lose any unsaved client-side state).
+  const handleRetry = () => {
+    void bootFeatureLoader({ onReady: _setLoadedFeatures });
+  };
 
   return (
     <div
@@ -74,10 +82,27 @@ export const FeaturesUnavailable: React.FC = () => {
               {'\n'}pnpm --filter @hermes/catalog-api dev
             </div>
             {error ? (
-              <div style={{ fontSize: 11, color: T.n500, fontFamily: T.fMono }}>
+              <div style={{ fontSize: 11, color: T.n500, fontFamily: T.fMono, marginBottom: 16 }}>
                 Reason: {error}
               </div>
             ) : null}
+            <button
+              type="button"
+              onClick={handleRetry}
+              style={{
+                fontFamily: T.fSans,
+                fontSize: 13,
+                fontWeight: 500,
+                padding: '8px 16px',
+                background: T.n900,
+                color: '#fff',
+                border: 'none',
+                borderRadius: 4,
+                cursor: 'pointer',
+              }}
+            >
+              Retry
+            </button>
           </>
         )}
       </div>
