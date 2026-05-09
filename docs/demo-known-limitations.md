@@ -187,6 +187,23 @@ Warning: Some chunks are larger than 500 kB after minification.
 
 ---
 
+## Feature Store v2 Deferrals (May 2026)
+
+Captured during the v2 redesign (`260509-1855-feature-store-v2-discovery-analytics`).
+All items below are intentional scope cuts, not bugs.
+
+| Issue                                                                  | Workaround                                                          | Timeline                            |
+|------------------------------------------------------------------------|---------------------------------------------------------------------|-------------------------------------|
+| Newly-registered features persist only for the session                 | Reload returns to base catalog; expected for offline demo           | Phase 2 (catalog-api wiring)        |
+| Drift score values are synthesised                                     | Real drift requires the parity-monitoring service from PRD §10      | Phase 2                             |
+| Top consuming campaigns numbers are synth for non-CFM games            | CFM uses real data; others derived from campaign-requirements doc   | Phase 2 multi-game crawler          |
+| Edit Definition CTA on detail page is no-op                            | Original PRD §13 deferral preserved; only "Register similar" wired  | Phase 2                             |
+| Propensity model AUC bands are illustrative                            | Real values pulled from ML pipeline metadata                        | Phase 2 ML integration              |
+| Per-substrate parity test surface not built                            | Detail page surfaces drift score; parity-test panel deferred        | Phase 2 (post-May-12)               |
+| Segment library group-by `byGameOfFeatures` not yet wired              | Group-by is additive — main flow uses domain/owner groupings still  | Follow-on (after Phase 7 sign-off)  |
+
+---
+
 ## Next Steps
 
 1. **P-11 (Docs Polish)** — Populate `./docs/` per CLAUDE.md structure.
