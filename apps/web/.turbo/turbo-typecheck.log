@@ -1,4 +1,0 @@
-
-> @hermes/web@0.0.1 typecheck C:\Users\CPU12830-local\code\hermes\apps\web
-> tsc --noEmit -p tsconfig.json
-

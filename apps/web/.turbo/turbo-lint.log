@@ -1,7 +1,0 @@
-
-> @hermes/web@0.0.1 lint C:\Users\CPU12830-local\code\hermes\apps\web
-> eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0
-
-'eslint' is not recognized as an internal or external command,
-operable program or batch file.
- ELIFECYCLE  Command failed with exit code 1.
