@@ -1,0 +1,759 @@
+[
+  {
+    "feature": "account_age_days",
+    "domain": "identity_lifecycle",
+    "tier": "T2",
+    "source_table": "etl_login",
+    "source_columns": [
+      "dteventtime",
+      "vopenid"
+    ],
+    "notes": "DATEDIFF(NOW(), MIN(dteventtime)) over etl_login; or first_login_time in std_master_user_profile"
+  },
+  {
+    "feature": "account_first_login_ts",
+    "domain": "identity_lifecycle",
+    "tier": "T1",
+    "source_table": "std_master_user_profile",
+    "source_columns": [
+      "first_login_time"
+    ],
+    "notes": "Direct column first_login_time in std_master_user_profile"
+  },
+  {
+    "feature": "account_first_login_mmdd",
+    "domain": "identity_lifecycle",
+    "tier": "T2",
+    "source_table": "std_master_user_profile",
+    "source_columns": [
+      "first_login_time"
+    ],
+    "notes": "FORMAT_DATETIME(first_login_time, 'MM-dd') — derived from T1 source"
+  },
+  {
+    "feature": "days_since_install",
+    "domain": "identity_lifecycle",
+    "tier": "T2",
+    "source_table": "etl_appsflyer_installs_datalocker",
+    "source_columns": [
+      "install_time"
+    ],
+    "notes": "DATEDIFF(NOW(), install_time) from AppsFlyer installs table; cross-ref std_master_user_profile.install_time"
+  },
+  {
+    "feature": "lifetime_login_count",
+    "domain": "identity_lifecycle",
+    "tier": "T2",
+    "source_table": "etl_login",
+    "source_columns": [
+      "vopenid",
+      "dteventtime"
+    ],
+    "notes": "COUNT(*) GROUP BY vopenid over etl_login"
+  },
+  {
+    "feature": "last_login_days_ago",
+    "domain": "identity_lifecycle",
+    "tier": "T2",
+    "source_table": "std_master_user_profile",
+    "source_columns": [
+      "last_login_time"
+    ],
+    "notes": "DATEDIFF(NOW(), last_login_time) — direct from std_master_user_profile"
+  },
+  {
+    "feature": "player_lifecycle_stage",
+    "domain": "identity_lifecycle",
+    "tier": "T3",
+    "source_table": "std_master_user_profile",
+    "source_columns": [
+      "first_login_time",
+      "last_login_time"
+    ],
+    "notes": "Derived enum: nru/mid/veteran/lapsed from account_age_days + last_login_days_ago; requires window logic"
+  },
+  {
+    "feature": "is_new_user_d7",
+    "domain": "identity_lifecycle",
+    "tier": "T2",
+    "source_table": "std_master_user_profile",
+    "source_columns": [
+      "first_login_time"
+    ],
+    "notes": "CASE WHEN account_age_days <= 7 THEN true — depends on account_age_days (T2)"
+  },
+  {
+    "feature": "is_returning_after_lapse",
+    "domain": "identity_lifecycle",
+    "tier": "T3",
+    "source_table": "etl_login",
+    "source_columns": [
+      "vopenid",
+      "dteventtime"
+    ],
+    "notes": "LAG(dteventtime) OVER (PARTITION BY vopenid ORDER BY dteventtime) — gap >= 30d"
+  },
+  {
+    "feature": "region_code",
+    "domain": "identity_lifecycle",
+    "tier": "T1",
+    "source_table": "etl_login",
+    "source_columns": [
+      "country"
+    ],
+    "notes": "country column in etl_login mapped to VN/TH/ID/PH/Other enum; also last_country_code in std_master_user_profile"
+  },
+  {
+    "feature": "character_gender",
+    "domain": "identity_lifecycle",
+    "tier": "T5",
+    "source_table": null,
+    "source_columns": null,
+    "notes": "NTH only — no cfm_vn source table; synthesise in P-4 or ingest from NTH game API"
+  },
+  {
+    "feature": "is_paying_user_lifetime",
+    "domain": "monetization",
+    "tier": "T2",
+    "source_table": "etl_recharge",
+    "source_columns": [
+      "vopenid",
+      "iamount"
+    ],
+    "notes": "EXISTS(SELECT 1 FROM etl_recharge WHERE vopenid=? AND iamount>0)"
+  },
+  {
+    "feature": "lifetime_purchase_count",
+    "domain": "monetization",
+    "tier": "T2",
+    "source_table": "etl_recharge",
+    "source_columns": [
+      "vopenid",
+      "iamount"
+    ],
+    "notes": "COUNT(*) WHERE iamount>0 GROUP BY vopenid"
+  },
+  {
+    "feature": "lifetime_revenue_local",
+    "domain": "monetization",
+    "tier": "T2",
+    "source_table": "etl_recharge",
+    "source_columns": [
+      "vopenid",
+      "iamount"
+    ],
+    "notes": "SUM(iamount) GROUP BY vopenid — local currency (VND)"
+  },
+  {
+    "feature": "last_purchase_days_ago",
+    "domain": "monetization",
+    "tier": "T2",
+    "source_table": "std_master_user_profile",
+    "source_columns": [
+      "last_charge_time"
+    ],
+    "notes": "DATEDIFF(NOW(), last_charge_time) — direct from std_master_user_profile"
+  },
+  {
+    "feature": "spend_tier_lifetime",
+    "domain": "monetization",
+    "tier": "T3",
+    "source_table": "etl_recharge",
+    "source_columns": [
+      "vopenid",
+      "iamount"
+    ],
+    "notes": "NTILE or CASE over SUM(iamount): free/low/mid/high/whale — window bucketing on lifetime_revenue_local"
+  },
+  {
+    "feature": "vip_status",
+    "domain": "monetization",
+    "tier": "T2",
+    "source_table": "etl_login",
+    "source_columns": [
+      "vopenid",
+      "viplevel"
+    ],
+    "notes": "MAX(viplevel) per vopenid in etl_login; also viplevel in etl_game_detail"
+  },
+  {
+    "feature": "pass_owned_current",
+    "domain": "monetization",
+    "tier": "T5",
+    "source_table": null,
+    "source_columns": null,
+    "notes": "No battle-pass ownership table in cfm_vn bedrock; synthesise or ingest from game inventory API in P-4"
+  },
+  {
+    "feature": "pass_progress_current",
+    "domain": "monetization",
+    "tier": "T5",
+    "source_table": null,
+    "source_columns": null,
+    "notes": "No battle-pass progress table in cfm_vn bedrock; synthesise in P-4"
+  },
+  {
+    "feature": "annual_contribution_tier",
+    "domain": "monetization",
+    "tier": "T3",
+    "source_table": "etl_recharge",
+    "source_columns": [
+      "vopenid",
+      "iamount",
+      "dteventtime"
+    ],
+    "notes": "NTILE(5) OVER (ORDER BY SUM(iamount)) for last 365d — RFM tier 1-5"
+  },
+  {
+    "feature": "avg_purchase_amount_30d",
+    "domain": "monetization",
+    "tier": "T2",
+    "source_table": "etl_recharge",
+    "source_columns": [
+      "vopenid",
+      "iamount",
+      "dteventtime"
+    ],
+    "notes": "AVG(iamount) WHERE dteventtime >= NOW()-30d GROUP BY vopenid"
+  },
+  {
+    "feature": "purchase_count_30d",
+    "domain": "monetization",
+    "tier": "T2",
+    "source_table": "etl_recharge",
+    "source_columns": [
+      "vopenid",
+      "dteventtime"
+    ],
+    "notes": "COUNT(*) WHERE dteventtime >= NOW()-30d GROUP BY vopenid"
+  },
+  {
+    "feature": "purchase_count_7d",
+    "domain": "monetization",
+    "tier": "T2",
+    "source_table": "etl_recharge",
+    "source_columns": [
+      "vopenid",
+      "dteventtime"
+    ],
+    "notes": "COUNT(*) WHERE dteventtime >= NOW()-7d GROUP BY vopenid"
+  },
+  {
+    "feature": "gem_balance_current",
+    "domain": "currency_snapshot",
+    "tier": "T3",
+    "source_table": "etl_moneyflow",
+    "source_columns": [
+      "vopenid",
+      "imoneytype",
+      "balance",
+      "dteventtime"
+    ],
+    "notes": "LAST_VALUE(balance) OVER (PARTITION BY vopenid ORDER BY dteventtime) WHERE imoneytype=gem"
+  },
+  {
+    "feature": "cf_coin_balance_current",
+    "domain": "currency_snapshot",
+    "tier": "T3",
+    "source_table": "etl_moneyflow",
+    "source_columns": [
+      "vopenid",
+      "imoneytype",
+      "balance",
+      "dteventtime"
+    ],
+    "notes": "LAST_VALUE(balance) OVER (PARTITION BY vopenid ORDER BY dteventtime) WHERE imoneytype=cf_coin"
+  },
+  {
+    "feature": "premium_currency_balance",
+    "domain": "currency_snapshot",
+    "tier": "T3",
+    "source_table": "etl_moneyflow",
+    "source_columns": [
+      "vopenid",
+      "imoneytype",
+      "balance",
+      "dteventtime"
+    ],
+    "notes": "LAST_VALUE(balance) per per-game premium currency type; same pattern as gem_balance_current"
+  },
+  {
+    "feature": "session_count_30d",
+    "domain": "engagement",
+    "tier": "T2",
+    "source_table": "etl_login",
+    "source_columns": [
+      "vopenid",
+      "dteventtime"
+    ],
+    "notes": "COUNT(*) WHERE dteventtime >= NOW()-30d GROUP BY vopenid"
+  },
+  {
+    "feature": "session_count_7d",
+    "domain": "engagement",
+    "tier": "T2",
+    "source_table": "etl_login",
+    "source_columns": [
+      "vopenid",
+      "dteventtime"
+    ],
+    "notes": "COUNT(*) WHERE dteventtime >= NOW()-7d GROUP BY vopenid"
+  },
+  {
+    "feature": "session_count_1d",
+    "domain": "engagement",
+    "tier": "T2",
+    "source_table": "etl_login",
+    "source_columns": [
+      "vopenid",
+      "dteventtime"
+    ],
+    "notes": "COUNT(*) WHERE dteventtime >= CURRENT_DATE GROUP BY vopenid"
+  },
+  {
+    "feature": "avg_session_duration_30d",
+    "domain": "engagement",
+    "tier": "T4",
+    "source_table": "etl_logout",
+    "source_columns": [
+      "vopenid",
+      "onlinetime",
+      "dteventtime"
+    ],
+    "notes": "AVG(onlinetime) WHERE dteventtime >= NOW()-30d; join etl_login/etl_logout on vopenid+session"
+  },
+  {
+    "feature": "daily_login_streak_current",
+    "domain": "engagement",
+    "tier": "T3",
+    "source_table": "etl_login",
+    "source_columns": [
+      "vopenid",
+      "dteventtime"
+    ],
+    "notes": "Consecutive-day window: DATE_TRUNC(day, dteventtime), ROW_NUMBER gaps — streak logic"
+  },
+  {
+    "feature": "daily_login_streak_max",
+    "domain": "engagement",
+    "tier": "T3",
+    "source_table": "etl_login",
+    "source_columns": [
+      "vopenid",
+      "dteventtime"
+    ],
+    "notes": "MAX of all consecutive-day run lengths over lifetime; same window pattern as current streak"
+  },
+  {
+    "feature": "mission_completion_rate_30d",
+    "domain": "engagement",
+    "tier": "T5",
+    "source_table": null,
+    "source_columns": null,
+    "notes": "No mission/quest table in cfm_vn bedrock; synthesise in P-4 or ingest from quest system"
+  },
+  {
+    "feature": "mission_completion_count_7d",
+    "domain": "engagement",
+    "tier": "T5",
+    "source_table": null,
+    "source_columns": null,
+    "notes": "Same as mission_completion_rate_30d — no source table; synthesise in P-4"
+  },
+  {
+    "feature": "chapter_progress_max",
+    "domain": "engagement",
+    "tier": "T2",
+    "source_table": "etl_game_detail",
+    "source_columns": [
+      "vopenid",
+      "chapterid"
+    ],
+    "notes": "MAX(CAST(chapterid AS int)) GROUP BY vopenid — TF-1 dependency"
+  },
+  {
+    "feature": "ranked_match_count_lifetime",
+    "domain": "gameplay_cfm",
+    "tier": "T2",
+    "source_table": "etl_game_detail",
+    "source_columns": [
+      "vopenid",
+      "matchmodule",
+      "gameresult"
+    ],
+    "notes": "COUNT(*) WHERE matchmodule=ranked GROUP BY vopenid"
+  },
+  {
+    "feature": "ranked_match_count_30d",
+    "domain": "gameplay_cfm",
+    "tier": "T2",
+    "source_table": "etl_game_detail",
+    "source_columns": [
+      "vopenid",
+      "matchmodule",
+      "dteventtime"
+    ],
+    "notes": "COUNT(*) WHERE matchmodule=ranked AND dteventtime >= NOW()-30d GROUP BY vopenid"
+  },
+  {
+    "feature": "ranked_win_rate_30d",
+    "domain": "gameplay_cfm",
+    "tier": "T2",
+    "source_table": "etl_game_detail",
+    "source_columns": [
+      "vopenid",
+      "matchmodule",
+      "gameresult",
+      "dteventtime"
+    ],
+    "notes": "SUM(gameresult=win)/COUNT(*) WHERE matchmodule=ranked AND dteventtime >= NOW()-30d"
+  },
+  {
+    "feature": "ranked_win_rate_7d",
+    "domain": "gameplay_cfm",
+    "tier": "T2",
+    "source_table": "etl_game_detail",
+    "source_columns": [
+      "vopenid",
+      "matchmodule",
+      "gameresult",
+      "dteventtime"
+    ],
+    "notes": "Same as ranked_win_rate_30d with 7d window"
+  },
+  {
+    "feature": "mmr_current",
+    "domain": "gameplay_cfm",
+    "tier": "T3",
+    "source_table": "etl_game_detail",
+    "source_columns": [
+      "vopenid",
+      "totalladderscore",
+      "dteventtime"
+    ],
+    "notes": "LAST_VALUE(totalladderscore) OVER (PARTITION BY vopenid ORDER BY dteventtime) — latest ladder score"
+  },
+  {
+    "feature": "mmr_drift_7d",
+    "domain": "gameplay_cfm",
+    "tier": "T3",
+    "source_table": "etl_game_detail",
+    "source_columns": [
+      "vopenid",
+      "totalladderscore",
+      "dteventtime"
+    ],
+    "notes": "mmr_current − mmr_7d_ago; LAG(totalladderscore, N) OVER time window — Derived from mmr_current"
+  },
+  {
+    "feature": "rank_points_current",
+    "domain": "gameplay_cfm",
+    "tier": "T3",
+    "source_table": "etl_game_detail",
+    "source_columns": [
+      "vopenid",
+      "gainedladderscore",
+      "totalladderscore",
+      "dteventtime"
+    ],
+    "notes": "LAST_VALUE(totalladderscore) OVER (PARTITION BY vopenid ORDER BY dteventtime)"
+  },
+  {
+    "feature": "rank_tier_current",
+    "domain": "gameplay_cfm",
+    "tier": "T3",
+    "source_table": "etl_game_detail",
+    "source_columns": [
+      "vopenid",
+      "ladderlevel",
+      "dteventtime"
+    ],
+    "notes": "LAST_VALUE(ladderlevel) OVER (PARTITION BY vopenid ORDER BY dteventtime)"
+  },
+  {
+    "feature": "demotion_threshold_distance",
+    "domain": "gameplay_cfm",
+    "tier": "T3",
+    "source_table": "etl_game_detail",
+    "source_columns": [
+      "vopenid",
+      "totalladderscore",
+      "ladderlevel",
+      "dteventtime"
+    ],
+    "notes": "Derived: rank_points_current − tier_floor_score; requires tier floor lookup table"
+  },
+  {
+    "feature": "is_in_demotion_zone",
+    "domain": "gameplay_cfm",
+    "tier": "T3",
+    "source_table": "etl_game_detail",
+    "source_columns": [
+      "vopenid",
+      "totalladderscore",
+      "ladderlevel",
+      "dteventtime"
+    ],
+    "notes": "Derived: demotion_threshold_distance <= 10 — boolean from T3 source"
+  },
+  {
+    "feature": "consecutive_ranked_losses_streak",
+    "domain": "stateful_streaks",
+    "tier": "T3",
+    "source_table": "etl_game_detail",
+    "source_columns": [
+      "vopenid",
+      "matchmodule",
+      "gameresult",
+      "dteventtime"
+    ],
+    "notes": "Window streak: ROW_NUMBER gaps on consecutive losses in ranked mode — resets on win. Dual-tier: also TEE online state"
+  },
+  {
+    "feature": "consecutive_ranked_wins_streak",
+    "domain": "stateful_streaks",
+    "tier": "T3",
+    "source_table": "etl_game_detail",
+    "source_columns": [
+      "vopenid",
+      "matchmodule",
+      "gameresult",
+      "dteventtime"
+    ],
+    "notes": "Inverse of consecutive_ranked_losses_streak — resets on loss. Dual-tier: also TEE online state"
+  },
+  {
+    "feature": "weapon_owned_lifetime",
+    "domain": "inventory_items",
+    "tier": "T5",
+    "source_table": null,
+    "source_columns": null,
+    "notes": "No weapon inventory table in cfm_vn bedrock; synthesise array from item-unlock events in P-4 or ingest from game store API"
+  },
+  {
+    "feature": "weapon_count_owned",
+    "domain": "inventory_items",
+    "tier": "T5",
+    "source_table": null,
+    "source_columns": null,
+    "notes": "LENGTH(weapon_owned_lifetime) — depends on weapon_owned_lifetime (T5)"
+  },
+  {
+    "feature": "housing_items_owned",
+    "domain": "inventory_items",
+    "tier": "T5",
+    "source_table": null,
+    "source_columns": null,
+    "notes": "NTH only — no housing inventory in cfm_vn bedrock; synthesise in P-4"
+  },
+  {
+    "feature": "char_skins_owned",
+    "domain": "inventory_items",
+    "tier": "T5",
+    "source_table": null,
+    "source_columns": null,
+    "notes": "No cosmetics inventory table in cfm_vn bedrock; synthesise in P-4"
+  },
+  {
+    "feature": "specific_pack_owned",
+    "domain": "inventory_items",
+    "tier": "T4",
+    "source_table": "etl_moneyflow",
+    "source_columns": [
+      "vopenid",
+      "reason",
+      "subreason",
+      "imoneytype"
+    ],
+    "notes": "JOIN etl_recharge + etl_moneyflow on vopenid; filter by productid/SKU — requires SKU mapping config"
+  },
+  {
+    "feature": "promoted_weapon_list",
+    "domain": "promotion_config",
+    "tier": "T5",
+    "source_table": null,
+    "source_columns": null,
+    "notes": "Config push from promotion system — no cfm_vn source; ingest via external API or config store in P-4"
+  },
+  {
+    "feature": "promoted_item_active_count",
+    "domain": "promotion_config",
+    "tier": "T5",
+    "source_table": null,
+    "source_columns": null,
+    "notes": "LENGTH(promoted_weapon_list) — depends on promoted_weapon_list (T5)"
+  },
+  {
+    "feature": "weapon_promotion_active_count",
+    "domain": "promotion_config",
+    "tier": "T5",
+    "source_table": null,
+    "source_columns": null,
+    "notes": "Same as promoted_item_active_count — from promotion config; no cfm_vn table; synthesise in P-4"
+  },
+  {
+    "feature": "guild_id",
+    "domain": "social_playstyle",
+    "tier": "T2",
+    "source_table": "etl_game_detail",
+    "source_columns": [
+      "vopenid",
+      "clanid"
+    ],
+    "notes": "LAST_VALUE(clanid) per vopenid — clanid maps to guild_id"
+  },
+  {
+    "feature": "guild_role",
+    "domain": "social_playstyle",
+    "tier": "T5",
+    "source_table": null,
+    "source_columns": null,
+    "notes": "No guild-role table in cfm_vn bedrock; synthesise or ingest from clan system API in P-4"
+  },
+  {
+    "feature": "guild_contribution_30d",
+    "domain": "social_playstyle",
+    "tier": "T2",
+    "source_table": "etl_game_detail",
+    "source_columns": [
+      "vopenid",
+      "gainclanactivity",
+      "dteventtime"
+    ],
+    "notes": "SUM(gainclanactivity) WHERE dteventtime >= NOW()-30d GROUP BY vopenid"
+  },
+  {
+    "feature": "dominant_playstyle",
+    "domain": "social_playstyle",
+    "tier": "T3",
+    "source_table": "etl_game_detail",
+    "source_columns": [
+      "vopenid",
+      "gamemode",
+      "gametype",
+      "dteventtime"
+    ],
+    "notes": "Most frequent gamemode/gametype bucket per vopenid over rolling 30d window — pvp/pve/etc."
+  },
+  {
+    "feature": "pvp_engagement_score",
+    "domain": "social_playstyle",
+    "tier": "T3",
+    "source_table": "etl_game_detail",
+    "source_columns": [
+      "vopenid",
+      "gamemode",
+      "timeskill",
+      "dteventtime"
+    ],
+    "notes": "Composite score from ranked match count + KD metrics over 30d; multi-column window aggregate"
+  },
+  {
+    "feature": "social_engagement_score",
+    "domain": "social_playstyle",
+    "tier": "T4",
+    "source_table": "etl_game_detail",
+    "source_columns": [
+      "vopenid",
+      "gainclanactivity",
+      "isteam"
+    ],
+    "notes": "Join etl_game_detail (clan/team activity) + etl_login (friend count) — cross-table composite"
+  },
+  {
+    "feature": "ugc_creator_score",
+    "domain": "social_playstyle",
+    "tier": "T5",
+    "source_table": null,
+    "source_columns": null,
+    "notes": "NTH UGC system — no cfm_vn source; synthesise in P-4 or ingest from NTH UGC API"
+  },
+  {
+    "feature": "ugc_voter_score",
+    "domain": "social_playstyle",
+    "tier": "T5",
+    "source_table": null,
+    "source_columns": null,
+    "notes": "NTH UGC votes — no cfm_vn source; synthesise in P-4"
+  },
+  {
+    "feature": "mong_hoa_luc_popularity_score",
+    "domain": "social_playstyle",
+    "tier": "T5",
+    "source_table": null,
+    "source_columns": null,
+    "notes": "NTH-9 — pushed via external API; no cfm_vn table; ingest via external signal API in P-4"
+  },
+  {
+    "feature": "anti_fraud_trust_score",
+    "domain": "social_playstyle",
+    "tier": "T5",
+    "source_table": null,
+    "source_columns": null,
+    "notes": "NTH-6 — pushed by anti-fraud system; no cfm_vn source; external signal ingestion required"
+  },
+  {
+    "feature": "cs_flag",
+    "domain": "social_playstyle",
+    "tier": "T5",
+    "source_table": null,
+    "source_columns": null,
+    "notes": "Customer service tags — no cfm_vn source; synthesise from CS ticketing system in P-4"
+  },
+  {
+    "feature": "marketing_consent_flag",
+    "domain": "social_playstyle",
+    "tier": "T5",
+    "source_table": null,
+    "source_columns": null,
+    "notes": "Consent management — no cfm_vn source; synthesise from consent platform in P-4"
+  },
+  {
+    "feature": "is_test_account",
+    "domain": "test_system",
+    "tier": "T5",
+    "source_table": null,
+    "source_columns": null,
+    "notes": "Test account list managed by QA — no cfm_vn source; inject as static allowlist in P-4"
+  },
+  {
+    "feature": "is_internal_user",
+    "domain": "test_system",
+    "tier": "T5",
+    "source_table": null,
+    "source_columns": null,
+    "notes": "Employee/QA list — no cfm_vn source; inject as static allowlist in P-4"
+  },
+  {
+    "feature": "last_iam_received_ts",
+    "domain": "campaign_engagement",
+    "tier": "T5",
+    "source_table": null,
+    "source_columns": null,
+    "notes": "Anti-fatigue: set by Apollo IAM delivery system — no cfm_vn source; synthesise from Hermes IAM event log in P-4"
+  },
+  {
+    "feature": "iam_received_count_24h",
+    "domain": "campaign_engagement",
+    "tier": "T5",
+    "source_table": null,
+    "source_columns": null,
+    "notes": "COUNT of IAM events in last 24h — no cfm_vn source; synthesise from Hermes IAM event log in P-4"
+  },
+  {
+    "feature": "iam_received_count_7d",
+    "domain": "campaign_engagement",
+    "tier": "T5",
+    "source_table": null,
+    "source_columns": null,
+    "notes": "COUNT of IAM events in last 7d — no cfm_vn source; synthesise from Hermes IAM event log in P-4"
+  },
+  {
+    "feature": "last_campaign_id_received",
+    "domain": "campaign_engagement",
+    "tier": "T5",
+    "source_table": null,
+    "source_columns": null,
+    "notes": "LAST campaign_id from IAM delivery system — no cfm_vn source; synthesise from Hermes IAM event log in P-4"
+  }
+]

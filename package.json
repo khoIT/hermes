@@ -20,7 +20,7 @@
     "sim:drip": "pnpm --filter @hermes/catalog-api sim:drip",
     "reset-db": "node scripts/reset-db.cjs",
     "demo:reset": "node scripts/demo-reset.cjs --confirm",
-    "refresh-cfm-data": "tsx infra/trino-mock/refresh.ts"
+    "refresh-cfm-data": "pnpm --filter @hermes/trino-crawler start --"
   },
   "dependencies": {
     "serve": "^14.2.6"

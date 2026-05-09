@@ -1,0 +1,4 @@
+
+> @hermes/trino-crawler@0.1.0 typecheck C:\Users\CPU12830-local\code\hermes\infra\trino-crawler
+> tsc --noEmit
+

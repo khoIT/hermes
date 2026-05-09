@@ -1,0 +1,4 @@
+
+> @hermes/catalog-api@0.0.1 lint C:\Users\CPU12830-local\code\hermes\apps\catalog-api
+> eslint "{src,apps,libs,test}/**/*.ts" --fix
+

@@ -20,28 +20,49 @@ interface SingleBadgeProps {
   style?: React.CSSProperties;
 }
 
-const TIER_COLOR: Record<HermesLatencyTier, string> = {
-  '<1s': T.green600,
-  '<1h': T.amber500,
-  '<1d': T.n500,
+// Substrate dot color: A (Apollo TEE · realtime) = deep red accent · B (batch) = neutral gray.
+// Per reference image (PRD §6.2): orange filled dot for substrate A, gray dot for substrate B.
+const SUBSTRATE_DOT: Record<HermesSubstrate, string> = {
+  A: '#f05a22', // deep red — realtime substrate signature
+  B: T.n500,    // neutral gray — batch substrate
+};
+
+const SUBSTRATE_BG: Record<HermesSubstrate, string> = {
+  A: '#fef0e8', // peach tint — substrate A pill background
+  B: T.n100,    // neutral tint — substrate B pill background
+};
+
+const SUBSTRATE_TEXT: Record<HermesSubstrate, string> = {
+  A: '#a23d18', // darker red text on peach
+  B: T.n700,    // neutral dark text on gray
 };
 
 const SingleBadge = React.memo<SingleBadgeProps>(({ tier, substrate, style }) => (
   <span style={{
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: 4,
     fontFamily: T.fMono,
     fontSize: 11,
     fontWeight: 500,
-    color: TIER_COLOR[tier],
-    background: 'transparent',
-    border: `1px solid currentColor`,
-    borderRadius: 4,
-    padding: '1px 5px',
+    color: SUBSTRATE_TEXT[substrate],
+    background: SUBSTRATE_BG[substrate],
+    border: `1px solid ${SUBSTRATE_BG[substrate]}`,
+    borderRadius: 999,
+    padding: '2px 8px',
     letterSpacing: '0.01em',
     whiteSpace: 'nowrap',
-    lineHeight: 1.5,
+    lineHeight: 1.4,
     ...style,
   }}>
-    {`[${tier} · ${substrate}]`}
+    <span style={{
+      width: 6,
+      height: 6,
+      borderRadius: '50%',
+      background: SUBSTRATE_DOT[substrate],
+      flexShrink: 0,
+    }} aria-hidden />
+    {`${tier} · ${substrate}`}
   </span>
 ));
 SingleBadge.displayName = 'SingleBadge';
