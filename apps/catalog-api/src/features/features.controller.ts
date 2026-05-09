@@ -29,4 +29,38 @@ export class FeaturesController {
   getUsedBy(@Param('name') name: string) {
     return this.svc.getUsedBy(name);
   }
+
+  @Get(':name/audience-count')
+  getAudienceCount(
+    @Param('name') name: string,
+    @Query('op') op: string,
+    @Query('value') value: string,
+  ) {
+    const allowed = new Set(['gt', 'lt', 'gte', 'lte', 'eq']);
+    if (!allowed.has(op)) {
+      throw new Error(`unsupported op: ${op}`);
+    }
+    return this.svc.getAudienceCount(name, op as 'gt'|'lt'|'gte'|'lte'|'eq', value);
+  }
+
+  @Get(':name/quantiles')
+  getQuantiles(@Param('name') name: string) {
+    return this.svc.getQuantiles(name);
+  }
+
+  @Get(':name/samples')
+  getSamples(
+    @Param('name') name: string,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+  ) {
+    return this.svc.getSamples(name, limit);
+  }
+
+  @Get(':name/pipeline-health')
+  getPipelineHealth(
+    @Param('name') name: string,
+    @Query('days', new DefaultValuePipe(30), ParseIntPipe) days: number,
+  ) {
+    return this.svc.getPipelineHealth(name, Math.min(Math.max(days, 1), 180));
+  }
 }

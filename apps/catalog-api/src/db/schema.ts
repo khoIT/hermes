@@ -395,4 +395,5 @@ export {
   featureValues,
   featureDistributionsDaily,
   featureAnalytics180d,
+  featurePipelineRuns,
 } from './schema-features';

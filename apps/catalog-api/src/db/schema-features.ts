@@ -13,7 +13,7 @@
  */
 
 import {
-  pgTable, text, bigint, doublePrecision, timestamp, date, boolean, jsonb, primaryKey, index,
+  pgTable, text, bigint, doublePrecision, timestamp, date, boolean, jsonb, primaryKey, index, uuid, integer,
 } from 'drizzle-orm/pg-core';
 
 // ───────────────────────────────────────────────────────────────────
@@ -23,7 +23,8 @@ import {
 // ───────────────────────────────────────────────────────────────────
 export const rawEventAggregates = pgTable('raw_event_aggregates', {
   sourceTable:    text('source_table').notNull(),                      // e.g. 'etl_login'
-  uid:            text('uid').notNull(),                               // vopenid
+  gameId:         text('game_id').notNull().default('cfm'),            // 'cfm', future: 'ptg', 'nth', 'tf', 'cos'
+  uid:            text('uid').notNull(),                               // vopenid (game-scoped)
   eventDate:      date('event_date').notNull(),
   rowCount:       bigint('row_count', { mode: 'number' }).notNull().default(0),
   numericSum:     doublePrecision('numeric_sum'),
@@ -33,10 +34,11 @@ export const rawEventAggregates = pgTable('raw_event_aggregates', {
   isSynthesized:  boolean('is_synthesized').notNull().default(false),
   computedAt:     timestamp('computed_at', { withTimezone: true }).notNull().defaultNow(),
 }, (t) => ({
-  pk:           primaryKey({ columns: [t.sourceTable, t.uid, t.eventDate] }),
+  pk:           primaryKey({ columns: [t.sourceTable, t.gameId, t.uid, t.eventDate] }),
   byDate:       index('rea_by_date').on(t.eventDate),
   byTableDate:  index('rea_by_table_date').on(t.sourceTable, t.eventDate),
   bySynth:      index('rea_by_synth').on(t.isSynthesized),
+  byGame:       index('rea_by_game').on(t.gameId),
 }));
 
 // ───────────────────────────────────────────────────────────────────
@@ -46,14 +48,33 @@ export const rawEventAggregates = pgTable('raw_event_aggregates', {
 // ───────────────────────────────────────────────────────────────────
 export const featureValues = pgTable('feature_values', {
   featureName:    text('feature_name').notNull(),
+  gameId:         text('game_id').notNull().default('cfm'),
   uid:            text('uid').notNull(),
   valueText:      text('value_text'),                                  // canonical string repr
   valueNumeric:   doublePrecision('value_numeric'),                    // null for enum/bool/string-only
   computedAt:     timestamp('computed_at', { withTimezone: true }).notNull().defaultNow(),
   isSynthesized:  boolean('is_synthesized').notNull().default(false),
 }, (t) => ({
-  pk:        primaryKey({ columns: [t.featureName, t.uid] }),
+  pk:        primaryKey({ columns: [t.featureName, t.gameId, t.uid] }),
   byNumeric: index('fv_by_numeric').on(t.featureName, t.valueNumeric),
+  byGame:    index('fv_by_game').on(t.gameId),
+}));
+
+// ───────────────────────────────────────────────────────────────────
+// feature_pipeline_runs — one row per derivation run (Phase 01 DE
+// pipeline-health endpoint). Lightweight; truncatable.
+// ───────────────────────────────────────────────────────────────────
+export const featurePipelineRuns = pgTable('feature_pipeline_runs', {
+  id:           uuid('id').primaryKey().defaultRandom(),
+  featureName:  text('feature_name').notNull(),
+  sourceTable:  text('source_table'),
+  startedAt:    timestamp('started_at', { withTimezone: true }).notNull().defaultNow(),
+  finishedAt:   timestamp('finished_at', { withTimezone: true }),
+  rowsWritten:  bigint('rows_written', { mode: 'number' }).notNull().default(0),
+  durationMs:   integer('duration_ms'),
+  error:        text('error'),
+}, (t) => ({
+  byFeatureStarted: index('fpr_by_feature_started').on(t.featureName, t.startedAt),
 }));
 
 // ───────────────────────────────────────────────────────────────────
