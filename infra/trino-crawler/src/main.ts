@@ -36,6 +36,8 @@ import { runAudienceCounts } from './steps/02-audience-counts.js';
 import { runSamplePlayers } from './steps/03-sample-players.js';
 import { runEventVolumes } from './steps/04-event-volumes.js';
 import { runSegmentDemographics } from './steps/05-segment-demographics.js';
+import { runRawEventAggregates } from './steps/06-raw-event-aggregates.js';
+import { endPool } from './postgres-client.js';
 
 // ── CLI flag parsing ──────────────────────────────────────────────────────────
 
@@ -47,23 +49,44 @@ type RunMode =
   | 'samples-only'
   | 'events-only'
   | 'demographics-only'
+  | 'raw-events-only'
   | 'all';
 
-function parseArgs(argv: string[]): RunMode {
-  if (argv.includes('--schema-only'))        return 'schema-only';
-  if (argv.includes('--features-only'))      return 'features-only';
-  if (argv.includes('--distributions-only')) return 'distributions-only';
-  if (argv.includes('--audience-only'))      return 'audience-only';
-  if (argv.includes('--samples-only'))       return 'samples-only';
-  if (argv.includes('--events-only'))        return 'events-only';
-  if (argv.includes('--demographics-only'))  return 'demographics-only';
-  return 'all';
+type ParsedArgs = {
+  mode: RunMode;
+  days: number;
+  capRows: number;
+};
+
+function parseArgs(argv: string[]): ParsedArgs {
+  let mode: RunMode = 'all';
+  if (argv.includes('--schema-only'))        mode = 'schema-only';
+  else if (argv.includes('--features-only'))      mode = 'features-only';
+  else if (argv.includes('--distributions-only')) mode = 'distributions-only';
+  else if (argv.includes('--audience-only'))      mode = 'audience-only';
+  else if (argv.includes('--samples-only'))       mode = 'samples-only';
+  else if (argv.includes('--events-only'))        mode = 'events-only';
+  else if (argv.includes('--demographics-only'))  mode = 'demographics-only';
+  else if (argv.includes('--raw-events-only'))    mode = 'raw-events-only';
+
+  // Parse --days=N  and --cap=N  from argv. Defaults: 7d, 500k rows/table.
+  const findVal = (flag: string, fallback: number): number => {
+    const arg = argv.find((a) => a.startsWith(`${flag}=`));
+    if (!arg) return fallback;
+    const n = Number(arg.split('=')[1]);
+    return Number.isFinite(n) && n > 0 ? n : fallback;
+  };
+  return {
+    mode,
+    days:    findVal('--days', 7),
+    capRows: findVal('--cap', 500_000),
+  };
 }
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 
 async function main(): Promise<void> {
-  const mode = parseArgs(process.argv.slice(2));
+  const { mode, days, capRows } = parseArgs(process.argv.slice(2));
 
   // Steps 1-5 are synth-only (no Trino connection needed).
   // Run them first when a step-specific flag is given.
@@ -89,6 +112,12 @@ async function main(): Promise<void> {
   }
   if (mode === 'demographics-only') {
     await runSegmentDemographics();
+    console.log('\n[crawler] Done.');
+    return;
+  }
+  if (mode === 'raw-events-only') {
+    await runRawEventAggregates({ days, capRows });
+    await endPool();
     console.log('\n[crawler] Done.');
     return;
   }
@@ -156,6 +185,14 @@ async function main(): Promise<void> {
     }
   }
 
+  // ── Step 06: Real raw aggregates from Trino (always in 'all' mode) ─────
+  // Runs BEFORE steps 1-5 so synth steps can reference real distributions.
+  if (mode === 'all' && !discoveryResult?.isStub) {
+    console.log('');
+    console.log(`[crawler] Step 06: pulling ${days}d real aggregates into Postgres...`);
+    await runRawEventAggregates({ days, capRows });
+  }
+
   // ── Steps 1-5: Synth fixtures (always run in 'all' mode) ───────────────
   if (mode === 'all') {
     console.log('');
@@ -167,6 +204,7 @@ async function main(): Promise<void> {
     await runSegmentDemographics();
   }
 
+  await endPool();
   console.log('');
   console.log('[crawler] Done.');
 }
