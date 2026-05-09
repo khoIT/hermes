@@ -26,6 +26,9 @@ import { PropensityModelCard } from './_components/propensity-model-card';
 import { DescriptionBlock } from './_components/description-block';
 import { HealthSnapshotCard } from './_components/health-snapshot-card';
 import { computeUsageCounts, getFeatureUsage } from './_logic/usage-count';
+import { SourceProvenanceCard } from './_components/_lm/source-provenance-card';
+import { HealthVerdictCard } from './_components/_lm/health-verdict-card';
+import { ThresholdPlaygroundPanel } from './_components/_lm/threshold-playground-panel';
 
 const USAGE_MAP = computeUsageCounts(allFeatures, allSegments, allCampaigns);
 
@@ -45,8 +48,8 @@ const STATUS_VARIANT: Record<string, 'success' | 'warning' | 'destructive'> = {
   deprecated: 'destructive',
 };
 
-type TabValue = 'overview' | 'analytics' | 'lineage' | 'usedby';
-const ALL_TABS: TabValue[] = ['overview', 'analytics', 'lineage', 'usedby'];
+type TabValue = 'liveops' | 'overview' | 'analytics' | 'lineage' | 'usedby';
+const ALL_TABS: TabValue[] = ['liveops', 'overview', 'analytics', 'lineage', 'usedby'];
 
 export default function FeatureStoreDetailPage() {
   const { name } = useParams<{ name: string }>();
@@ -56,7 +59,7 @@ export default function FeatureStoreDetailPage() {
 
   const tabFromQuery = searchParams.get('tab') as TabValue | null;
   const initialTab: TabValue =
-    tabFromQuery && ALL_TABS.includes(tabFromQuery) ? tabFromQuery : 'overview';
+    tabFromQuery && ALL_TABS.includes(tabFromQuery) ? tabFromQuery : 'liveops';
   const [tab, setTab] = React.useState<TabValue>(initialTab);
 
   const decodedName = name ? decodeURIComponent(name) : '';
@@ -100,6 +103,7 @@ export default function FeatureStoreDetailPage() {
       })`;
 
   const tabs: { value: TabValue; label: string }[] = [
+    { value: 'liveops', label: 'LiveOps' },
     { value: 'overview', label: 'Overview' },
     { value: 'analytics', label: 'Analytics' },
     { value: 'lineage', label: 'Lineage' },
@@ -252,6 +256,13 @@ export default function FeatureStoreDetailPage() {
       {/* ── Body ──────────────────────────────────────────────────────────── */}
       <div style={{ display: 'flex', padding: '28px 40px', gap: 32, alignItems: 'flex-start' }}>
         <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 20 }}>
+          {tab === 'liveops' && (
+            <>
+              <SourceProvenanceCard feature={feature} />
+              <HealthVerdictCard feature={feature} />
+              <ThresholdPlaygroundPanel feature={feature} />
+            </>
+          )}
           {tab === 'overview' && (
             <OverviewTab feature={feature} storageDescription={storageDescription} />
           )}
