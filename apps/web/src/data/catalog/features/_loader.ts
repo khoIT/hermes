@@ -8,12 +8,22 @@
  * fetch fails the snapshot stays empty and Feature Store routes
  * render `<FeaturesUnavailable />`. Other modules read whatever the
  * snapshot holds at the time of subscription.
+ *
+ * Boot semantics: the awaited promise resolves after the FIRST
+ * attempt (success or failure) so React render isn't blocked. On
+ * failure, status flips to 'error' immediately AND a background
+ * retry chain is scheduled (1s, 2s, 4s) — common case is a transient
+ * race between Vite-up and catalog-api-up at startup. If a retry
+ * succeeds, status flips to 'ready' and subscribers re-render
+ * automatically. A new bootFeatureLoader() call (e.g. from the
+ * Retry button) cancels any pending retry and starts fresh.
  */
 
 import type { HermesFeature } from '@hermes/contracts';
 
 const FEATURES_URL = '/api/v1/features';
 const DEFAULT_BOOT_TIMEOUT_MS = 8_000;
+const RETRY_BACKOFF_MS = [1_000, 2_000, 4_000];
 
 export type LoadStatus = 'loading' | 'ready' | 'error';
 
@@ -21,6 +31,8 @@ type Listener = (status: LoadStatus, error?: string) => void;
 const statusListeners = new Set<Listener>();
 let currentStatus: LoadStatus = 'loading';
 let currentError: string | undefined;
+
+let retryTimer: ReturnType<typeof setTimeout> | null = null;
 
 export function getLoadStatus(): { status: LoadStatus; error?: string } {
   return { status: currentStatus, error: currentError };
@@ -39,16 +51,26 @@ function setStatus(next: LoadStatus, err?: string): void {
   statusListeners.forEach((cb) => cb(next, err));
 }
 
-/**
- * Boot-time fetch. Resolves once the snapshot is populated OR an
- * error/timeout puts the loader into the 'error' state. Always
- * resolves — callers don't need to handle rejection.
- */
-export async function bootFeatureLoader(opts: {
+type LoaderOpts = {
   timeoutMs?: number;
   onReady?: (features: HermesFeature[]) => void;
   onError?: (reason: string) => void;
-} = {}): Promise<void> {
+};
+
+/**
+ * Kick off the boot fetch. Resolves after the FIRST attempt resolves
+ * (so render isn't blocked by background retries). Always resolves —
+ * callers don't need to handle rejection.
+ */
+export async function bootFeatureLoader(opts: LoaderOpts = {}): Promise<void> {
+  if (retryTimer) {
+    clearTimeout(retryTimer);
+    retryTimer = null;
+  }
+  await runAttempt(opts, 0);
+}
+
+async function runAttempt(opts: LoaderOpts, retryIdx: number): Promise<void> {
   const timeoutMs = opts.timeoutMs ?? DEFAULT_BOOT_TIMEOUT_MS;
   setStatus('loading');
 
@@ -85,11 +107,22 @@ export async function bootFeatureLoader(opts: {
   } catch (err) {
     clearTimeout(timer);
     const reason = describeFetchFailure(err);
+    const attemptLabel = retryIdx === 0 ? 'boot fetch' : `retry ${retryIdx}/${RETRY_BACKOFF_MS.length}`;
     // eslint-disable-next-line no-console
-    console.error(`[features] boot fetch failed: ${reason}`);
+    console.error(`[features] ${attemptLabel} failed: ${reason}`);
     setStatus('error', reason);
     opts.onError?.(reason);
+    scheduleNextRetry(opts, retryIdx);
   }
+}
+
+function scheduleNextRetry(opts: LoaderOpts, completedRetryIdx: number): void {
+  if (completedRetryIdx >= RETRY_BACKOFF_MS.length) return;
+  const delay = RETRY_BACKOFF_MS[completedRetryIdx];
+  retryTimer = setTimeout(() => {
+    retryTimer = null;
+    void runAttempt(opts, completedRetryIdx + 1);
+  }, delay);
 }
 
 /**
