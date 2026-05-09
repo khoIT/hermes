@@ -186,11 +186,23 @@ export default function AgentsInboxPage() {
         </div>
 
         {/* Stat strip */}
-        <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap', alignItems: 'center' }}>
           <Badge variant="brandSoft">{liveOps.length} opportunities</Badge>
           <Badge variant="warning">{liveDrafts.length} drafts pending review</Badge>
           <Badge variant="info">{allRecommendations.length} experiment recommendations</Badge>
           <Badge variant="secondary">31 actions this week</Badge>
+          <button
+            onClick={() => navigate('/agents/compose')}
+            style={{
+              marginLeft: 'auto',
+              padding: '8px 16px', borderRadius: 8,
+              background: T.brand, color: '#fff', border: 0,
+              cursor: 'pointer', fontFamily: T.fSans, fontSize: 13, fontWeight: 600,
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+            }}
+          >
+            ✦ Describe a problem
+          </button>
         </div>
 
         {/* Tabs */}
@@ -230,6 +242,7 @@ export default function AgentsInboxPage() {
                       onApprove={handleApprove}
                       onEdit={handleEdit}
                       onDismiss={handleDismiss}
+                      onOpenInCompose={id => navigate(`/agents/compose?fromOp=${id}`)}
                       onOpenThread={id => navigate(`/agents/op/${id.replace('ag-op-', '')}`)}
                       style={{ cursor: 'default' }}
                     />

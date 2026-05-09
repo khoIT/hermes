@@ -5,3 +5,4 @@ export { allOpportunities, opCfmLossStreak, opNthWhaleAtRisk, opTfReturningCoach
 export { allDrafts } from './drafts.js';
 export { allRecommendations } from './recommendations.js';
 export { allActivity } from './activity.js';
+export { allPlaybooks, opportunityToPlaybookMap, getPlaybookById } from './compose-playbooks.js';

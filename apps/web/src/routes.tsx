@@ -67,6 +67,7 @@ import AgentsOpportunityDetailPage from './modules/agents/opportunity-detail';
 import AgentsDraftsPage         from './modules/agents/drafts';
 import AgentsActivityPage       from './modules/agents/activity';
 import AgentsSettingsPage       from './modules/agents/settings';
+import AgentsComposePage        from './modules/agents/compose/compose-page';
 
 export function AppRoutes() {
   return (
@@ -103,6 +104,7 @@ export function AppRoutes() {
 
       {/* 18-22 — Agents */}
       <Route path="/agents"             element={<AgentsInboxPage />} />
+      <Route path="/agents/compose"     element={<AgentsComposePage />} />
       <Route path="/agents/drafts"      element={<AgentsDraftsPage />} />
       <Route path="/agents/activity"    element={<AgentsActivityPage />} />
       <Route path="/agents/settings"    element={<AgentsSettingsPage />} />

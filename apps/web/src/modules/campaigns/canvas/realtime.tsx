@@ -22,6 +22,7 @@ import { ForecastBlock }      from './_blocks/forecast-block';
 import { CampaignMaterialsShelf } from './_blocks/materials-shelf';
 import { CampaignHandoffModal } from '../handoff-modal';
 import type { EventSource } from './_blocks/event-source-picker';
+import { readHandoff } from '../../agents/compose/_state/campaign-handoff';
 
 interface SelectedSegment { id: string; name: string; reach: number }
 
@@ -31,11 +32,33 @@ export default function CampaignCanvasRealtimePage() {
   const seedSegmentId               = searchParams.get('seedSegment');
   const fromDraftParam              = searchParams.get('from');
   const draftId                     = fromDraftParam?.startsWith('draft-') ? fromDraftParam.slice(6) : null;
+  const composeSessionId            = fromDraftParam?.startsWith('compose-') ? fromDraftParam.slice(8) : null;
+  const composeHandoff              = React.useMemo(
+    () => composeSessionId ? readHandoff(composeSessionId) : null,
+    [composeSessionId],
+  );
+
+  const initialIntent = composeHandoff?.intent ?? '';
+  const initialGoal: Goal4RType = (() => {
+    const tag = composeHandoff?.fourR?.tag;
+    if (tag === '4r-retain') return 'retain';
+    if (tag === '4r-revenue') return 'revenue';
+    if (tag === '4r-reactivate') return 'reactivate';
+    if (tag === '4r-recruit') return 'recruit';
+    return 'retain';
+  })();
+  const initialSegment: SelectedSegment | null = composeHandoff?.segmentId
+    ? {
+        id: composeHandoff.segmentId,
+        name: composeHandoff.segmentId,
+        reach: composeHandoff.audienceCount ?? 0,
+      }
+    : null;
 
   const [triggerType, setTriggerType] = React.useState<'real-time' | 'scheduled' | 'one-time'>('real-time');
-  const [goal, setGoal]             = React.useState<Goal4RType>('retain');
-  const [intent, setIntent]         = React.useState('');
-  const [segment, setSegment]       = React.useState<SelectedSegment | null>(null);
+  const [goal, setGoal]             = React.useState<Goal4RType>(initialGoal);
+  const [intent, setIntent]         = React.useState(initialIntent);
+  const [segment, setSegment]       = React.useState<SelectedSegment | null>(initialSegment);
   const [eventSource, setEventSource] = React.useState<EventSource | null>(null);
   const [handoffOpen, setHandoffOpen] = React.useState(false);
 
@@ -65,6 +88,28 @@ export default function CampaignCanvasRealtimePage() {
           <TriggerTypeControl value={triggerType} onChange={handleTriggerTypeChange} />
         </div>
       </div>
+
+      {/* Compose handoff banner — shown when ?from=compose-{sessionId} */}
+      {composeHandoff && (
+        <div style={{
+          background: T.brandSoft, borderBottom: `1px solid ${T.brandBorder}`,
+          padding: '10px 40px', display: 'flex', alignItems: 'center', gap: 12,
+        }}>
+          <span style={{ fontFamily: T.fSans, fontSize: 13, color: T.n800 }}>
+            <strong>✦ Authored from agent session {composeHandoff.sessionId}.</strong> Audience + intent + payload pre-filled. Edit freely.
+          </span>
+          <button
+            onClick={() => navigate('/agents/compose')}
+            style={{
+              marginLeft: 'auto', padding: '4px 10px', borderRadius: 6,
+              background: '#fff', color: T.brand, border: `1px solid ${T.brandBorder}`,
+              cursor: 'pointer', fontFamily: T.fSans, fontSize: 11, fontWeight: 600,
+            }}
+          >
+            ← back to agent
+          </button>
+        </div>
+      )}
 
       {/* Agent draft review banner (Agentic §5.4) — shown when ?from=draft-{id} */}
       {draftId && (

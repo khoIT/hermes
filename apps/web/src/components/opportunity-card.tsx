@@ -28,6 +28,7 @@ interface OpportunityCardProps {
   onApprove?: (id: string) => void;
   onEdit?: (id: string) => void;
   onDismiss?: (id: string) => void;
+  onOpenInCompose?: (id: string) => void;
   onOpenThread?: (id: string) => void;
   style?: React.CSSProperties;
 }
@@ -182,6 +183,7 @@ export const OpportunityCard = React.memo<OpportunityCardProps>(({
   onApprove,
   onEdit,
   onDismiss,
+  onOpenInCompose,
   onOpenThread,
   style,
 }) => {
@@ -256,6 +258,20 @@ export const OpportunityCard = React.memo<OpportunityCardProps>(({
         onDismiss={() => onDismiss?.(op.id)}
         disabled={op.status !== 'open'}
       />
+      {/* Compose entry — only on the card mode in the inbox */}
+      {!isDetail && !isEmbedded && onOpenInCompose && op.status === 'open' && (
+        <div style={{ marginTop: 8, textAlign: 'right' }}>
+          <button
+            onClick={() => onOpenInCompose(op.id)}
+            style={{
+              fontFamily: T.fSans, fontSize: 11, color: T.brand,
+              background: 'none', border: 0, padding: 0, cursor: 'pointer',
+            }}
+          >
+            Open in Compose →
+          </button>
+        </div>
+      )}
     </div>
   );
 });
