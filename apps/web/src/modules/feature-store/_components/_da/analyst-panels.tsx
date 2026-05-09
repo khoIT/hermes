@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import { T } from '../../../../theme';
 import { useApiFetch } from './fetch-hook';
 
-interface PanelProps { feature: { name: string; type: string } }
+interface PanelProps { feature: { name: string; displayName: string; type: string } }
 
 const Shell: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
   <div
@@ -177,10 +177,32 @@ const ContextChip: React.FC<{ label: string; value: string }> = ({ label, value 
   </span>
 );
 
-const SampleCard: React.FC<{ s: SampleCardData; isNumeric: boolean }> = ({ s, isNumeric }) => {
+/**
+ * Pick a unit hint from the feature name's suffix. Keeps the card's
+ * value self-explanatory ("6,548 days" rather than just "6,548").
+ */
+function unitFromFeatureName(name: string): string | null {
+  if (name.endsWith('_days') || name.endsWith('_days_ago')) return 'days';
+  if (name.endsWith('_minutes')) return 'min';
+  if (name.endsWith('_seconds') || name.endsWith('_ts'))    return 's';
+  if (name.endsWith('_count') || name.endsWith('_count_lifetime') || name.endsWith('_count_30d') || name.endsWith('_count_7d') || name.endsWith('_count_24h')) return null;
+  if (name.endsWith('_rate') || name.endsWith('_rate_30d') || name.endsWith('_rate_7d')) return null;
+  if (name.endsWith('_streak') || name.endsWith('_streak_current') || name.endsWith('_streak_max')) return 'consecutive';
+  if (name.endsWith('_balance') || name.endsWith('_balance_current')) return 'units';
+  if (name.endsWith('_revenue') || name.endsWith('_revenue_local'))   return null; // already shown as ₫ via formatter
+  if (name.endsWith('_score'))      return null; // 0–100
+  if (name.endsWith('_propensity')) return null; // 0–1
+  return null;
+}
+
+const SampleCard: React.FC<{ s: SampleCardData; featureName: string; isNumeric: boolean }> = ({ s, featureName, isNumeric }) => {
   const pct = s.percentile;
   const tag = pct ?? s.labelGroup ?? 'SAMPLE';
   const tagColor = pct === 'p10' ? T.blue500 : pct === 'p90' ? T.brand : pct ? T.n500 : T.purple500;
+  const unit = isNumeric ? unitFromFeatureName(featureName) : null;
+  const formattedValue = isNumeric && typeof s.value === 'string' && /^\d+(\.\d+)?$/.test(s.value)
+    ? Number(s.value).toLocaleString('en-US')
+    : String(s.value);
 
   return (
     <div
@@ -207,17 +229,27 @@ const SampleCard: React.FC<{ s: SampleCardData; isNumeric: boolean }> = ({ s, is
         >
           {tag}
         </span>
-        <span style={{ fontFamily: T.fMono, fontSize: 10, color: T.n400 }}>{s.uidAnonymized}</span>
+        <span
+          title={`Anonymized vopenid (last-4 of full uid). The leading … indicates truncation for privacy.`}
+          style={{ fontFamily: T.fMono, fontSize: 10, color: T.n500 }}
+        >
+          <span style={{ color: T.n400 }}>user</span> {s.uidAnonymized}
+        </span>
       </div>
-      <div
-        style={{
-          fontFamily: T.fMono,
-          fontSize:   isNumeric ? 18 : 14,
-          fontWeight: 700,
-          color:      T.n900,
-        }}
-      >
-        {String(s.value)}
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+        <span
+          style={{
+            fontFamily: T.fMono,
+            fontSize:   isNumeric ? 18 : 14,
+            fontWeight: 700,
+            color:      T.n900,
+          }}
+        >
+          {formattedValue}
+        </span>
+        {unit && (
+          <span style={{ fontFamily: T.fMono, fontSize: 11, color: T.n500 }}>{unit}</span>
+        )}
       </div>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
         {s.context.lifecycleStage && <ContextChip label="stage:"  value={s.context.lifecycleStage} />}
@@ -259,20 +291,24 @@ export const SampleValueCardsPanel: React.FC<PanelProps> = ({ feature }) => {
             style={{
               fontSize:     11,
               color:        T.n500,
-              marginBottom: 10,
-              lineHeight:   1.5,
+              marginBottom: 12,
+              lineHeight:   1.55,
             }}
           >
-            Each card is a real user picked at a percentile of the distribution
-            (or one per top label). Cohort chips show who they are — stage,
-            VIP tier, region, last-login recency, lifetime spend. Use these to
-            sanity-check what a value of{' '}
-            <code style={{ fontFamily: T.fMono }}>{String(data.samples[0]?.value ?? '?')}</code>{' '}
-            actually means in terms of player profile.
+            <strong style={{ color: T.n800 }}>How to read each card →</strong>{' '}
+            top-left is the <strong>distribution percentile</strong> (p10 = users near the
+            low end, p90 = near the high end); top-right is an{' '}
+            <strong>anonymized user</strong> (last-4 of their <code style={{ fontFamily: T.fMono }}>vopenid</code>).
+            The big number is <strong>that user's value</strong> for{' '}
+            <code style={{ fontFamily: T.fMono }}>{feature.name}</code>{' '}
+            ({feature.displayName}). Chips below show the user's
+            cohort — lifecycle stage, VIP tier, region, last-login recency,
+            lifetime spend. Use these to sanity-check what a value actually
+            means in player-profile terms.
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 8 }}>
             {data.samples.map((s, i) => (
-              <SampleCard key={`${s.uidAnonymized}-${i}`} s={s} isNumeric={isNumeric} />
+              <SampleCard key={`${s.uidAnonymized}-${i}`} s={s} featureName={feature.name} isNumeric={isNumeric} />
             ))}
           </div>
         </>
