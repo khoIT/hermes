@@ -19,6 +19,7 @@
 import {
   bulkUpsertFeatureValues,
   deleteFeatureValues,
+  startPipelineRun,
   streamAllAggregates,
   type FeatureValueRow,
   type RawAggregateRow,
@@ -58,9 +59,11 @@ async function emitForUid(
 
 async function runOneDerivation(d: Derivation): Promise<PerFeatureResult> {
   const start = Date.now();
-  await deleteFeatureValues(d.feature);
-
   const sourceTable = d.sourceTables[0]; // single-source assumption (see header)
+
+  const run = await startPipelineRun({ featureName: d.feature, sourceTable });
+
+  await deleteFeatureValues(d.feature);
 
   let uidsScanned = 0;
   let valuesWritten = 0;
@@ -68,6 +71,7 @@ async function runOneDerivation(d: Derivation): Promise<PerFeatureResult> {
   let currentUid = '';
   let currentRows: RawAggregateRow[] = [];
 
+  try {
   for await (const chunk of streamAllAggregates(sourceTable)) {
     for (const row of chunk) {
       if (row.uid !== currentUid) {
@@ -96,6 +100,7 @@ async function runOneDerivation(d: Derivation): Promise<PerFeatureResult> {
     valuesWritten += await bulkUpsertFeatureValues(outBuffer);
   }
 
+  await run.finish(valuesWritten);
   return {
     feature: d.feature,
     sourceTables: d.sourceTables,
@@ -103,6 +108,10 @@ async function runOneDerivation(d: Derivation): Promise<PerFeatureResult> {
     valuesWritten,
     durationMs: Date.now() - start,
   };
+  } catch (err) {
+    await run.finish(valuesWritten, err instanceof Error ? err.message : String(err));
+    throw err;
+  }
 }
 
 export async function runComputeFeatureValues(): Promise<PerFeatureResult[]> {

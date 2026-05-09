@@ -25,6 +25,7 @@ import {
   upsertFeatureAnalytics,
   bulkUpsertFeatureDistributions,
   deleteFeatureDistributions,
+  startPipelineRun,
   type FeatureDistributionRow,
 } from '../postgres-client.js';
 import { makeRng } from '../synthesizers/seeded-rng.js';
@@ -252,12 +253,16 @@ function readSeed(): Record<string, SeedAnalytics> {
 // ── Main runners ───────────────────────────────────────────────────
 
 async function processRealFeature(feature: string): Promise<'real' | 'hybrid'> {
+  const run = await startPipelineRun({ featureName: feature, sourceTable: 'analytics_rollup' });
+  let rowsWritten = 0;
+  try {
   const snapshot = await readFeatureValueSnapshot(feature);
   await deleteFeatureDistributions(feature);
 
   const isSynthFlag = !snapshot.isRealOnly;
   const distRows = build30dDistributionRows(feature, snapshot, isSynthFlag);
   await bulkUpsertFeatureDistributions(distRows);
+  rowsWritten = distRows.length;
 
   const drift = detectDriftEvents(distRows);
   const totalUids = snapshot.totalUids;
@@ -281,7 +286,12 @@ async function processRealFeature(feature: string): Promise<'real' | 'hybrid'> {
     lastSlaMissAt:         null,
     source,
   });
+  await run.finish(rowsWritten);
   return source;
+  } catch (err) {
+    await run.finish(rowsWritten, err instanceof Error ? err.message : String(err));
+    throw err;
+  }
 }
 
 /** Round a possibly-fractional value to bigint-compatible integer; null passthrough. */

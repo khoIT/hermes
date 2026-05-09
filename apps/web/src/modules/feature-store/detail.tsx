@@ -29,6 +29,13 @@ import { computeUsageCounts, getFeatureUsage } from './_logic/usage-count';
 import { SourceProvenanceCard } from './_components/_lm/source-provenance-card';
 import { HealthVerdictCard } from './_components/_lm/health-verdict-card';
 import { ThresholdPlaygroundPanel } from './_components/_lm/threshold-playground-panel';
+import {
+  QuantileStripPanel, CoverageSegmentationPanel, SampleValueCardsPanel,
+  CorrelatedFeaturesPanel, OutlierExamplesPanel,
+} from './_components/_da/analyst-panels';
+import {
+  PipelineHealthTimelinePanel, CostLatencyPanel, LineageV2Panel, BackfillHistoryPanel,
+} from './_components/_de/engineer-panels';
 
 const USAGE_MAP = computeUsageCounts(allFeatures, allSegments, allCampaigns);
 
@@ -48,8 +55,8 @@ const STATUS_VARIANT: Record<string, 'success' | 'warning' | 'destructive'> = {
   deprecated: 'destructive',
 };
 
-type TabValue = 'liveops' | 'overview' | 'analytics' | 'lineage' | 'usedby';
-const ALL_TABS: TabValue[] = ['liveops', 'overview', 'analytics', 'lineage', 'usedby'];
+type TabValue = 'liveops' | 'analyst' | 'engineer' | 'overview' | 'analytics' | 'lineage' | 'usedby';
+const ALL_TABS: TabValue[] = ['liveops', 'analyst', 'engineer', 'overview', 'analytics', 'lineage', 'usedby'];
 
 export default function FeatureStoreDetailPage() {
   const { name } = useParams<{ name: string }>();
@@ -103,7 +110,9 @@ export default function FeatureStoreDetailPage() {
       })`;
 
   const tabs: { value: TabValue; label: string }[] = [
-    { value: 'liveops', label: 'LiveOps' },
+    { value: 'liveops',  label: 'LiveOps' },
+    { value: 'analyst',  label: 'Analyst' },
+    { value: 'engineer', label: 'Engineer' },
     { value: 'overview', label: 'Overview' },
     { value: 'analytics', label: 'Analytics' },
     { value: 'lineage', label: 'Lineage' },
@@ -261,6 +270,23 @@ export default function FeatureStoreDetailPage() {
               <SourceProvenanceCard feature={feature} />
               <HealthVerdictCard feature={feature} />
               <ThresholdPlaygroundPanel feature={feature} />
+            </>
+          )}
+          {tab === 'analyst' && (
+            <>
+              <QuantileStripPanel        feature={feature} />
+              <CoverageSegmentationPanel feature={feature} />
+              <SampleValueCardsPanel     feature={feature} />
+              <CorrelatedFeaturesPanel   feature={feature} />
+              <OutlierExamplesPanel      feature={feature} />
+            </>
+          )}
+          {tab === 'engineer' && (
+            <>
+              <PipelineHealthTimelinePanel feature={feature} />
+              <CostLatencyPanel            feature={feature} />
+              <LineageV2Panel              feature={feature} />
+              <BackfillHistoryPanel        feature={feature} />
             </>
           )}
           {tab === 'overview' && (

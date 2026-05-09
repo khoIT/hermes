@@ -240,6 +240,43 @@ export type FeatureAnalyticsRow = {
   source:                'real' | 'hybrid' | 'synth';
 };
 
+// ── feature_pipeline_runs ──────────────────────────────────────────
+
+export type PipelineRunStart = {
+  featureName:  string;
+  sourceTable:  string | null;
+};
+
+/**
+ * Record a pipeline run row. Returns id; close() the run when done.
+ * Used by step 08 (per derivation) and step 09 (per analytics rollup).
+ */
+export async function startPipelineRun(args: PipelineRunStart): Promise<{
+  id: string;
+  startedAt: number;
+  finish: (rowsWritten: number, error?: string | null) => Promise<void>;
+}> {
+  const pool = getPool();
+  const startedAt = Date.now();
+  const res = await pool.query<{ id: string }>(
+    `INSERT INTO feature_pipeline_runs (feature_name, source_table) VALUES ($1, $2) RETURNING id`,
+    [args.featureName, args.sourceTable],
+  );
+  const id = res.rows[0]?.id;
+  if (!id) throw new Error('feature_pipeline_runs INSERT did not return id');
+  return {
+    id,
+    startedAt,
+    finish: async (rowsWritten: number, error: string | null = null) => {
+      const durationMs = Date.now() - startedAt;
+      await pool.query(
+        `UPDATE feature_pipeline_runs SET finished_at = NOW(), rows_written = $2, duration_ms = $3, error = $4 WHERE id = $1`,
+        [id, rowsWritten, durationMs, error],
+      );
+    },
+  };
+}
+
 export async function upsertFeatureAnalytics(row: FeatureAnalyticsRow): Promise<void> {
   const pool = getPool();
   await pool.query(
