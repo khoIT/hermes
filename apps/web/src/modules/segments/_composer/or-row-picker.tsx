@@ -12,6 +12,7 @@ import { LatencyBadge } from '../../../components/latency-badge';
 import { DriftBadge } from '../../../components/drift-badge';
 import { GamesChipCluster } from '../../feature-store/_components/games-chip-cluster';
 import { PlatformPropensityChip } from '../../feature-store/_components/platform-propensity-chip';
+import { PickerModalShell } from './picker-modal-shell';
 
 interface Props {
   /** Features already in the target group — used to compute pairing suggestions */
@@ -109,13 +110,7 @@ export const OrRowPicker = React.memo<Props>(({ groupFeatures, onSelect, onClose
   }, [search, groupFeatures]);
 
   return (
-    <div style={{
-      position: 'fixed', top: 0, right: 0, bottom: 0,
-      width: 380, zIndex: 350,
-      background: '#fff', borderLeft: `1px solid ${T.n200}`,
-      boxShadow: '-8px 0 24px rgba(0,0,0,0.10)',
-      display: 'flex', flexDirection: 'column',
-    }}>
+    <PickerModalShell onClose={onClose} maxWidth={520}>
       {/* Header */}
       <div style={{ padding: '16px 16px 12px', borderBottom: `1px solid ${T.n100}` }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
@@ -172,7 +167,7 @@ export const OrRowPicker = React.memo<Props>(({ groupFeatures, onSelect, onClose
           </p>
         )}
       </div>
-    </div>
+    </PickerModalShell>
   );
 });
 OrRowPicker.displayName = 'OrRowPicker';

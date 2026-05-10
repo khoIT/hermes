@@ -12,6 +12,7 @@ import { LatencyBadge } from '../../../components/latency-badge';
 import { DriftBadge } from '../../../components/drift-badge';
 import { GamesChipCluster } from '../../feature-store/_components/games-chip-cluster';
 import { PlatformPropensityChip } from '../../feature-store/_components/platform-propensity-chip';
+import { PickerModalShell } from './picker-modal-shell';
 
 const EXCLUSION_TEMPLATES: Array<{ label: string; feature: string; featureType: string; operator: string; value: unknown }> = [
   { label: 'Paying users',          feature: 'is_paying_user_lifetime',  featureType: 'bool',   operator: 'is_true',  value: true },
@@ -82,13 +83,7 @@ export const ExclusionPicker = React.memo<Props>(({ existingFeatures = [], onSel
   }, [search, existingFeatures]);
 
   return (
-    <div style={{
-      position: 'fixed', top: 0, right: 0, bottom: 0,
-      width: 380, zIndex: 350,
-      background: '#fff', borderLeft: `1px solid ${T.n200}`,
-      boxShadow: '-8px 0 24px rgba(0,0,0,0.10)',
-      display: 'flex', flexDirection: 'column',
-    }}>
+    <PickerModalShell onClose={onClose} maxWidth={520}>
       {/* Header */}
       <div style={{ padding: '16px 16px 12px', borderBottom: `1px solid ${T.n100}` }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
@@ -152,7 +147,7 @@ export const ExclusionPicker = React.memo<Props>(({ existingFeatures = [], onSel
           </p>
         )}
       </div>
-    </div>
+    </PickerModalShell>
   );
 });
 ExclusionPicker.displayName = 'ExclusionPicker';

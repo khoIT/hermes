@@ -13,6 +13,7 @@ import { LatencyBadge } from '../../../components/latency-badge';
 import { DriftBadge } from '../../../components/drift-badge';
 import { GamesChipCluster } from '../../feature-store/_components/games-chip-cluster';
 import { PlatformPropensityChip } from '../../feature-store/_components/platform-propensity-chip';
+import { PickerModalShell } from './picker-modal-shell';
 
 const DOMAIN_ORDER = [
   'identity-lifecycle', 'monetization', 'currency', 'engagement',
@@ -109,13 +110,7 @@ export const ConditionPicker = React.memo<Props>(({ existingFeatures = [], onSel
   );
 
   return (
-    <div style={{
-      position: 'fixed', top: 0, right: 0, bottom: 0,
-      width: 380, zIndex: 350,
-      background: '#fff', borderLeft: `1px solid ${T.n200}`,
-      boxShadow: '-8px 0 24px rgba(0,0,0,0.10)',
-      display: 'flex', flexDirection: 'column',
-    }}>
+    <PickerModalShell onClose={onClose} maxWidth={520}>
       {/* Header */}
       <div style={{ padding: '16px 16px 0', borderBottom: `1px solid ${T.n100}`, paddingBottom: 12 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
@@ -224,7 +219,7 @@ export const ConditionPicker = React.memo<Props>(({ existingFeatures = [], onSel
           </div>
         </div>
       )}
-    </div>
+    </PickerModalShell>
   );
 });
 ConditionPicker.displayName = 'ConditionPicker';

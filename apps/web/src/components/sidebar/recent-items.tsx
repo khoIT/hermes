@@ -18,18 +18,22 @@ interface RecentItemsProps {
   visible?: number;
   /** Optional uppercase subheader rendered above the list when items exist. */
   subheader?: string;
+  /** Optional filter predicate — useful for hiding dangling/orphan recents. */
+  filter?: (item: { id: string; title: string }) => boolean;
 }
 
-export function RecentItems({ module, seeAllTo, hrefFor, visible = 4, subheader }: RecentItemsProps) {
+export function RecentItems({ module, seeAllTo, hrefFor, visible = 4, subheader, filter }: RecentItemsProps) {
   // Re-read on render — sidebar mounts once, so we expose a cheap re-fetch
   // hook via window event for other code paths to trigger.
-  const [items, setItems] = React.useState(() => getRecent(module));
+  const [rawItems, setItems] = React.useState(() => getRecent(module));
 
   React.useEffect(() => {
     const handler = () => setItems(getRecent(module));
     window.addEventListener('hermes:recent-changed', handler);
     return () => window.removeEventListener('hermes:recent-changed', handler);
   }, [module]);
+
+  const items = filter ? rawItems.filter(i => filter({ id: i.id, title: i.title })) : rawItems;
 
   if (items.length === 0) {
     return (

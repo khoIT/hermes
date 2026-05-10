@@ -19,6 +19,25 @@ import { SidebarFeatureStoreSection } from './sidebar-feature-store-section';
 import { CollapseToggle } from './collapse-toggle';
 import { getCollapsed, onCollapsedChange } from '../../utils/sidebar-collapsed-store';
 import { getSidebarSectionForPath, setSectionExpanded } from '../../utils/recent-items-store';
+import { allSegments } from '../../data/catalog/segments';
+
+const CANONICAL_SEGMENT_IDS = new Set(allSegments.map(s => s.id));
+
+/**
+ * Filter for the segments recent-items list — drops "dangling" entries:
+ *   - URL-only visits whose title fell back to the id (title === id)
+ *   - ad-hoc backend ids (`s_<digits>`) that aren't in the canonical catalog
+ *   - stub ids (`seg-stub-<...>`) from offline createSegment fallback
+ * Real chat-action-card creations land in the catalog (or carry a real
+ * displayName from the action card's name field) and pass through.
+ */
+function isCanonicalSegmentRecent(item: { id: string; title: string }): boolean {
+  if (CANONICAL_SEGMENT_IDS.has(item.id)) return true;
+  if (item.title === item.id) return false;
+  if (/^s_\d+$/.test(item.id)) return false;
+  if (item.id.startsWith('seg-stub-')) return false;
+  return true;
+}
 
 const SIDEBAR_WIDTH_EXPANDED = 260;
 const SIDEBAR_WIDTH_COLLAPSED = 60;
@@ -108,6 +127,7 @@ export function Sidebar() {
             module="segments"
             seeAllTo="/segments"
             hrefFor={id => `/segments/${id}`}
+            filter={isCanonicalSegmentRecent}
           />
         </SidebarSection>
 

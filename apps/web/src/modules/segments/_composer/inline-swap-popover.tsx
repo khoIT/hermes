@@ -104,6 +104,9 @@ export const InlineSwapPopover = React.memo<Props>(({
       border: `1px solid ${T.n200}`, borderRadius: 10,
       boxShadow: '0 8px 24px rgba(0,0,0,0.14)',
       padding: '12px 14px', minWidth: 280, maxWidth: 340,
+      // Cap height so a tall list (4 alternatives + browse footer) never
+      // clips below the viewport, even when the rail is open.
+      maxHeight: 'min(70vh, 480px)', overflowY: 'auto',
     }}>
       {/* Header */}
       <div style={{

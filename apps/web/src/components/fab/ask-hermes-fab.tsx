@@ -11,7 +11,7 @@
  */
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import { MessageCircle, ChevronRight } from 'lucide-react';
+import { MessageCircle } from 'lucide-react';
 import { T, Icon } from '../../theme';
 import { isRailHidden } from '../../utils/chat-rail-store';
 
@@ -23,17 +23,21 @@ interface AskHermesFabProps {
 export function AskHermesFab({ open, onToggle }: AskHermesFabProps) {
   const { pathname } = useLocation();
   if (isRailHidden(pathname)) return null;
+  // Hide when the rail is already open — its own header X button is the
+  // canonical close affordance, and the FAB would otherwise overlap the
+  // rail's bottom-right input area.
+  if (open) return null;
 
   const label = 'Ask Hermes';
-  const tooltip = open ? 'Hide chat rail' : 'Open chat rail';
-  const IconCmp = open ? ChevronRight : MessageCircle;
+  const tooltip = 'Open chat rail';
+  const IconCmp = MessageCircle;
 
   return (
     <button
       onClick={onToggle}
       title={tooltip}
       aria-label={tooltip}
-      aria-pressed={open}
+      aria-pressed={false}
       style={{
         position: 'fixed', right: 24, bottom: 24, zIndex: 900,
         height: 44, padding: '0 18px 0 14px', borderRadius: 9999,
