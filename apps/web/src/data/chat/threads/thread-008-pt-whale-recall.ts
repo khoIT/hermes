@@ -10,6 +10,23 @@ const T1: ChatMessage = {
   credits: 4,
   createdAt: '2026-05-09T15:18:00.000Z',
   sections: [
+    { type: 'tool_call', payload: {
+      fn: 'query_trino',
+      args: [
+        { name: 'catalog', value: 'pt_global' },
+        { name: 'feature', value: 'lifetime_revenue_local' },
+        { name: 'min_usd', value: 500 },
+        { name: 'last_login', value: '7..14d' },
+      ],
+      result: '3,420 whales · $5.7M LTV',
+      durationMs: 760,
+    } },
+    { type: 'tool_call', payload: {
+      fn: 'load_experiment',
+      args: [{ name: 'id', value: 'pt_whale_recall_jan_2026' }],
+      result: '+$24..$38 ARPDAU · n=4,180 · p<0.01',
+      durationMs: 320,
+    } },
     {
       type: 'narrative',
       payload: {

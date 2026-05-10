@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { MessageSquare, ChevronRight } from 'lucide-react';
 import { T, Icon } from '../../theme';
 import { listThreads } from '../../utils/chat-store';
+import { useT } from '../../i18n/i18n-provider';
 
 interface ThreadEntry {
   id: string;
@@ -30,6 +31,7 @@ function relativeTime(iso: string): string {
 
 export function RecentThreadsPanel() {
   const navigate = useNavigate();
+  const t = useT();
   const [threads, setThreads] = React.useState<ThreadEntry[]>([]);
 
   React.useEffect(() => {
@@ -41,12 +43,15 @@ export function RecentThreadsPanel() {
   }, []);
 
   return (
-    <div style={{
-      background: '#fff',
-      border: `1px solid ${T.n200}`,
-      borderRadius: 10,
-      padding: '20px 20px 14px',
-    }}>
+    <div
+      data-hermes-surface="card"
+      style={{
+        background: T.surface,
+        border: `1px solid ${T.n200}`,
+        borderRadius: 10,
+        padding: '20px 20px 14px',
+      }}
+    >
       <h2 style={{
         fontFamily: T.fSans,
         fontSize: 16,
@@ -54,7 +59,7 @@ export function RecentThreadsPanel() {
         color: T.n950,
         margin: '0 0 12px',
       }}>
-        Recent threads
+        {t('welcome.recentThreads.title')}
       </h2>
       {threads.length === 0 ? (
         <div style={{
@@ -63,7 +68,7 @@ export function RecentThreadsPanel() {
           fontSize: 13,
           fontFamily: T.fSans,
         }}>
-          No chats yet. Ask Hermes a question to get started.
+          {t('welcome.recentThreads.empty')}
         </div>
       ) : (
         threads.map(t => (

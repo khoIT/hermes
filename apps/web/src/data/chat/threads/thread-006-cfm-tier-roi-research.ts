@@ -10,6 +10,26 @@ const T1: ChatMessage = {
   credits: 4,
   createdAt: '2026-05-09T11:14:00.000Z',
   sections: [
+    { type: 'tool_call', payload: {
+      fn: 'query_trino',
+      args: [
+        { name: 'catalog', value: 'cfm_vn' },
+        { name: 'event',   value: 'CFM-11' },
+        { name: 'tiers',   value: '[T1,T2,T3,T4,T5]' },
+        { name: 'metrics', value: '["reward_cost","arpdau","d14_retention"]' },
+      ],
+      result: '5 tiers × 3 metrics · 3-week window',
+      durationMs: 860,
+    } },
+    { type: 'tool_call', payload: {
+      fn: 'compute_roi',
+      args: [
+        { name: 'cost_field',   value: 'reward_cost_usd' },
+        { name: 'revenue_field', value: 'arpdau_lift_usd' },
+      ],
+      result: 'T1=+1.4 · T2=−0.3 · T3=−0.1 · T4=+1.7 · T5=n/a',
+      durationMs: 240,
+    } },
     {
       type: 'narrative',
       payload: {

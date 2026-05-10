@@ -30,7 +30,7 @@ import { threadDemoLivops2026 } from '../data/chat/threads/thread-demo-livops-20
 import { threadDemoAgentLivops2026 } from '../data/chat/threads/thread-demo-agent-livops-2026';
 import { pushRecent, clearRecent, getRecent } from './recent-items-store';
 
-const BOOTSTRAP_VERSION = 'v11-260510-2300';
+const BOOTSTRAP_VERSION = 'v12-260510-2330';
 const VERSION_KEY = 'hermes.chat.bootstrap.version';
 
 // Stale segment-recent IDs to scrub on each bootstrap version bump.

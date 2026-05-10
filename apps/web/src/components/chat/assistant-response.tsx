@@ -121,10 +121,8 @@ export function AssistantResponse({
             );
           case 'soft_hint':
             return <SoftHint key={i} text={(s.payload as SoftHintPayload).text} />;
-          case 'tool_call': {
-            const p = s.payload as ToolCallPayload;
-            return <ToolCallChip key={i} label={p.label} detail={p.detail} status={p.status} />;
-          }
+          case 'tool_call':
+            return <ToolCallChip key={i} {...(s.payload as ToolCallPayload)} />;
           case 'provenance':
             return <ProvenanceCaption key={i} text={(s.payload as ProvenancePayload).text} />;
           default:

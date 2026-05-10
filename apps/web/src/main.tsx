@@ -9,7 +9,10 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import './styles/colors-and-type.css';
+import './theme-tokens.css';
 import App from './App';
+import { ThemeProvider } from './utils/theme-provider';
+import { I18nProvider } from './i18n/i18n-provider';
 import { bootFeatureLoader, _setLoadedFeatures } from './data/catalog/features/index';
 
 const rootEl = document.getElementById('root');
@@ -22,7 +25,11 @@ void bootFeatureLoader({
 }).then(() => {
   createRoot(rootEl).render(
     <React.StrictMode>
-      <App />
+      <ThemeProvider>
+        <I18nProvider>
+          <App />
+        </I18nProvider>
+      </ThemeProvider>
     </React.StrictMode>,
   );
 });

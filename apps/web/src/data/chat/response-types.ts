@@ -127,17 +127,31 @@ export interface SoftHintPayload {
 }
 
 /**
- * Tool-call chip — single line surfacing a query/computation the agent ran.
- * Renders as a pill with mono font, dim background, optional duration/row count.
- * Used to make the "agent doing work" feel concrete in the agent-first demo arc.
+ * Tool-call chip — structured function-call surfacing a query/computation the
+ * agent ran. Renders as: `⚡ fn(arg=val, arg=val) → result · duration`.
+ *
+ * Buffering: when the chip first mounts, it animates a "running" state for
+ * `durationMs` (default 900ms) before flipping to "done". Makes the agent
+ * feel like it is actually executing rather than pre-canned.
+ *
+ * Used in agent-first demo path + (now) the canonical analyst arc + research
+ * threads. Replaces the legacy single-line `label/detail` shape from the
+ * 260510-2300 cook.
  */
 export interface ToolCallPayload {
-  /** Short label, shown in mono. e.g. "Querying cfm_vn.ranked_match" */
-  label: string;
-  /** Optional postfix detail. e.g. "n=2.1M · 1.4s" */
-  detail?: string;
-  /** Status — controls dot color. Default 'done'. */
-  status?: 'running' | 'done';
+  /** Function name. e.g. "query_trino", "compute_decomp", "shapley_attribution" */
+  fn: string;
+  /** Structured args — rendered inline as `name="value"`. Order preserved. */
+  args?: Array<{ name: string; value: string | number | boolean }>;
+  /** Result summary. e.g. "2.1M rows · cached:false" */
+  result?: string;
+  /** Buffer duration in ms. Drives the running→done animation. Default 900. */
+  durationMs?: number;
+  /** Optional status override. Default behavior: starts 'running', flips
+   *  to 'done' after durationMs. Set 'done' to skip animation. */
+  status?: 'running' | 'done' | 'error';
+  /** Optional error message (only shown when status='error'). */
+  error?: string;
 }
 
 /**

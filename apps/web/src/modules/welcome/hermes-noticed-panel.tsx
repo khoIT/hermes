@@ -13,43 +13,41 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronRight, Activity } from 'lucide-react';
 import { T, Icon } from '../../theme';
+import { useT } from '../../i18n/i18n-provider';
 
 const AGENT_THREAD_ID = 'thread-demo-agent-livops-2026';
 
 interface NoticedCard {
-  /** Agent timestamp — short, human ("06:14 today", "3h ago"). */
   detectedAt: string;
-  /** First line of the observation — the lede. */
-  headline: string;
-  /** Two-sentence body, observation-led, hedged. Variant A voice. */
-  body: string;
-  /** CTA label, observation-framed. */
-  cta: string;
-  /** Route on click. */
+  headlineKey: 'welcome.hermesNoticed.cardHeadline';
+  bodyKey: 'welcome.hermesNoticed.cardBody';
+  ctaKey: 'welcome.hermesNoticed.cta';
   threadId: string;
 }
 
 const CARDS: NoticedCard[] = [
   {
     detectedAt: '06:14 today',
-    headline: 'CFM ARPDAU is down 7% vs last 4 weeks.',
-    body:
-      'Traced to mid-skill ranked players hitting loss-streaks ≥ 5 — that bucket grew 3.2× this quarter. ' +
-      'ARPPU is flat; this is a conversion problem, not a spend problem.',
-    cta: 'Investigate →',
-    threadId: AGENT_THREAD_ID,
+    headlineKey: 'welcome.hermesNoticed.cardHeadline',
+    bodyKey:     'welcome.hermesNoticed.cardBody',
+    ctaKey:      'welcome.hermesNoticed.cta',
+    threadId:    AGENT_THREAD_ID,
   },
 ];
 
 export function HermesNoticedPanel() {
   const navigate = useNavigate();
+  const t = useT();
   return (
-    <div style={{
-      background: '#fff',
-      border: `1px solid ${T.n200}`,
-      borderRadius: 10,
-      padding: '20px 20px 14px',
-    }}>
+    <div
+      data-hermes-surface="card"
+      style={{
+        background: T.surface,
+        border: `1px solid ${T.n200}`,
+        borderRadius: 10,
+        padding: '20px 20px 14px',
+      }}
+    >
       <div style={{
         display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14,
       }}>
@@ -68,25 +66,34 @@ export function HermesNoticedPanel() {
           margin: 0,
           letterSpacing: '-0.005em',
         }}>
-          Hermes noticed
+          {t('welcome.hermesNoticed.title')}
         </h2>
         <span style={{
           fontFamily: T.fMono, fontSize: 10, color: T.n500,
           background: T.n50, padding: '2px 8px', borderRadius: 4,
           marginLeft: 4, letterSpacing: '0.04em',
         }}>
-          AGENT-FIRST DEMO
+          {t('welcome.hermesNoticed.tag')}
         </span>
       </div>
 
       {CARDS.map((c, i) => (
-        <NoticedRow key={i} card={c} onClick={() => navigate(`/chat/${c.threadId}`)} />
+        <NoticedRow
+          key={i}
+          card={c}
+          headline={t(c.headlineKey)}
+          body={t(c.bodyKey)}
+          cta={t(c.ctaKey)}
+          onClick={() => navigate(`/chat/${c.threadId}`)}
+        />
       ))}
     </div>
   );
 }
 
-function NoticedRow({ card, onClick }: { card: NoticedCard; onClick: () => void }) {
+function NoticedRow({
+  card, headline, body, cta, onClick,
+}: { card: NoticedCard; headline: string; body: string; cta: string; onClick: () => void }) {
   const [hover, setHover] = React.useState(false);
   return (
     <button
@@ -122,20 +129,20 @@ function NoticedRow({ card, onClick }: { card: NoticedCard; onClick: () => void 
         fontSize: 14, fontWeight: 600, color: T.n900,
         marginBottom: 4, lineHeight: 1.4,
       }}>
-        {card.headline}
+        {headline}
       </div>
       <div style={{
         fontSize: 12.5, color: T.n600, lineHeight: 1.55,
         marginBottom: 8,
       }}>
-        {card.body}
+        {body}
       </div>
       <div style={{
         display: 'flex', alignItems: 'center', gap: 4,
         fontSize: 12, fontWeight: 500,
         color: hover ? T.brand : T.n700,
       }}>
-        {card.cta.replace(' →', '')}
+        {cta}
         <Icon icon={ChevronRight} size={13} color={hover ? T.brand : T.n500} />
       </div>
     </button>

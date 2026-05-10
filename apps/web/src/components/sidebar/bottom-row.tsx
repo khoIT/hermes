@@ -7,6 +7,7 @@ import { Database, Settings as SettingsIcon, User as UserIcon } from 'lucide-rea
 import { useNavigate, useLocation } from 'react-router-dom';
 import { T } from '../../theme';
 import { SidebarItem } from './sidebar-item';
+import { useT } from '../../i18n/i18n-provider';
 
 interface BottomRowProps {
   collapsed?: boolean;
@@ -15,6 +16,7 @@ interface BottomRowProps {
 export function BottomRow({ collapsed }: BottomRowProps) {
   const navigate = useNavigate();
   const location = useLocation();
+  const t = useT();
   const isAccountActive =
     location.pathname === '/account' || location.pathname.startsWith('/account/');
 
@@ -24,10 +26,10 @@ export function BottomRow({ collapsed }: BottomRowProps) {
       padding: '6px 0 8px',
     }}>
       <SidebarItem icon={Database} label="Data" to="/data" collapsed={collapsed} />
-      <SidebarItem icon={SettingsIcon} label="Settings" to="/settings" collapsed={collapsed} />
+      <SidebarItem icon={SettingsIcon} label={t('nav.settings')} to="/settings" collapsed={collapsed} />
 
       {collapsed ? (
-        <SidebarItem icon={UserIcon} label="Account" to="/account" collapsed />
+        <SidebarItem icon={UserIcon} label={t('nav.account')} to="/account" collapsed />
       ) : (
         <div
           onClick={() => navigate('/account')}

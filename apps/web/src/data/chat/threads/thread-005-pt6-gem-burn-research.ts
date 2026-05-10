@@ -11,6 +11,17 @@ const T1: ChatMessage = {
   credits: 4,
   createdAt: '2026-05-09T10:02:00.000Z',
   sections: [
+    { type: 'tool_call', payload: {
+      fn: 'query_trino',
+      args: [
+        { name: 'catalog', value: 'pt_global' },
+        { name: 'metric',  value: 'gem_balance_avg' },
+        { name: 'segments', value: '["F2P","Mid","VIP3+"]' },
+        { name: 'events',  value: '["PT-6","PT-10"]' },
+      ],
+      result: '6 cohort×event cells · 14d windows',
+      durationMs: 1240,
+    } },
     {
       type: 'narrative',
       payload: {

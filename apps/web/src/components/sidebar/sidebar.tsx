@@ -20,6 +20,7 @@ import { CollapseToggle } from './collapse-toggle';
 import { getCollapsed, onCollapsedChange } from '../../utils/sidebar-collapsed-store';
 import { getSidebarSectionForPath, setSectionExpanded } from '../../utils/recent-items-store';
 import { allSegments } from '../../data/catalog/segments';
+import { useT } from '../../i18n/i18n-provider';
 
 const CANONICAL_SEGMENT_IDS = new Set(allSegments.map(s => s.id));
 
@@ -44,6 +45,7 @@ const SIDEBAR_WIDTH_COLLAPSED = 60;
 const SIDEBAR_BG = '#F9F6F2';
 
 export function Sidebar() {
+  const t = useT();
   // Synchronous initial read — avoids hydration flash from 260 → 60.
   const [collapsed, setCollapsedState] = React.useState<boolean>(() => getCollapsed());
 
@@ -91,7 +93,7 @@ export function Sidebar() {
         {/* Primary CTA */}
         <SidebarItem
           icon={Plus}
-          label="New chat"
+          label={t('welcome.startSomething.askHermes')}
           to="/"
           matchPrefix="/__new_chat__"
           primary
@@ -101,7 +103,7 @@ export function Sidebar() {
         <SidebarSection
           id="chats"
           icon={Clock}
-          label="All Chats"
+          label={t('nav.chat')}
           to="/chat"
           matchPrefix="/chat"
           collapsed={collapsed}
@@ -119,7 +121,7 @@ export function Sidebar() {
         <SidebarSection
           id="segments"
           icon={Users}
-          label="Segments"
+          label={t('nav.segments')}
           to="/segments"
           collapsed={collapsed}
         >
@@ -134,7 +136,7 @@ export function Sidebar() {
         <SidebarSection
           id="boards"
           icon={Layers}
-          label="Boards"
+          label={t('nav.canvas')}
           to="/canvas"
           collapsed={collapsed}
         >
@@ -148,7 +150,7 @@ export function Sidebar() {
         <SidebarSection
           id="campaigns"
           icon={Send}
-          label="Campaigns"
+          label={t('nav.campaigns')}
           to="/campaigns"
           collapsed={collapsed}
         >
@@ -169,10 +171,10 @@ export function Sidebar() {
           collapsed={collapsed}
           hideLabelWhenExpanded
         >
-          <SidebarItem icon={FileText}  label="Playbooks"  to="/playbooks"  indent />
-          <SidebarItem icon={Filter}    label="Funnels"    to="/funnels"    indent />
-          <SidebarItem icon={RefreshCw} label="Retentions" to="/retentions" indent />
-          <SidebarItem icon={BookOpen}  label="Knowledge"  to="/knowledge"  indent />
+          <SidebarItem icon={FileText}  label={t('nav.playbooks')}  to="/playbooks"  indent />
+          <SidebarItem icon={Filter}    label={t('nav.funnels')}    to="/funnels"    indent />
+          <SidebarItem icon={RefreshCw} label={t('nav.retentions')} to="/retentions" indent />
+          <SidebarItem icon={BookOpen}  label={t('nav.knowledge')}  to="/knowledge"  indent />
         </SidebarSection>
       </nav>
 

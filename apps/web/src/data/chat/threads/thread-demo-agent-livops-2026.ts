@@ -35,9 +35,36 @@ const T1: ChatMessage = {
   suppressUniversalCtas: true,
   sections: [
     // Tool-call chain — what the agent did before posting this opportunity.
-    { type: 'tool_call', payload: { label: 'Querying cfm_vn.ranked_match', detail: 'window 2026-04-15 → 2026-05-09 · n=2.1M', status: 'done' } },
-    { type: 'tool_call', payload: { label: 'Decomposing ARPDAU', detail: 'ARPPU vs Paying-DAU% · 12-week index', status: 'done' } },
-    { type: 'tool_call', payload: { label: 'Bucketing 7d retention by streak length', detail: 'feature: consecutive_ranked_losses_streak', status: 'done' } },
+    { type: 'tool_call', payload: {
+      fn: 'query_trino',
+      args: [
+        { name: 'catalog', value: 'cfm_vn' },
+        { name: 'table',   value: 'ranked_match' },
+        { name: 'window',  value: '2026-04-15 → 2026-05-09' },
+      ],
+      result: '2,103,847 rows · cached:false',
+      durationMs: 1420,
+    } },
+    { type: 'tool_call', payload: {
+      fn: 'compute_decomp',
+      args: [
+        { name: 'metric',  value: 'arpdau' },
+        { name: 'factors', value: '["arppu","paying_dau_pct"]' },
+        { name: 'grain',   value: 'weekly' },
+      ],
+      result: '2 series · 12 buckets',
+      durationMs: 320,
+    } },
+    { type: 'tool_call', payload: {
+      fn: 'bucket_by',
+      args: [
+        { name: 'feature', value: 'consecutive_ranked_losses_streak' },
+        { name: 'bins',    value: '[1-2,3-4,5-6,7-8,9+]' },
+        { name: 'measure', value: 'd7_retention' },
+      ],
+      result: '5 buckets · cliff at 5+',
+      durationMs: 540,
+    } },
 
     {
       type: 'narrative',
@@ -138,8 +165,23 @@ const T2: ChatMessage = {
   createdAt: '2026-05-10T06:16:00.000Z',
   suppressUniversalCtas: true,
   sections: [
-    { type: 'tool_call', payload: { label: 'Loading Jan 2026 rescue A/B results', detail: 'experiment: cfm_loss_streak_rescue_v1 · n=18,400', status: 'done' } },
-    { type: 'tool_call', payload: { label: 'Computing audience for 3-filter predicate', detail: 'severity × engagement × monetization-fit', status: 'done' } },
+    { type: 'tool_call', payload: {
+      fn: 'load_experiment',
+      args: [
+        { name: 'id',     value: 'cfm_loss_streak_rescue_v1' },
+        { name: 'window', value: '2026-01-08 → 2026-01-29' },
+      ],
+      result: 'n=18,400 · 3 arms · α=0.05',
+      durationMs: 380,
+    } },
+    { type: 'tool_call', payload: {
+      fn: 'estimate_audience',
+      args: [
+        { name: 'predicate', value: 'streak≥5 AND session_count_7d≥3 AND last_purchase≥30d' },
+      ],
+      result: '2,950 UIDs · projected +24pp D7',
+      durationMs: 720,
+    } },
 
     {
       type: 'narrative',
@@ -231,8 +273,25 @@ const T3: ChatMessage = {
   createdAt: '2026-05-10T06:18:00.000Z',
   suppressUniversalCtas: true,
   sections: [
-    { type: 'tool_call', payload: { label: 'Sizing rescue grant cost', detail: '2,950 UIDs × $0.81 IAM CPM × 3 touches', status: 'done' } },
-    { type: 'tool_call', payload: { label: 'Reserving 20% holdout', detail: '2,360 treatment · 590 holdout', status: 'done' } },
+    { type: 'tool_call', payload: {
+      fn: 'estimate_cost',
+      args: [
+        { name: 'audience',       value: 2950 },
+        { name: 'iam_cpm_usd',    value: 0.81 },
+        { name: 'touches',        value: 3 },
+      ],
+      result: '$2,406 · 8,850 impressions',
+      durationMs: 220,
+    } },
+    { type: 'tool_call', payload: {
+      fn: 'split_holdout',
+      args: [
+        { name: 'cohort',  value: 2950 },
+        { name: 'percent', value: 20 },
+      ],
+      result: '2,360 treatment · 590 holdout',
+      durationMs: 140,
+    } },
 
     {
       type: 'narrative',
@@ -270,9 +329,30 @@ const T4: ChatMessage = {
   createdAt: '2026-05-24T06:30:00.000Z',
   suppressUniversalCtas: true,
   sections: [
-    { type: 'tool_call', payload: { label: 'Pulling rescue cohort outcomes', detail: 'experiment: cfm_loss_streak_rescue_v2 · 14d window', status: 'done' } },
-    { type: 'tool_call', payload: { label: 'Decomposing lift by filter', detail: 'shapley attribution · 3 filters', status: 'done' } },
-    { type: 'tool_call', payload: { label: 'Checking holdout integrity', detail: '590 reserved · 587 measurable', status: 'done' } },
+    { type: 'tool_call', payload: {
+      fn: 'load_experiment',
+      args: [
+        { name: 'id',     value: 'cfm_loss_streak_rescue_v2' },
+        { name: 'window', value: '2026-05-10 → 2026-05-24' },
+      ],
+      result: 'n=2,947 (treat) + 587 (hold) · p<0.001',
+      durationMs: 460,
+    } },
+    { type: 'tool_call', payload: {
+      fn: 'shapley_attribution',
+      args: [
+        { name: 'filters', value: '[A:streak,B:sessions,C:purchase]' },
+        { name: 'target',  value: 'd7_retention_lift' },
+      ],
+      result: 'B=71% · A=19% · C=10%',
+      durationMs: 1180,
+    } },
+    { type: 'tool_call', payload: {
+      fn: 'check_holdout_integrity',
+      args: [{ name: 'experiment_id', value: 'cfm_loss_streak_rescue_v2' }],
+      result: '587/590 measurable · 99.5% intact',
+      durationMs: 280,
+    } },
 
     {
       type: 'narrative',

@@ -11,6 +11,26 @@ const T1: ChatMessage = {
   credits: 4,
   createdAt: '2026-05-09T13:42:00.000Z',
   sections: [
+    { type: 'tool_call', payload: {
+      fn: 'query_trino',
+      args: [
+        { name: 'catalog', value: 'cfm_vn' },
+        { name: 'feature', value: 'consecutive_ranked_losses_streak' },
+        { name: 'window',  value: 'last 14d' },
+      ],
+      result: '239,800 player-streaks · 5 buckets',
+      durationMs: 980,
+    } },
+    { type: 'tool_call', payload: {
+      fn: 'compare_churn_rate',
+      args: [
+        { name: 'cohort_a', value: 'streak≥5' },
+        { name: 'cohort_b', value: 'general_non_paying' },
+        { name: 'horizon',  value: '7d' },
+      ],
+      result: '38% vs 12% · Δ +26pp',
+      durationMs: 340,
+    } },
     {
       type: 'narrative',
       payload: {

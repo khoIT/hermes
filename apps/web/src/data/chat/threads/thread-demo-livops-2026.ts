@@ -31,6 +31,26 @@ const T1: ChatMessage = {
   createdAt: '2026-05-10T09:00:00.000Z',
   suppressUniversalCtas: true,
   sections: [
+    // Tool-call chain — what the agent ran to support the deduction below.
+    { type: 'tool_call', payload: {
+      fn: 'query_trino',
+      args: [
+        { name: 'catalog', value: 'cfm_vn' },
+        { name: 'metric',  value: 'arpdau' },
+        { name: 'window',  value: '2026-02-16 → 2026-05-09' },
+      ],
+      result: '12 weekly buckets',
+      durationMs: 1180,
+    } },
+    { type: 'tool_call', payload: {
+      fn: 'compute_decomp',
+      args: [
+        { name: 'metric',  value: 'arpdau' },
+        { name: 'factors', value: '["arppu","paying_dau_pct"]' },
+      ],
+      result: 'arppu flat · paying_dau_pct −14%',
+      durationMs: 280,
+    } },
     {
       type: 'narrative',
       payload: {
@@ -215,6 +235,23 @@ const T2: ChatMessage = {
   createdAt: '2026-05-10T09:02:00.000Z',
   suppressUniversalCtas: true,
   sections: [
+    { type: 'tool_call', payload: {
+      fn: 'load_experiment',
+      args: [
+        { name: 'id',     value: 'cfm_loss_streak_rescue_v1' },
+        { name: 'window', value: '2026-01-08 → 2026-01-29' },
+      ],
+      result: 'n=18,400 · 3 arms · α=0.05',
+      durationMs: 380,
+    } },
+    { type: 'tool_call', payload: {
+      fn: 'estimate_audience',
+      args: [
+        { name: 'predicate', value: 'streak≥5 ∧ session_count_7d≥3 ∧ last_purchase≥30d' },
+      ],
+      result: '2,950 UIDs · 4.4× baseline churn',
+      durationMs: 620,
+    } },
     {
       type: 'narrative',
       payload: {
@@ -346,6 +383,22 @@ const T3: ChatMessage = {
   createdAt: '2026-05-10T09:04:00.000Z',
   suppressUniversalCtas: true,
   sections: [
+    { type: 'tool_call', payload: {
+      fn: 'register_trigger',
+      args: [
+        { name: 'event',     value: 'event_match_end' },
+        { name: 'predicate', value: 'consecutive_ranked_losses_streak == 5' },
+        { name: 'substrate', value: 'apollo_tee' },
+      ],
+      result: 'trigger_id=trg_cfm_rescue_v2 · <60s SLA',
+      durationMs: 240,
+    } },
+    { type: 'tool_call', payload: {
+      fn: 'split_holdout',
+      args: [{ name: 'percent', value: 10 }],
+      result: '90% treat · 10% hold · power@α=0.05 in 14d',
+      durationMs: 120,
+    } },
     {
       type: 'narrative',
       payload: {

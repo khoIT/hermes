@@ -2,22 +2,51 @@
  * Hermes Design Tokens + Primitive Components
  * Typed TSX port of the VNGGames GDS (segment-builder theme.jsx).
  * This file is the canonical token/primitive source — do NOT duplicate tokens elsewhere.
+ *
+ * Theming model (260510-2327): each color token resolves to a CSS custom
+ * property defined in `theme-tokens.css`. ThemeProvider toggles `html.dark`
+ * which flips the underlying values app-wide, no per-component refactor.
+ * Hardcoded white card backgrounds in inline styles can opt into the dark
+ * surface by setting `data-hermes-surface="card"` (or `"muted"`) on the
+ * outermost container — see theme-tokens.css selectors.
  */
 import React from 'react';
 
 // ── Design tokens ────────────────────────────────────────────────────────────
 export const T = {
   // Neutral scale
-  n50: '#fafafa', n100: '#f5f5f5', n200: '#e5e5e5', n300: '#d4d4d4',
-  n400: '#a3a3a3', n500: '#737373', n600: '#525252', n700: '#404040',
-  n800: '#262626', n900: '#171717', n950: '#0a0a0a',
+  n50:  'var(--hermes-n50)',
+  n100: 'var(--hermes-n100)',
+  n200: 'var(--hermes-n200)',
+  n300: 'var(--hermes-n300)',
+  n400: 'var(--hermes-n400)',
+  n500: 'var(--hermes-n500)',
+  n600: 'var(--hermes-n600)',
+  n700: 'var(--hermes-n700)',
+  n800: 'var(--hermes-n800)',
+  n900: 'var(--hermes-n900)',
+  n950: 'var(--hermes-n950)',
   // Brand + status
-  brand: '#f05a22', brandHover: '#f54a00', brandSoft: '#fff7ed', brandBorder: '#fed7aa',
-  red500: '#ef4444', red600: '#dc2626', redSoft: '#fef2f2',
-  blue500: '#3b82f6', blue600: '#3f8dff', blueSoft: '#eff6ff',
-  green600: '#059669', greenSoft: '#ecfdf5',
-  amber500: '#f59e0b', amberSoft: '#fffbeb',
-  purple500: '#a855f7', purpleSoft: '#faf5ff',
+  brand:       'var(--hermes-brand)',
+  brandHover:  'var(--hermes-brand-hover)',
+  brandSoft:   'var(--hermes-brand-soft)',
+  brandBorder: 'var(--hermes-brand-border)',
+  red500:  'var(--hermes-red500)',
+  red600:  'var(--hermes-red600)',
+  redSoft: 'var(--hermes-red-soft)',
+  blue500:  'var(--hermes-blue500)',
+  blue600:  'var(--hermes-blue600)',
+  blueSoft: 'var(--hermes-blue-soft)',
+  green600:  'var(--hermes-green600)',
+  greenSoft: 'var(--hermes-green-soft)',
+  amber500:  'var(--hermes-amber500)',
+  amberSoft: 'var(--hermes-amber-soft)',
+  purple500:  'var(--hermes-purple500)',
+  purpleSoft: 'var(--hermes-purple-soft)',
+  // Surface (use these instead of hardcoded #fff where dark mode is desired)
+  surface:       'var(--hermes-surface)',
+  surfaceMuted:  'var(--hermes-surface-muted)',
+  surfaceSubtle: 'var(--hermes-surface-subtle)',
   // Fonts
   fDisp: '"League Gothic", "Inter", sans-serif',
   fSans: '"Inter", ui-sans-serif, system-ui, sans-serif',
