@@ -30,7 +30,7 @@ export function DetailTabs({ segmentId }: DetailTabsProps) {
   return (
     <nav
       style={{
-        position: 'sticky', top: 56, zIndex: 15,
+        position: 'sticky', top: 0, zIndex: 15,
         height: 40, padding: '0 24px',
         display: 'flex', alignItems: 'flex-end', gap: 4,
         background: 'rgba(249,246,242,0.92)',

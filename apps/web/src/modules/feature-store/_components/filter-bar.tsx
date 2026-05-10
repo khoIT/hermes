@@ -67,7 +67,7 @@ export function FilterBar({ features, state, onChange }: FilterBarProps) {
 
   return (
     <div style={{
-      position: 'sticky', top: 56, zIndex: 14,
+      position: 'sticky', top: 0, zIndex: 14,
       background: '#fff', borderBottom: `1px solid ${T.n200}`,
       padding: '12px 40px',
     }}>
