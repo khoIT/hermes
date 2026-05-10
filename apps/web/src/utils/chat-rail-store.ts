@@ -10,8 +10,35 @@
 import { matchPath } from 'react-router-dom';
 
 const KEY = 'hermes:chat-rail:open';
+const WIDTH_KEY = 'hermes:chat-rail:width';
 
-export const RAIL_WIDTH = 400;
+export const RAIL_WIDTH_DEFAULT = 400;
+export const RAIL_WIDTH_MIN = 320;
+export const RAIL_WIDTH_MAX = 720;
+
+export function getStoredWidth(): number {
+  try {
+    const v = localStorage.getItem(WIDTH_KEY);
+    if (v === null) return RAIL_WIDTH_DEFAULT;
+    const n = Number(v);
+    if (!Number.isFinite(n)) return RAIL_WIDTH_DEFAULT;
+    return clampWidth(n);
+  } catch {
+    return RAIL_WIDTH_DEFAULT;
+  }
+}
+
+export function setStoredWidth(width: number): void {
+  try {
+    localStorage.setItem(WIDTH_KEY, String(clampWidth(width)));
+  } catch {
+    /* no-op */
+  }
+}
+
+export function clampWidth(width: number): number {
+  return Math.min(RAIL_WIDTH_MAX, Math.max(RAIL_WIDTH_MIN, Math.round(width)));
+}
 
 const HIDDEN_ROUTES = new Set<string>(['/', '/chat']);
 const HIDDEN_PREFIXES = ['/chat/'];

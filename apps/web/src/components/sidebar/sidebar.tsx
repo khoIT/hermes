@@ -50,17 +50,16 @@ export function Sidebar() {
       style={{
         width,
         flexShrink: 0,
-        position: 'sticky',
-        top: 0,
-        height: '100vh',
+        height: '100%',
         background: SIDEBAR_BG,
-        borderRight: `1px solid rgba(0,0,0,0.06)`,
+        borderRadius: 18,
         display: 'flex',
         flexDirection: 'column',
         fontFamily: T.fSans,
         // overflow:visible lets the seam <CollapseToggle/> pop outside the
         // right edge as a round button. Inner <nav> manages its own scroll.
         overflow: 'visible',
+        position: 'relative',
         transition: 'width 0.16s ease',
         willChange: 'width',
       }}

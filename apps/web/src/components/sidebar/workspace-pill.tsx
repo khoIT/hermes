@@ -23,7 +23,7 @@ export function WorkspacePill({ collapsed }: WorkspacePillProps) {
         aria-label="Hermes — Welcome"
         style={{
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          width: '100%', padding: '12px 0',
+          width: '100%', height: 56, flexShrink: 0,
           background: 'transparent', border: 'none', cursor: 'pointer',
           borderRadius: 0,
         }}
@@ -48,11 +48,12 @@ export function WorkspacePill({ collapsed }: WorkspacePillProps) {
       style={{
         display: 'flex', alignItems: 'center', gap: 8,
         width: '100%',
-        padding: '10px 12px',
+        height: 56, flexShrink: 0,
+        padding: '0 12px',
         background: 'transparent', border: 'none',
         cursor: 'pointer',
         textAlign: 'left',
-        borderRadius: 0,
+        borderRadius: '18px 18px 0 0',
         transition: 'background .12s',
       }}
       onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.04)'; }}

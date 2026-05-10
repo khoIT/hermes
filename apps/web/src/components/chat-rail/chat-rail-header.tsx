@@ -23,8 +23,8 @@ export function ChatRailHeader({
   return (
     <div style={{
       display: 'flex', alignItems: 'center', gap: 8,
-      padding: subtitle ? '8px 12px' : '10px 12px',
-      minHeight: 44, boxSizing: 'border-box',
+      padding: '0 12px',
+      height: 56, flexShrink: 0, boxSizing: 'border-box',
       borderBottom: `1px solid ${T.n200}`,
       background: '#fff',
       fontFamily: T.fSans,

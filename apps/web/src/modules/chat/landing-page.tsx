@@ -8,7 +8,8 @@ import { useNavigate } from 'react-router-dom';
 import { T } from '../../theme';
 import { ChatInputBox } from '../../components/chat/chat-input-box';
 import { SuggestedPromptList } from '../../components/chat/suggested-prompt-list';
-import { createThread, appendMessage } from '../../utils/chat-store';
+import type { SuggestedPrompt } from '../../data/chat/suggested-prompts';
+import { createThread, appendMessage, getThread } from '../../utils/chat-store';
 import { respondToText } from '../../utils/chat-respond';
 import { pushRecent } from '../../utils/recent-items-store';
 import { notifyRecentChanged } from '../../components/sidebar/recent-items';
@@ -23,6 +24,19 @@ export default function ChatLandingPage() {
     notifyRecentChanged();
     navigate(`/chat/${id}`);
   }, [navigate]);
+
+  // Scripted prompts have a canonical pre-seeded thread; route to it instead
+  // of forking a duplicate `t-XXXXX` clone every click.
+  const handlePromptPick = React.useCallback((prompt: SuggestedPrompt) => {
+    const seeded = getThread(prompt.threadId);
+    if (seeded) {
+      pushRecent('chats', { id: seeded.id, title: seeded.title, updatedAt: seeded.updatedAt });
+      notifyRecentChanged();
+      navigate(`/chat/${seeded.id}`);
+      return;
+    }
+    handleSubmit(prompt.text);
+  }, [handleSubmit, navigate]);
 
   return (
     <div style={{
@@ -63,7 +77,7 @@ export default function ChatLandingPage() {
       </div>
 
       <div style={{ width: '100%', maxWidth: 820, marginTop: 28 }}>
-        <SuggestedPromptList onPick={handleSubmit} />
+        <SuggestedPromptList onPick={handlePromptPick} />
       </div>
     </div>
   );

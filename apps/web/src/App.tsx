@@ -68,29 +68,24 @@ function AppShell() {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'stretch',
+        padding: 10,
+        gap: 8,
+        boxSizing: 'border-box',
       }}>
         <Sidebar />
-        <div style={{
-          flex: 1, minWidth: 0,
-          display: 'flex', flexDirection: 'row',
-          padding: '10px 10px 10px 0',
-          gap: 8,
-          minHeight: 0,
+        <main style={{
+          flex: 1, minWidth: 0, minHeight: 0,
+          display: 'flex', flexDirection: 'column',
+          background: '#fff',
+          borderRadius: 18,
+          overflow: 'hidden',
         }}>
-          <main style={{
-            flex: 1, minWidth: 0, minHeight: 0,
-            display: 'flex', flexDirection: 'column',
-            background: '#fff',
-            borderRadius: 18,
-            overflow: 'hidden',
-          }}>
-            <Topbar onSearchOpen={() => setCmdKOpen(true)} />
-            <div style={{ flex: 1, minWidth: 0, minHeight: 0, overflow: 'auto' }}>
-              <AppRoutes />
-            </div>
-          </main>
-          {!railHidden && railOpen && <ChatRail open={railOpen} onClose={closeRail} />}
-        </div>
+          <Topbar onSearchOpen={() => setCmdKOpen(true)} />
+          <div style={{ flex: 1, minWidth: 0, minHeight: 0, overflow: 'auto' }}>
+            <AppRoutes />
+          </div>
+        </main>
+        {!railHidden && railOpen && <ChatRail open={railOpen} onClose={closeRail} />}
         {!railHidden && <AskHermesFab open={railOpen} onToggle={toggleRail} />}
         <ToastHost />
         <CmdKModal open={cmdKOpen} onClose={() => setCmdKOpen(false)} />

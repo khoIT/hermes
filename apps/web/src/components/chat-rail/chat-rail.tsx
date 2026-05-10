@@ -28,7 +28,9 @@ import { ChatRailEmpty } from './chat-rail-empty';
 import { CompactThreadView } from './compact-thread-view';
 import { RecentThreadsSection } from './recent-threads-section';
 import { ScriptedPromptsSection } from './scripted-prompts-section';
-import { RAIL_WIDTH } from '../../utils/chat-rail-store';
+import {
+  getStoredWidth, setStoredWidth, clampWidth,
+} from '../../utils/chat-rail-store';
 import type { MessageArtifact } from '../../utils/chat-store';
 
 interface ChatRailProps {
@@ -62,6 +64,31 @@ export function ChatRail({ open, onClose }: ChatRailProps) {
   const [tick, setTick] = React.useState(0);
   /** Set when the user clicked "+ New" so auto-resume doesn't re-fill the rail. */
   const userClearedRef = React.useRef(false);
+
+  // Drag-to-resize. Width is local state (read once from storage); persisted
+  // on pointerUp to avoid thrashing localStorage during the drag.
+  const [width, setWidth] = React.useState<number>(() => getStoredWidth());
+  const dragRef = React.useRef<{ startX: number; startW: number } | null>(null);
+
+  const onHandleDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    (e.currentTarget as Element).setPointerCapture(e.pointerId);
+    dragRef.current = { startX: e.clientX, startW: width };
+    e.preventDefault();
+  };
+  const onHandleMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    const s = dragRef.current;
+    if (!s) return;
+    // Dragging the LEFT edge of the rail: moving cursor leftward (clientX
+    // decreases) grows the rail. Inverse delta from start.
+    const next = clampWidth(s.startW + (s.startX - e.clientX));
+    setWidth(next);
+  };
+  const onHandleUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!dragRef.current) return;
+    dragRef.current = null;
+    setStoredWidth(width);
+    (e.currentTarget as Element).releasePointerCapture(e.pointerId);
+  };
 
   React.useEffect(() => { hydrateBoardsOnce(); }, []);
 
@@ -130,11 +157,21 @@ export function ChatRail({ open, onClose }: ChatRailProps) {
   };
 
   /**
-   * Picking a scripted prompt creates a new thread (so its title matches)
-   * and immediately appends the pre-baked T1 response via respondToText.
+   * Picking a scripted prompt routes to the canonical pre-seeded thread when
+   * one exists (avoids duplicate `t-XXXXX` clones in the sidebar). Falls back
+   * to the legacy create+respond path for prompts without a seeded fixture.
    * The follow-up chips on T1 then play through multi-turn-registry.
    */
-  const onPickScriptedPrompt = (prompt: { text: string }) => {
+  const onPickScriptedPrompt = (prompt: { text: string; threadId?: string }) => {
+    const seeded = prompt.threadId ? getThread(prompt.threadId) : null;
+    if (seeded) {
+      pushRecent('chats', { id: seeded.id, title: seeded.title, updatedAt: seeded.updatedAt });
+      notifyRecentChanged();
+      userClearedRef.current = false;
+      setActiveThreadId(seeded.id);
+      refresh();
+      return;
+    }
     const id = createThread(prompt.text);
     appendMessage(id, respondToText(prompt.text, id));
     pushRecent('chats', { id, title: prompt.text, updatedAt: new Date().toISOString() });
@@ -149,16 +186,35 @@ export function ChatRail({ open, onClose }: ChatRailProps) {
   return (
     <aside
       style={{
-        width: RAIL_WIDTH, flexShrink: 0,
+        width, flexShrink: 0,
         background: '#F9F6F2',
         borderRadius: 18,
         overflow: 'hidden',
         display: 'flex', flexDirection: 'column',
         height: '100%',
+        position: 'relative',
         zIndex: 15,
       }}
       aria-label="Chat rail"
     >
+      <div
+        onPointerDown={onHandleDown}
+        onPointerMove={onHandleMove}
+        onPointerUp={onHandleUp}
+        onPointerCancel={onHandleUp}
+        role="separator"
+        aria-orientation="vertical"
+        aria-label="Resize chat rail"
+        title="Drag to resize"
+        style={{
+          position: 'absolute',
+          left: -3, top: 0, bottom: 0,
+          width: 8,
+          cursor: 'col-resize',
+          zIndex: 16,
+          touchAction: 'none',
+        }}
+      />
       <ChatRailHeader
         title={headerTitle}
         titleClickable={!!conversation}
