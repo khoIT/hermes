@@ -11,6 +11,8 @@ import { allCampaigns } from '../../data/catalog/campaigns';
 import { UpliftChart } from './_components/uplift-chart';
 import { ExperimentAgentPanel } from './_components/experiment-agent-panel';
 import { SampleFiresTable } from './_components/sample-fires-table';
+import { pushRecent } from '../../utils/recent-items-store';
+import { notifyRecentChanged } from '../../components/sidebar/recent-items';
 
 const HEALTH_SPARKLINE = [3200, 3280, 3350, 3420, 3380, 3450, 3500, 3420, 3480, 3520, 3410, 3460, 3440, 3480];
 
@@ -27,6 +29,17 @@ export default function CampaignMonitoringPage() {
 
   const campaign = allCampaigns.find(c => c.id === id) ?? allCampaigns.find(c => c.id === 'cmp-cfm-407')!;
   const isAnchor = campaign.id === 'cmp-cfm-407';
+
+  // Track recent: log a visit once we know which campaign rendered.
+  React.useEffect(() => {
+    pushRecent('campaigns', {
+      id: campaign.id,
+      title: campaign.displayName,
+      updatedAt: new Date().toISOString(),
+      href: `/campaigns/${campaign.id}`,
+    });
+    notifyRecentChanged();
+  }, [campaign.id]);
 
   return (
     <div style={{ minHeight: '100vh', background: T.n50 }}>

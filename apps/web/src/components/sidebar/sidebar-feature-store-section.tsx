@@ -2,9 +2,9 @@
  * SidebarFeatureStoreSection — replaces the generic <RecentItems> for the
  * Feature Store section with a richer four-surface layout:
  *   ▸ Register feature (CTA)
- *   ▸ PINNED      (when any pins exist)
- *   ▸ YOU VIEWED  (when any view history exists)
- *   ▸ NEW THIS MONTH (features added this calendar month)
+ *   ▸ PINNED          (when any pins exist)
+ *   ▸ RECENTLY VIEWED (when any view history exists)
+ *   ▸ NEW THIS MONTH  (features added this calendar month)
  *
  * All subsections render only when non-empty, so the section stays compact
  * for a fresh user. Stale pin IDs (renamed/deleted features) are silently
@@ -115,7 +115,7 @@ export function SidebarFeatureStoreSection({ collapsed }: SidebarFeatureStoreSec
 
       {viewedItems.length > 0 && (
         <>
-          <SidebarSubheader>You viewed</SidebarSubheader>
+          <SidebarSubheader>Recently viewed</SidebarSubheader>
           {viewedItems.map(item => (
             <SidebarItem
               key={`view-${item.id}`}

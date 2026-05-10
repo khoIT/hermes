@@ -4,6 +4,7 @@
  */
 import React from 'react';
 import { SidebarItem } from './sidebar-item';
+import { SidebarSubheader } from './sidebar-subheader';
 import { ChatContextMenu } from './chat-context-menu';
 import { getRecent, type RecentModule } from '../../utils/recent-items-store';
 
@@ -15,9 +16,11 @@ interface RecentItemsProps {
   hrefFor?: (id: string) => string;
   /** Visible item cap (default 4). */
   visible?: number;
+  /** Optional uppercase subheader rendered above the list when items exist. */
+  subheader?: string;
 }
 
-export function RecentItems({ module, seeAllTo, hrefFor, visible = 4 }: RecentItemsProps) {
+export function RecentItems({ module, seeAllTo, hrefFor, visible = 4, subheader }: RecentItemsProps) {
   // Re-read on render — sidebar mounts once, so we expose a cheap re-fetch
   // hook via window event for other code paths to trigger.
   const [items, setItems] = React.useState(() => getRecent(module));
@@ -42,6 +45,7 @@ export function RecentItems({ module, seeAllTo, hrefFor, visible = 4 }: RecentIt
   const shown = items.slice(0, visible);
   return (
     <>
+      {subheader && <SidebarSubheader>{subheader}</SidebarSubheader>}
       {shown.map(item => (
         <SidebarItem
           key={item.id}

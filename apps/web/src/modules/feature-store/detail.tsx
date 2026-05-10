@@ -26,6 +26,8 @@ import { PropensityModelCard } from './_components/propensity-model-card';
 import { DescriptionBlock } from './_components/description-block';
 import { HealthSnapshotCard } from './_components/health-snapshot-card';
 import { computeUsageCounts, getFeatureUsage } from './_logic/usage-count';
+import { pushRecent } from '../../utils/recent-items-store';
+import { notifyRecentChanged } from '../../components/sidebar/recent-items';
 import { SourceProvenanceCard } from './_components/_lm/source-provenance-card';
 import { HealthVerdictCard } from './_components/_lm/health-verdict-card';
 import { ThresholdPlaygroundPanel } from './_components/_lm/threshold-playground-panel';
@@ -77,6 +79,18 @@ export default function FeatureStoreDetailPage() {
       navigate('/feature-store', { replace: true });
     }
   }, [decodedName, feature, navigate, loadStatus]);
+
+  // Track recent: log a visit once the feature resolves.
+  React.useEffect(() => {
+    if (!feature) return;
+    pushRecent('features', {
+      id: feature.name,
+      title: feature.name,
+      updatedAt: new Date().toISOString(),
+      href: `/feature-store/${encodeURIComponent(feature.name)}`,
+    });
+    notifyRecentChanged();
+  }, [feature?.name]);
 
   if (loadStatus !== 'ready') {
     return <FeaturesUnavailable />;

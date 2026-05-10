@@ -6,6 +6,7 @@ import { GAMES, SOURCES, METRICS, FRESHNESS, SEGMENTS } from './fixtures';
 import { REAL_CFM_BINDINGS, REAL_BINDING_KEYS } from './real-trino-bindings';
 import { seedDataCatalog } from './data-catalog/orchestrator';
 import { seedDemoMetricPipelines } from './metric-pipelines/demo-pipelines';
+import { seedSampleBoards } from './seed-boards';
 
 // Idempotent seed via ON CONFLICT DO NOTHING — re-runnable.
 // Run: `pnpm --filter @hermes/catalog-api db:seed`.
@@ -129,6 +130,10 @@ async function main() {
   // eslint-disable-next-line no-console
   console.log('[seed] inserting demo metric pipelines + materialized values');
   await seedDemoMetricPipelines(db, pool);
+
+  // eslint-disable-next-line no-console
+  console.log('[seed] inserting sample LiveOps 2026 boards');
+  await seedSampleBoards(db);
 
   // eslint-disable-next-line no-console
   console.log('[seed] done');

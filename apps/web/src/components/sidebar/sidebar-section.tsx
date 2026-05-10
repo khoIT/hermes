@@ -17,8 +17,8 @@ interface SidebarSectionProps {
   id: string;
   icon: LucideIcon;
   label: string;
-  /** Click destination for the header (the section is always navigable). */
-  to: string;
+  /** Click destination for the header. Omit for pure expand-only groups (e.g. "More"). */
+  to?: string;
   /** Active-route prefix; defaults to `to`. */
   matchPrefix?: string;
   /** If provided, renders content under header when expanded. */
@@ -27,10 +27,15 @@ interface SidebarSectionProps {
   flat?: boolean;
   /** Sidebar is in 60px icon-rail mode. */
   collapsed?: boolean;
+  /** When true + section expanded, hide the header text label (icon + caret remain
+   *  so the row stays clickable to collapse). Used by the "Advanced Features" group
+   *  to give an unbranded look once the four sub-items are revealed. */
+  hideLabelWhenExpanded?: boolean;
 }
 
 export function SidebarSection({
   id, icon, label, to, matchPrefix, children, flat, collapsed,
+  hideLabelWhenExpanded,
 }: SidebarSectionProps) {
   const [expanded, setExpanded] = React.useState(() =>
     flat ? false : getSectionExpanded(id)
@@ -47,11 +52,13 @@ export function SidebarSection({
 
   const showChildren = !flat && expanded && !!children && !collapsed;
 
+  const headerLabel = hideLabelWhenExpanded && expanded && !collapsed ? '' : label;
+
   return (
     <div>
       <SidebarItem
         icon={icon}
-        label={label}
+        label={headerLabel}
         to={to}
         matchPrefix={matchPrefix}
         expandable={!flat && !collapsed}

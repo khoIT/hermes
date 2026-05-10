@@ -122,7 +122,7 @@ function SegmentRow({
 
   return (
     <div
-      onClick={onEdit}
+      onClick={onView}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{

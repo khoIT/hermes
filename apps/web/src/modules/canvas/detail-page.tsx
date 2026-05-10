@@ -12,6 +12,8 @@ import {
 import { Widget } from '../../components/chat/widgets/widget';
 import { toast } from '../../components/ui/toast';
 import { ComingSoon } from '../../components/empty-state/coming-soon';
+import { pushRecent } from '../../utils/recent-items-store';
+import { notifyRecentChanged } from '../../components/sidebar/recent-items';
 
 export default function CanvasDetailPage() {
   const { boardId } = useParams<{ boardId: string }>();
@@ -26,6 +28,18 @@ export default function CanvasDetailPage() {
     void getBoard(boardId).then(b => { if (!cancelled) { setBoard(b); setLoaded(true); } });
     return () => { cancelled = true; };
   }, [boardId, tick]);
+
+  // Track recent: log a visit once the board resolves.
+  React.useEffect(() => {
+    if (!board) return;
+    pushRecent('boards', {
+      id: board.id,
+      title: board.name,
+      updatedAt: new Date().toISOString(),
+      href: `/canvas/${board.id}`,
+    });
+    notifyRecentChanged();
+  }, [board?.id]);
 
   const refresh = () => setTick(t => t + 1);
 

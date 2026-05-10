@@ -1,6 +1,6 @@
 /**
  * WorkspacePill — top-of-sidebar Hermes brand pill with workspace name.
- * Click → /welcome (logo-as-home). Subtitle "Thinking Data → Actionable Data".
+ * Click → /welcome (logo-as-home). Subtitle "Thinking → Actionable Data".
  * Collapsed mode renders only the VG glyph centered.
  */
 import React from 'react';
@@ -83,7 +83,7 @@ export function WorkspacePill({ collapsed }: WorkspacePillProps) {
           color: T.n500, lineHeight: 1.3, letterSpacing: '0.01em',
           whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
         }}>
-          Thinking Data → Actionable Data
+          Thinking → Actionable Data
         </span>
       </span>
       <Icon icon={ChevronDown} size={14} color={T.n400} />

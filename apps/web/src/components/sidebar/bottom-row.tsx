@@ -7,7 +7,6 @@ import { Database, Settings as SettingsIcon, User as UserIcon } from 'lucide-rea
 import { useNavigate, useLocation } from 'react-router-dom';
 import { T } from '../../theme';
 import { SidebarItem } from './sidebar-item';
-import { CollapseToggle } from './collapse-toggle';
 
 interface BottomRowProps {
   collapsed?: boolean;
@@ -69,7 +68,6 @@ export function BottomRow({ collapsed }: BottomRowProps) {
         </div>
       )}
 
-      <CollapseToggle collapsed={!!collapsed} />
     </div>
   );
 }

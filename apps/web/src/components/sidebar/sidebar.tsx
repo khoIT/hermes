@@ -6,7 +6,7 @@
 import React from 'react';
 import {
   Plus, Clock, Layers, FileText, Users,
-  Filter, RefreshCw, Send, BookOpen,
+  Filter, RefreshCw, Send, BookOpen, MoreHorizontal,
 } from 'lucide-react';
 import { T } from '../../theme';
 import { SidebarSection } from './sidebar-section';
@@ -15,6 +15,7 @@ import { RecentItems } from './recent-items';
 import { WorkspacePill } from './workspace-pill';
 import { BottomRow } from './bottom-row';
 import { SidebarFeatureStoreSection } from './sidebar-feature-store-section';
+import { CollapseToggle } from './collapse-toggle';
 import { getCollapsed, onCollapsedChange } from '../../utils/sidebar-collapsed-store';
 
 const SIDEBAR_WIDTH_EXPANDED = 260;
@@ -42,7 +43,9 @@ export function Sidebar() {
         display: 'flex',
         flexDirection: 'column',
         fontFamily: T.fSans,
-        overflow: 'hidden',
+        // overflow:visible lets the seam <CollapseToggle/> pop outside the
+        // right edge as a round button. Inner <nav> manages its own scroll.
+        overflow: 'visible',
         transition: 'width 0.16s ease',
         willChange: 'width',
       }}
@@ -77,7 +80,22 @@ export function Sidebar() {
           />
         </SidebarSection>
 
+        {/* Primary modules — ordered Feature Store, Segments, Boards, Campaigns. */}
         <SidebarFeatureStoreSection collapsed={collapsed} />
+
+        <SidebarSection
+          id="segments"
+          icon={Users}
+          label="Segments"
+          to="/segments"
+          collapsed={collapsed}
+        >
+          <RecentItems
+            module="segments"
+            seeAllTo="/segments"
+            hrefFor={id => `/segments/${id}`}
+          />
+        </SidebarSection>
 
         <SidebarSection
           id="boards"
@@ -94,32 +112,6 @@ export function Sidebar() {
         </SidebarSection>
 
         <SidebarSection
-          id="playbooks"
-          icon={FileText}
-          label="Playbooks"
-          to="/playbooks"
-          flat
-          collapsed={collapsed}
-        />
-
-        <SidebarSection
-          id="segments"
-          icon={Users}
-          label="Segments"
-          to="/segments"
-          collapsed={collapsed}
-        >
-          <RecentItems
-            module="segments"
-            seeAllTo="/segments"
-            hrefFor={id => `/segments/${id}`}
-          />
-        </SidebarSection>
-
-        <SidebarSection id="funnels" icon={Filter} label="Funnels" to="/funnels" flat collapsed={collapsed} />
-        <SidebarSection id="retentions" icon={RefreshCw} label="Retentions" to="/retentions" flat collapsed={collapsed} />
-
-        <SidebarSection
           id="campaigns"
           icon={Send}
           label="Campaigns"
@@ -133,10 +125,28 @@ export function Sidebar() {
           />
         </SidebarSection>
 
-        <SidebarSection id="knowledge" icon={BookOpen} label="Knowledge" to="/knowledge" flat collapsed={collapsed} />
+        {/* Advanced Features group — Playbooks, Funnels, Retentions, Knowledge live here.
+            Pure expand-only header (no `to`) so the row toggles in place. The label
+            disappears once expanded so the four sub-items read as a clean module list. */}
+        <SidebarSection
+          id="advanced-features"
+          icon={MoreHorizontal}
+          label="Advanced Features"
+          collapsed={collapsed}
+          hideLabelWhenExpanded
+        >
+          <SidebarItem icon={FileText}  label="Playbooks"  to="/playbooks"  indent />
+          <SidebarItem icon={Filter}    label="Funnels"    to="/funnels"    indent />
+          <SidebarItem icon={RefreshCw} label="Retentions" to="/retentions" indent />
+          <SidebarItem icon={BookOpen}  label="Knowledge"  to="/knowledge"  indent />
+        </SidebarSection>
       </nav>
 
       <BottomRow collapsed={collapsed} />
+
+      {/* Seam-hover collapse button — absolute, pops outside the aside's
+          right edge. Hidden by default; revealed on hover of the seam strip. */}
+      <CollapseToggle collapsed={collapsed} />
     </aside>
   );
 }
