@@ -5,13 +5,20 @@
 # Usage:
 #   .\scripts\pre-demo-warmup.ps1
 #   .\scripts\pre-demo-warmup.ps1 -CatalogUrl http://localhost:3001 -QueryUrl http://localhost:3002
+#   .\scripts\pre-demo-warmup.ps1 -Reset      # also clears rehearsal litter from DB
 #
 # Run this ~30s before the demo starts with both services already up.
 # All probes should report OK. Any FAIL needs investigation before demo.
+#
+# -Reset runs `pnpm --filter @hermes/catalog-api db:reset-demo` which deletes
+# board_cards / campaigns / segments tagged with thread-demo-livops-2026.
+# It does NOT clear browser localStorage — open in incognito or use the
+# Restart-demo chip in the demo thread T1 header for a fresh client state.
 
 param(
   [string]$CatalogUrl = 'http://localhost:3001',
-  [string]$QueryUrl   = 'http://localhost:3002'
+  [string]$QueryUrl   = 'http://localhost:3002',
+  [switch]$Reset
 )
 
 $ErrorActionPreference = 'Continue'
@@ -92,6 +99,20 @@ Write-Host "  catalog-api: $CatalogUrl"
 Write-Host "  query-svc:   $QueryUrl"
 Write-Host "  $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
 Write-Host ""
+
+# Step 0 (optional): reset demo-thread artifacts in Postgres
+if ($Reset) {
+  Write-Host "  Resetting demo-thread artifacts in DB..." -ForegroundColor Yellow
+  $resetStart = [System.Diagnostics.Stopwatch]::StartNew()
+  & pnpm --filter '@hermes/catalog-api' db:reset-demo
+  $resetStart.Stop()
+  if ($LASTEXITCODE -eq 0) {
+    Write-Host "  [OK]   db:reset-demo  $($resetStart.ElapsedMilliseconds)ms" -ForegroundColor Green
+  } else {
+    Write-Host "  [FAIL] db:reset-demo  exit $LASTEXITCODE" -ForegroundColor Red
+  }
+  Write-Host ""
+}
 
 # Step 1: get dev token for authenticated catalog-api probes
 $token = Get-DevToken -BaseUrl $CatalogUrl
