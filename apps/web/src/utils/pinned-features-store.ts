@@ -30,9 +30,17 @@ function notify() {
   subscribers.forEach(cb => cb());
 }
 
-/** Returns a defensive copy of the current pin list (most-recent first). */
-export function getPinned(): string[] {
-  return pinned.slice();
+/**
+ * Returns the current pin list (most-recent first).
+ *
+ * Reference stability: returns the internal array directly so React's
+ * `useSyncExternalStore` identity check sees a stable snapshot between
+ * mutations. `togglePin` reassigns `pinned` to a new array, so consumers
+ * still see a fresh reference exactly when the data changes. Do NOT
+ * mutate the returned array — treat it as readonly.
+ */
+export function getPinned(): readonly string[] {
+  return pinned;
 }
 
 /**
