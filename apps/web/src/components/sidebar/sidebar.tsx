@@ -6,7 +6,7 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
 import {
-  Plus, Clock, Layers, FileText, Users,
+  MessageSquare, Layers, FileText, Users,
   Filter, RefreshCw, Send, BookOpen, MoreHorizontal,
 } from 'lucide-react';
 import { T } from '../../theme';
@@ -88,21 +88,15 @@ export function Sidebar() {
       {/* Workspace */}
       <WorkspacePill collapsed={collapsed} />
 
-      {/* Scrollable nav region */}
+      {/* Scrollable nav region.
+          Chat section IS the Ask-Hermes entry point — clicking the section
+          header navigates to /chat (landing) where users start a new ask.
+          The standalone "+ Ask Hermes" button was removed (260511) as
+          duplicative with this section + the bottom-right Ask Hermes FAB. */}
       <nav style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', padding: '4px 0 12px' }}>
-        {/* Primary CTA */}
-        <SidebarItem
-          icon={Plus}
-          label={t('welcome.startSomething.askHermes')}
-          to="/"
-          matchPrefix="/__new_chat__"
-          primary
-          collapsed={collapsed}
-        />
-
         <SidebarSection
           id="chats"
-          icon={Clock}
+          icon={MessageSquare}
           label={t('nav.chat')}
           to="/chat"
           matchPrefix="/chat"

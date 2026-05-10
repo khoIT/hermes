@@ -33,10 +33,10 @@ export function DetailTabs({ segmentId }: DetailTabsProps) {
         position: 'sticky', top: 0, zIndex: 15,
         height: 40, padding: '0 24px',
         display: 'flex', alignItems: 'flex-end', gap: 4,
-        background: 'rgba(249,246,242,0.92)',
+        background: T.topbar,
         backdropFilter: 'blur(8px)',
         WebkitBackdropFilter: 'blur(8px)',
-        borderBottom: `1px solid rgba(0,0,0,0.06)`,
+        borderBottom: `1px solid ${T.n200}`,
       }}
     >
       {SEGMENT_TABS.map(t => {
