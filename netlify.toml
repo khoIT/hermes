@@ -1,0 +1,44 @@
+# Netlify config — Hermes web (demo mode, frontend-only).
+#
+# Architecture: this repo is a pnpm + turbo monorepo. Only `apps/web` ships
+# to Netlify; `catalog-api` and `query-svc` are NOT deployed because they
+# need a long-running Node process + Postgres + pg-boss workers that
+# Netlify Functions cannot host.
+#
+# All boards / segments / campaigns / chat-thread persistence falls back to
+# localStorage per-browser when /api/v1/* is unreachable — see
+# apps/web/src/api/*-client.ts. The redirect below short-circuits API calls
+# to a 502 envelope so the fallback path engages on the first attempt
+# instead of blocking on a slow upstream timeout.
+
+[build]
+  base    = "."
+  publish = "apps/web/dist"
+  # Turbo with --filter=@hermes/web auto-builds the contracts workspace
+  # via the ^build dependency in turbo.json before running the web build.
+  command = "corepack enable && pnpm install --frozen-lockfile && pnpm turbo run build --filter=@hermes/web"
+
+[build.environment]
+  NODE_VERSION = "20"
+  # pnpm version pinned in package.json (packageManager field).
+  NPM_FLAGS    = "--version"  # forces Netlify to skip its npm install step
+  # Skip puppeteer / heavy optional deps if any package pulls them in transitively.
+  PUPPETEER_SKIP_DOWNLOAD = "true"
+
+# ─── Redirects (order matters — first match wins) ──────────────────────────
+
+# 1. Stub the live API. Returns the static envelope below; *-client.ts
+#    catches the !res.ok and writes/reads localStorage instead.
+[[redirects]]
+  from   = "/api/*"
+  to    = "/api-disabled.json"
+  status = 502
+  force  = true
+
+# 2. SPA history fallback for react-router (BrowserRouter). Every other
+#    path serves index.html so deep links like /chat/thread-001 work on
+#    direct load + browser refresh.
+[[redirects]]
+  from   = "/*"
+  to    = "/index.html"
+  status = 200

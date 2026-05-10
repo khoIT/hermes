@@ -1,0 +1,5 @@
+{
+  "code": "DEMO_MODE_API_DISABLED",
+  "message": "Netlify demo build does not host catalog-api. Clients fall back to localStorage; see apps/web/src/api/*-client.ts.",
+  "deployment": "netlify-frontend-only"
+}

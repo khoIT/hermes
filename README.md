@@ -232,6 +232,25 @@ pnpm start      # Serve web on port 3000
 
 See `docs/deployment-guide.md` for detailed runbook.
 
+### Production (Netlify — frontend-only demo)
+
+`netlify.toml` ships at the repo root and is wired for `apps/web` only.
+`catalog-api` and `query-svc` are NOT deployed — Netlify Functions can't
+host a long-running NestJS app + pg-boss workers + Postgres pool.
+All board / segment / campaign / chat persistence falls back to
+localStorage per-browser (see `apps/web/src/api/*-client.ts`).
+
+```bash
+# One-time: connect the repo in the Netlify dashboard.
+# Build command, publish dir, and SPA redirects are read from netlify.toml.
+# Auto-deploys on push to the configured branch.
+```
+
+Single-platform shape suits the May-12 stakeholder demo. For multi-user
+shared state, deploy `catalog-api` separately (Render / Fly / Railway)
+plus Postgres on Neon/Supabase, and remove the `/api/*` redirect rule
+in `netlify.toml`.
+
 ---
 
 ## Contributing
