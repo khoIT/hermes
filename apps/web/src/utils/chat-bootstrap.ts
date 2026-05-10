@@ -29,7 +29,7 @@ import { thread008 } from '../data/chat/threads/thread-008-pt-whale-recall';
 import { threadDemoLivops2026 } from '../data/chat/threads/thread-demo-livops-2026';
 import { pushRecent, clearRecent } from './recent-items-store';
 
-const BOOTSTRAP_VERSION = 'v6-260510-2050';
+const BOOTSTRAP_VERSION = 'v9-260510-2144';
 const VERSION_KEY = 'hermes.chat.bootstrap.version';
 
 /** Canonical fixture set — order matters: insertion order drives recent-items.
