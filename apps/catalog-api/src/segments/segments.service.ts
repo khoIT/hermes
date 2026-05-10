@@ -59,6 +59,7 @@ export class SegmentsService {
       description: (input.desc as string) ?? '',
       filters: (input.filters ?? []) as never,
       criteria: (input.criteria ?? null) as never,
+      sourceThreadId: (input.sourceThreadId as string | undefined) ?? null,
       version: 1,
       createdAt: now,
       updatedAt: now,

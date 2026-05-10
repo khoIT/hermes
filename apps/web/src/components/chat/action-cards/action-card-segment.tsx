@@ -9,6 +9,7 @@ import { createSegment } from '../../../api/segments-client';
 import { pushRecent } from '../../../utils/recent-items-store';
 import { notifyRecentChanged } from '../../sidebar/recent-items';
 import { toast } from '../../ui/toast';
+import { useActiveThreadId } from '../../../utils/active-thread-context';
 import type { ActionCardSegmentPayload } from '../../../data/chat/response-types';
 
 interface Props {
@@ -17,6 +18,7 @@ interface Props {
 
 export function ActionCardSegment({ payload }: Props) {
   const navigate = useNavigate();
+  const activeThreadId = useActiveThreadId();
   const [status, setStatus] = React.useState<ActionCardStatus>(
     payload.createdId ? 'confirmed' : 'preview',
   );
@@ -30,6 +32,7 @@ export function ActionCardSegment({ payload }: Props) {
       const result = await createSegment({
         name: payload.name,
         description: payload.description,
+        sourceThreadId: activeThreadId ?? undefined,
       });
       setCreatedId(result.id);
       setStatus('confirmed');

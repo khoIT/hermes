@@ -26,15 +26,19 @@ import { thread005 } from '../data/chat/threads/thread-005-pt6-gem-burn-research
 import { thread006 } from '../data/chat/threads/thread-006-cfm-tier-roi-research';
 import { thread007 } from '../data/chat/threads/thread-007-cfm-loss-streak-multi';
 import { thread008 } from '../data/chat/threads/thread-008-pt-whale-recall';
+import { threadDemoLivops2026 } from '../data/chat/threads/thread-demo-livops-2026';
 import { pushRecent, clearRecent } from './recent-items-store';
 
-const BOOTSTRAP_VERSION = 'v3-260510-1635';
+const BOOTSTRAP_VERSION = 'v4-260510-1815';
 const VERSION_KEY = 'hermes.chat.bootstrap.version';
 
-/** Canonical fixture set — order matters: insertion order drives recent-items. */
+/** Canonical fixture set — order matters: insertion order drives recent-items.
+ *  threadDemoLivops2026 is last in the array so it is pushed FIRST to recents
+ *  (reverse-insert logic below) and appears at the top of the sidebar. */
 const THREADS: Conversation[] = [
   thread001, thread002, thread004,
   thread005, thread006, thread007, thread008,
+  threadDemoLivops2026,
 ];
 
 const CANONICAL_IDS = new Set(THREADS.map(t => t.id));

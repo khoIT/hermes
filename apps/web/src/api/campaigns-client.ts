@@ -13,6 +13,8 @@ export interface CreateCampaignPayload {
   description?: string;
   type: 'realtime' | 'scheduled' | 'onetime';
   segmentId?: string;
+  /** Chat thread that originated this campaign via action card. */
+  sourceThreadId?: string;
 }
 
 export interface CreateCampaignResult {

@@ -10,6 +10,8 @@ import { thread005Turns } from './threads/thread-005-pt6-gem-burn-research';
 import { thread006Turns } from './threads/thread-006-cfm-tier-roi-research';
 import { thread007Turns } from './threads/thread-007-cfm-loss-streak-multi';
 import { thread008Turns } from './threads/thread-008-pt-whale-recall';
+import { threadDemoLivops2026Turns } from './threads/thread-demo-livops-2026';
+
 
 export interface RegistryEntry {
   assistantMsg: ChatMessage;
@@ -40,6 +42,11 @@ const ENTRIES: Array<[string, string, RegistryEntry]> = [
   ['thread-008', 'Tighten cohort',               { assistantMsg: thread008Turns.tighten }],
   ['thread-008', 'Compare to active whales',     { assistantMsg: thread008Turns.active }],
   ['thread-008', 'Build at-risk whale segment',  { assistantMsg: thread008Turns.build, isTerminal: true }],
+
+  // ─── thread-demo-livops-2026: full arc Board → Segment → Campaign ────────
+  ['thread-demo-livops-2026', "Who's most at risk right now?",  { assistantMsg: threadDemoLivops2026Turns.atRisk }],
+  ['thread-demo-livops-2026', 'Build a rescue intervention',    { assistantMsg: threadDemoLivops2026Turns.campaign }],
+  // "Activate" chip removed from T3 followUps; no registry entry needed.
 ];
 
 const REGISTRY = new Map<string, RegistryEntry>(
@@ -52,4 +59,21 @@ function makeKey(threadId: string, userText: string): string {
 
 export function lookupNextTurn(threadId: string, userText: string): RegistryEntry | null {
   return REGISTRY.get(makeKey(threadId, userText)) ?? null;
+}
+
+/**
+ * Generic fallback response for off-script free-text input.
+ * Returns a short narrative + 2 follow-up chips that map to real scripted paths.
+ */
+export function genericFallbackResponse(_text: string): Omit<import('../../utils/chat-store').ChatMessage, 'id' | 'createdAt'> {
+  return {
+    role: 'assistant',
+    sections: [
+      {
+        type: 'narrative',
+        payload: { text: "Let me explore that angle — here's what stands out for your game's live-ops right now." },
+      },
+    ],
+    followUps: ['Show me at-risk segments', 'Compare to last week'],
+  };
 }

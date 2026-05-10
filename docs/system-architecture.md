@@ -1,6 +1,6 @@
 # System Architecture
 
-**Last updated:** 2026-05-09 · Phase 11
+**Last updated:** 2026-05-10 · Phase 12 (Chat ↔ Artifact Connectivity)
 
 ---
 
@@ -85,6 +85,36 @@ Hermes bridges two independent, substrate-specific platforms within a unified au
 ```
 
 **Why static?** PRD requirement (no fetch, offline demo). Crawler outputs committed to git. Real Trino integration happens post-May-12 via query-svc live queries.
+
+---
+
+## 2.5 Chat ↔ Artifact Reverse Navigation (May-12 Phase 12)
+
+```
+ChatThread (T1: "Show me weapon owners")
+    │
+    ├─ AssistantResponse + UniversalCtaRow
+    │   [🎯 Save as segment]  [📊 Pin to board]  [📣 Build campaign]
+    │   │
+    │   └─ QuickSegmentDialog (inline)
+    │       └─ POST /segments { predicate, sourceThreadId: "thread-xxx" }
+    │           │
+    │           ▼
+    │       Postgres segments table
+    │       [id, name, predicate, sourceThreadId ←────┐
+    │                                                  │
+    │       SegmentDetail page                    ─────┘
+    │       ├─ <SourceThreadPill threadId="xxx">
+    │       │   [<Avatar>] Back to "Show me weapon owners"
+    │       │   ↓ click
+    │       ▼ ChatThread T1 (restored)
+```
+
+New in May-12: `sourceThreadId` persisted on segment/campaign POSTs (via `useActiveThreadId()` context hook) and displayed as a clickable reverse-navigation pill on detail pages. Enables fluid artifact ↔ source-thread navigation within a single user session.
+
+**Contracts:** `sourceThreadId?: string` added to `HermesSegment` and `HermesCampaign`.
+
+**DB:** Migration `0012_add_source_thread_id.sql` adds nullable columns to segments + campaigns.
 
 ---
 

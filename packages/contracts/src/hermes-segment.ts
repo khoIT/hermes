@@ -110,5 +110,7 @@ export const HermesSegment = z.object({
   drift: z.boolean().optional(),
   status: z.enum(['active', 'draft', 'stale', 'archived']).optional(),
   usedByCampaigns: z.number().int().nonnegative().optional(),
+  /** ID of the chat thread that originated this segment, when agent-drafted via action card */
+  sourceThreadId: z.string().optional(),
 });
 export type HermesSegment = z.infer<typeof HermesSegment>;

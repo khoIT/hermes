@@ -8,7 +8,7 @@
  * pre-baked T1 response, then T2/T3 advance via multi-turn-registry.
  */
 
-export type PromptCategory = 'research' | 'segment';
+export type PromptCategory = 'demo' | 'research' | 'segment';
 
 export interface SuggestedPrompt {
   id: string;
@@ -19,6 +19,13 @@ export interface SuggestedPrompt {
 }
 
 export const SUGGESTED_PROMPTS: SuggestedPrompt[] = [
+  // ── Demo arc: Board → Segment → Campaign in ≤90s ─────────────────────────
+  {
+    id: 'cfm-arpdau-demo',
+    category: 'demo',
+    threadId: 'thread-demo-livops-2026',
+    text: 'Why is CFM ARPDAU dipping last quarter?',
+  },
   {
     id: 'pt6-gem-burn',
     category: 'research',
@@ -46,6 +53,7 @@ export const SUGGESTED_PROMPTS: SuggestedPrompt[] = [
 ];
 
 export const CATEGORY_LABEL: Record<PromptCategory, string> = {
+  demo: 'Demo · Full arc',
   research: 'Deep research → Board',
   segment: 'Find features → Segment',
 };

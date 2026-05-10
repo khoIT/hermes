@@ -16,7 +16,7 @@ import { thread005 } from '../data/chat/threads/thread-005-pt6-gem-burn-research
 import { thread006 } from '../data/chat/threads/thread-006-cfm-tier-roi-research';
 import { thread007 } from '../data/chat/threads/thread-007-cfm-loss-streak-multi';
 import { thread008 } from '../data/chat/threads/thread-008-pt-whale-recall';
-import { lookupNextTurn } from '../data/chat/multi-turn-registry';
+import { lookupNextTurn, genericFallbackResponse } from '../data/chat/multi-turn-registry';
 import type { ChatMessage } from './chat-store';
 
 const THREAD_LOOKUP: Record<string, ChatMessage | undefined> = {
@@ -29,7 +29,8 @@ const THREAD_LOOKUP: Record<string, ChatMessage | undefined> = {
   'thread-008': thread008.messages[1],
 };
 
-const SOFT_HINT_TEXT = "Try one of the follow-ups above — I'm running pre-scripted demos for now.";
+// Kept for reference; superseded by genericFallbackResponse for all miss paths.
+const _SOFT_HINT_TEXT = "Try one of the follow-ups above — I'm running pre-scripted demos for now.";
 
 /** Build an assistant response. `threadId` enables multi-turn registry routing. */
 export function respondToText(
@@ -57,13 +58,6 @@ export function respondToText(
     if (canned) return { ...canned, credits: intent.credits ?? canned.credits };
   }
 
-  // 3. Soft-hint fallback when mid-flow free-text doesn't match
-  if (threadId) {
-    return {
-      role: 'assistant',
-      sections: [{ type: 'soft_hint', payload: { text: SOFT_HINT_TEXT } }],
-    };
-  }
-
-  return CANNED_RESPONSES.fallback!;
+  // 3. Generic fallback — off-script text (mid-flow or new thread with no intent match)
+  return genericFallbackResponse(userText);
 }

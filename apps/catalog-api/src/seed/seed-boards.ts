@@ -20,6 +20,8 @@ type Db = NodePgDatabase<typeof schema>;
 interface SampleBoard {
   id: string;
   name: string;
+  /** Phase 4: reverse-link to originating chat thread. */
+  sourceThreadId?: string;
   sections: { id: string; title: string; isExpanded: boolean }[];
   cards: { sectionId: string; widget: Record<string, unknown> }[];
 }
@@ -190,7 +192,18 @@ const WHALE_AT_RISK_BOARD: SampleBoard = {
   ],
 };
 
-const SAMPLE_BOARDS: SampleBoard[] = [LOSS_STREAK_BOARD, WHALE_AT_RISK_BOARD];
+// Phase 4: demo arc board — pre-seeded so "Pin to LiveOps 2026" from the demo
+// thread finds an existing board rather than creating a stub. sourceThreadId
+// links back to thread-demo-livops-2026 for the ContinueInChatPill.
+const LIVOPS_2026_BOARD: SampleBoard = {
+  id: 'bd-livops-2026-demo',
+  name: 'LiveOps 2026',
+  sourceThreadId: 'thread-demo-livops-2026',
+  sections: SECTIONS_DEFAULT,
+  cards: [],
+};
+
+const SAMPLE_BOARDS: SampleBoard[] = [LOSS_STREAK_BOARD, WHALE_AT_RISK_BOARD, LIVOPS_2026_BOARD];
 
 export async function seedSampleBoards(db: Db): Promise<void> {
   const ownerName = 'system · livops-2026';
@@ -198,6 +211,9 @@ export async function seedSampleBoards(db: Db): Promise<void> {
 
   for (const sample of SAMPLE_BOARDS) {
     // Insert board row (idempotent) — keeps prior seed runs safe.
+    // Note: sourceThreadId lives on board_cards (per-card), not boards table,
+    // so we don't forward sample.sourceThreadId here; it is set automatically
+    // when the chat pin action posts a card with sourceThreadId in the payload.
     await db.insert(schema.boards).values({
       id: sample.id,
       name: sample.name,

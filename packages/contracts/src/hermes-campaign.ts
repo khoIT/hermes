@@ -77,6 +77,8 @@ export const HermesCampaign = z.object({
   author: HermesCampaignAuthor,
   /** Opportunity ID when agent-drafted */
   agentRef: z.string().optional(),
+  /** ID of the chat thread that originated this campaign, when agent-drafted via action card */
+  sourceThreadId: z.string().optional(),
   /** Daily fire estimate and unique players/week for real-time campaigns */
   estimatedFiresPerDay: z.number().optional(),
   estimatedUniquePlayers7d: z.number().optional(),

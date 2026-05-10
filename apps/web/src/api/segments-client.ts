@@ -12,6 +12,8 @@ export interface CreateSegmentPayload {
   description?: string;
   /** Predicate JSON; loosely typed at this layer. */
   predicate?: unknown;
+  /** Chat thread that originated this segment via action card. */
+  sourceThreadId?: string;
 }
 
 export interface CreateSegmentResult {

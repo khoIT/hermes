@@ -16,6 +16,7 @@ import {
 import { pushRecent } from '../../../utils/recent-items-store';
 import { notifyRecentChanged } from '../../sidebar/recent-items';
 import { toast } from '../../ui/toast';
+import { useActiveThreadId } from '../../../utils/active-thread-context';
 import type { ChatMessage } from '../../../utils/chat-store';
 import type {
   PinToBoardPayload, WidgetPayload,
@@ -27,18 +28,25 @@ interface PinToBoardSectionProps {
   message: ChatMessage;
   /** All messages in the thread, in order — searched for snapshot id. */
   threadMessages?: ChatMessage[];
+  /**
+   * Optional override: supply the widget directly instead of resolving it by
+   * widgetSnapshotId. Used by UniversalCtaRow which already holds the widget
+   * from extractPrefillContext.
+   */
+  forceWidget?: import('../../../data/chat/response-types').DataWidget;
 }
 
 export function PinToBoardSection({
-  payload, message, threadMessages,
+  payload, message, threadMessages, forceWidget,
 }: PinToBoardSectionProps) {
   const [pinned, setPinned] = React.useState(false);
   const [busy, setBusy] = React.useState(false);
   const [boardId, setBoardId] = React.useState<string | null>(null);
+  const activeThreadId = useActiveThreadId();
 
   const widget = React.useMemo(
-    () => findWidgetSnapshot(payload.widgetSnapshotId, message, threadMessages),
-    [payload.widgetSnapshotId, message, threadMessages]
+    () => forceWidget ?? findWidgetSnapshot(payload.widgetSnapshotId, message, threadMessages),
+    [forceWidget, payload.widgetSnapshotId, message, threadMessages]
   );
 
   const onPin = async () => {
@@ -52,7 +60,9 @@ export function PinToBoardSection({
       if (!board) {
         board = await createBoard(payload.boardName);
       }
-      await pinCard(board.id, widget);
+      // Pass activeThreadId so board cards track their source thread →
+      // enables SourceThreadPill and ContinueInChatPill on /canvas/:id.
+      await pinCard(board.id, widget, activeThreadId ?? undefined);
       pushRecent('boards', {
         id: board.id, title: board.name, updatedAt: new Date().toISOString(),
       });

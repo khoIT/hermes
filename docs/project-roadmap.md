@@ -1,6 +1,6 @@
 # Project Roadmap
 
-**Last updated:** 2026-05-09 · Phase 11 final polish
+**Last updated:** 2026-05-10 · Phase 12 Chat ↔ Artifact Connectivity
 
 ---
 
@@ -35,6 +35,29 @@
 **May 12 Readiness:** Ready for alignment meeting. Demo runs offline; no VPN required.
 
 **Known Limitations:** See `docs/demo-known-limitations.md`.
+
+---
+
+## Phase 12: May 10–12, 2026 — Chat ↔ Artifact Connectivity (IN PROGRESS → COMPLETE)
+
+**Scope:** Unified agent surface. Adds reverse navigation (artifact → source thread), universal inline CTAs on every assistant response, quick-create dialogs, and a guided 90s demo arc.
+
+**Deliverables (Phases 1–4, May-12 critical):**
+- Demo polish: Campaign confirm navigates to detail; off-script chat routes through fallback handler; user messages get HelpCircle prefix.
+- Reverse navigation: `sourceThreadId` persisted on segment/campaign POSTs (DB migration `0012`); `<SourceThreadPill>` renders reverse link on detail headers.
+- Universal CTAs: `<UniversalCtaRow>` on every `<AssistantResponse>` with 🎯 Save · 📊 Pin · 📣 Build; smart-hides when redundant.
+- Quick dialogs: `<QuickSegmentDialog>` and `<QuickCampaignDialog>` for inline creation.
+- Active thread context: `useActiveThreadId()` hook via `apps/web/src/utils/active-thread-context.tsx`.
+- Demo arc thread: Pre-seeded `thread-demo-livops-2026` chains all three artifact types with `<RestartDemoChip>` for re-seeding.
+- Warmup script: `scripts/pre-demo-warmup.ps1` pre-caches endpoints before live demo.
+
+**Contracts:** `HermesSegment` + `HermesCampaign` gained `sourceThreadId?: string`.
+
+**Files modified:** ~30 (chat components, utils, contracts, segments/campaigns clients, board/segment/campaign detail pages).
+
+**Status:** Phases 1–4 delivered for May-12 demo. Phases 5–6 (refinement playbooks, broader rollout) deferred to post-demo.
+
+**Known deferral:** Plan `260510-0045-agents-compose-canvas` reverted from `completed` → `pending` (zero code exists; separate track).
 
 ---
 

@@ -22,6 +22,7 @@ import { ResponseActionBar } from './response-action-bar';
 import { FollowUps } from './follow-ups';
 import { PinToBoardSection } from './sections/pin-to-board-section';
 import { SoftHint } from './sections/soft-hint';
+import { UniversalCtaRow } from './universal-cta-row';
 
 interface AssistantResponseProps {
   message: ChatMessage;
@@ -42,6 +43,17 @@ interface AssistantResponseProps {
 export function AssistantResponse({
   message, onFollowUp, onPin, renderActionCard, threadMessages,
 }: AssistantResponseProps) {
+  // Compute which universal CTAs are already covered by explicit sections
+  const hiddenCtas = React.useMemo(() => {
+    const hidden = new Set<'segment' | 'board' | 'campaign'>();
+    for (const s of message.sections ?? []) {
+      if (s.type === 'action_card_segment') hidden.add('segment');
+      if (s.type === 'pin_to_board') hidden.add('board');
+      if (s.type === 'action_card_campaign') hidden.add('campaign');
+    }
+    return hidden;
+  }, [message.sections]);
+
   // Aggregate narrative text for Copy action
   const copyText = React.useMemo(() => {
     const parts: string[] = [];
@@ -111,6 +123,9 @@ export function AssistantResponse({
             return null;
         }
       })}
+
+      {/* Universal CTA row — smart-hides when redundant sections present */}
+      <UniversalCtaRow response={message} hiddenCtas={hiddenCtas} />
 
       {/* Action bar */}
       <ResponseActionBar copyText={copyText} credits={message.credits} />

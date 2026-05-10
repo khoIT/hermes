@@ -15,7 +15,7 @@ interface ScriptedPromptsSectionProps {
   onPick: (prompt: SuggestedPrompt) => void;
 }
 
-const CATEGORIES: PromptCategory[] = ['research', 'segment'];
+const CATEGORIES: PromptCategory[] = ['demo', 'research', 'segment'];
 
 export function ScriptedPromptsSection({ onPick }: ScriptedPromptsSectionProps) {
   return (

@@ -26,6 +26,7 @@ type CreateInput = {
   channel?: string;
   status?: string;
   payload?: Record<string, unknown>;
+  sourceThreadId?: string | null;
 };
 
 @Injectable()
@@ -82,6 +83,7 @@ export class CampaignsService {
       start: 'Ongoing',
       end: '',
       payload: (input.payload ?? {}) as never,
+      sourceThreadId: input.sourceThreadId ?? null,
       version: 1,
       createdAt: now,
       updatedAt: now,

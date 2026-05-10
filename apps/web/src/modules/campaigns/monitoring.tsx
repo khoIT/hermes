@@ -11,8 +11,11 @@ import { allCampaigns } from '../../data/catalog/campaigns';
 import { UpliftChart } from './_components/uplift-chart';
 import { ExperimentAgentPanel } from './_components/experiment-agent-panel';
 import { SampleFiresTable } from './_components/sample-fires-table';
+import { SourceThreadPill } from '../../components/chat-rail/source-thread-pill';
+import { ContinueInChatPill } from '../../components/chat-rail/continue-in-chat-pill';
 import { pushRecent } from '../../utils/recent-items-store';
 import { notifyRecentChanged } from '../../components/sidebar/recent-items';
+import { getThreadTitle } from '../../utils/thread-title-lookup';
 
 const HEALTH_SPARKLINE = [3200, 3280, 3350, 3420, 3380, 3450, 3500, 3420, 3480, 3520, 3410, 3460, 3440, 3480];
 
@@ -29,6 +32,11 @@ export default function CampaignMonitoringPage() {
 
   const campaign = allCampaigns.find(c => c.id === id) ?? allCampaigns.find(c => c.id === 'cmp-cfm-407')!;
   const isAnchor = campaign.id === 'cmp-cfm-407';
+
+  // Source-thread reverse-link — renders pill when campaign was created from chat.
+  // HermesCampaign.sourceThreadId is declared in the contract; no cast needed.
+  const sourceThreadId: string | undefined = campaign.sourceThreadId;
+  const sourceThreadTitle = sourceThreadId ? (getThreadTitle(sourceThreadId) ?? 'chat thread') : null;
 
   // Track recent: log a visit once we know which campaign rendered.
   React.useEffect(() => {
@@ -50,8 +58,16 @@ export default function CampaignMonitoringPage() {
         </div>
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16, flexWrap: 'wrap' }}>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontFamily: T.fDisp, fontSize: 32, textTransform: 'uppercase', color: T.n950, lineHeight: 1, marginBottom: 8 }}>
-              {campaign.displayName}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 8 }}>
+              <div style={{ fontFamily: T.fDisp, fontSize: 32, textTransform: 'uppercase', color: T.n950, lineHeight: 1 }}>
+                {campaign.displayName}
+              </div>
+              {/* Reverse-link pill — Phase 2: back to originating chat thread */}
+              <SourceThreadPill
+                threadId={sourceThreadId}
+                variant="header"
+                prefix="💬 Last asked"
+              />
             </div>
             {/* Status + active duration */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
@@ -113,6 +129,31 @@ export default function CampaignMonitoringPage() {
         </div>
       </div>
 
+      {/* Source-thread banner — Phase 2 gated, no-op until sourceThreadId + lookup available */}
+      {sourceThreadTitle && sourceThreadId && (
+        <div style={{
+          margin: '12px 40px 0', padding: '10px 16px', borderRadius: 8,
+          background: T.purpleSoft, border: '1px solid #e9d5ff',
+          display: 'flex', alignItems: 'center', gap: 10,
+          fontFamily: T.fSans, fontSize: 13, color: T.n700,
+        }}>
+          <span style={{ fontSize: 16 }}>🎯</span>
+          <span>Activated · Source:</span>
+          <button
+            onClick={() => navigate(`/chat/${sourceThreadId}`)}
+            style={{
+              fontFamily: T.fSans, fontSize: 13, fontWeight: 600,
+              color: T.purple500, background: 'none', border: 'none',
+              cursor: 'pointer', padding: 0, textDecoration: 'underline',
+            }}
+          >
+            {sourceThreadTitle}
+          </button>
+          <span>→</span>
+        </div>
+      )}
+
+      <ContinueInChatPill threadId={sourceThreadId} />
       <div style={{ padding: '24px 40px', maxWidth: 1100 }}>
 
         {/* Health snapshot */}

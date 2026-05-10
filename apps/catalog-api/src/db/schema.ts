@@ -99,6 +99,8 @@ export const segments = pgTable('segments', {
   filters: jsonb('filters').notNull(),                // SegmentFilter[]
   criteria: jsonb('criteria'),                        // SegmentCriteria | null
   version: integer('version').notNull().default(1),
+  /** Chat thread that originated this segment via action card — nullable, no backfill needed */
+  sourceThreadId: text('source_thread_id'),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 }, (t) => ({

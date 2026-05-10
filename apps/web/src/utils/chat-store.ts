@@ -39,6 +39,12 @@ export interface ChatMessage {
   followUps?: string[];
   /** Cosmetic credits counter (PRD §6). */
   credits?: number;
+  /**
+   * Phase 4 demo flag — when true, Phase 3's universal-CTA row is hidden so
+   * the demo's curated follow-up chips are the singular forward path.
+   * Non-breaking optional field; ignored by all non-Phase-3 renderers.
+   */
+  suppressUniversalCtas?: boolean;
   createdAt: string;
 }
 

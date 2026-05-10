@@ -6,6 +6,8 @@ import React from 'react';
 import { Outlet, useParams } from 'react-router-dom';
 import { DetailTabs } from './detail-tabs';
 import { allSegments } from '../../../data/catalog/segments';
+import { SourceThreadPill } from '../../../components/chat-rail/source-thread-pill';
+import { ContinueInChatPill } from '../../../components/chat-rail/continue-in-chat-pill';
 import { pushRecent } from '../../../utils/recent-items-store';
 import { notifyRecentChanged } from '../../../components/sidebar/recent-items';
 
@@ -28,10 +30,24 @@ export function SegmentDetailLayout() {
   }, [id]);
 
   if (!id) return <Outlet />;
+
+  const seg = allSegments.find(s => s.id === id);
+  const sourceThreadId = seg?.sourceThreadId;
+
   return (
     <>
       <DetailTabs segmentId={id} />
+      {sourceThreadId && (
+        <div style={{ padding: '6px 24px 0' }}>
+          <SourceThreadPill
+            threadId={sourceThreadId}
+            variant="header"
+            prefix="💬 Last asked"
+          />
+        </div>
+      )}
       <Outlet />
+      <ContinueInChatPill threadId={sourceThreadId} />
     </>
   );
 }

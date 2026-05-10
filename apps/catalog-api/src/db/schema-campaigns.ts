@@ -41,6 +41,8 @@ export const campaigns = pgTable('campaigns', {
   // Action payload (offer / message / cooldown / holdout). Loose JSON now;
   // a dedicated zod-validated shape lives in @hermes/contracts/campaign.ts.
   payload: jsonb('payload').notNull().default({}),
+  /** Chat thread that originated this campaign via action card — nullable, no backfill needed */
+  sourceThreadId: text('source_thread_id'),
   version: integer('version').notNull().default(1),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),

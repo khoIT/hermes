@@ -1,6 +1,6 @@
 # Codebase Summary — Entry Point for New Sessions
 
-**Last updated:** 2026-05-09 · Phase 11
+**Last updated:** 2026-05-10 · Phase 12 (Chat ↔ Artifact Connectivity)
 
 This document is your reference when onboarding to Hermes. Read this first when starting a new session.
 
@@ -175,6 +175,24 @@ T.transitions   // smooth, snappy for animations
 - `FeaturePill` — feature name + latency badge
 - `AudienceBand` — sticky segment audience overview band
 - `Histogram`, `Sparkline` — recharts-based visualizations
+
+---
+
+## 5.5 Chat ↔ Artifact Connectivity (May-12 Demo)
+
+**New in Phase 12 (May 10–12):** Unified agent experience tying chat surface to segments, campaigns, and boards. Key surfaces:
+
+- **Reverse navigation:** Every segment/campaign detail displays `<SourceThreadPill>` (if `sourceThreadId` persisted) linking back to originating chat thread. Pill shows avatar + thread title.
+- **Universal CTAs:** Every `<AssistantResponse>` renders `<UniversalCtaRow>` with 🎯 Save as segment · 📊 Pin to board · 📣 Build campaign. Smart-hides when payload already includes matching `action_card_*` sections.
+- **Quick dialogs:** `<QuickSegmentDialog>` and `<QuickCampaignDialog>` spawn inline from CTAs for rapid creation without leaving chat.
+- **Active thread context:** `useActiveThreadId()` hook via `apps/web/src/utils/active-thread-context.tsx` lets action cards access current thread and persist `sourceThreadId` on segment/campaign POST.
+- **Demo arc thread:** Pre-seeded `thread-demo-livops-2026` chains Board pin → Segment confirm → Campaign activate in ≤90s with `<RestartDemoChip>` for re-seeding.
+- **Demo polish:** Campaign action card Confirm navigates to `/campaigns/{id}`; off-script chat routes through `genericFallbackResponse()`; user messages/headers prefixed with HelpCircle icon.
+
+**Implementation notes:**
+- `sourceThreadId?: string` added to `HermesSegment` and `HermesCampaign` contracts.
+- DB migration `0012_add_source_thread_id.sql` adds nullable `source_thread_id` columns to segments + campaigns tables.
+- Warmup script `scripts/pre-demo-warmup.ps1` pre-caches loader + audience-count + segments-list before live demo.
 
 ---
 

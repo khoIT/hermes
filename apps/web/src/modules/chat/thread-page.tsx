@@ -19,6 +19,7 @@ import { AssistantResponse } from '../../components/chat/assistant-response';
 import { ChatInputBox } from '../../components/chat/chat-input-box';
 import { ActionCardSegment } from '../../components/chat/action-cards/action-card-segment';
 import { ActionCardCampaign } from '../../components/chat/action-cards/action-card-campaign';
+import { ActiveThreadProvider } from '../../utils/active-thread-context';
 import type {
   ActionCardSegmentPayload, ActionCardCampaignPayload,
 } from '../../data/chat/response-types';
@@ -101,6 +102,7 @@ export default function ChatThreadPage() {
   const [first, ...rest] = conv.messages;
 
   return (
+    <ActiveThreadProvider threadId={id}>
     <div style={{
       display: 'flex', flexDirection: 'column',
       minHeight: '100vh',
@@ -109,7 +111,7 @@ export default function ChatThreadPage() {
     }}>
       <div style={{ flex: 1, paddingBottom: 80 }}>
         {first?.role === 'user' && first.text && (
-          <ThreadHeader question={first.text} />
+          <ThreadHeader question={first.text} threadId={id} />
         )}
         {rest.map(m =>
           m.role === 'user'
@@ -143,5 +145,6 @@ export default function ChatThreadPage() {
         />
       </div>
     </div>
+    </ActiveThreadProvider>
   );
 }
