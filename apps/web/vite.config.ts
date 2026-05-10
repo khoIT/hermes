@@ -1,6 +1,21 @@
-import { defineConfig } from 'vite';
+import { defineConfig, createLogger } from 'vite';
 import react from '@vitejs/plugin-react';
 import type { IncomingMessage, ServerResponse } from 'http';
+
+// Vite logs `[vite] http proxy error: <path>` on every connection-level
+// failure (ECONNREFUSED / ECONNRESET / ETIMEDOUT) BEFORE our `proxy.on('error')`
+// handler runs. During NestJS `--watch` reloads catalog-api drops its
+// listener for ~200ms, which spams the dev console with noise that's
+// harmless (the loader already retries with 1s/2s/4s backoff). Filter
+// these specific lines out of the logger.
+const baseLogger = createLogger();
+const quietLogger = {
+  ...baseLogger,
+  error(msg: string, options?: Parameters<typeof baseLogger.error>[1]) {
+    if (typeof msg === 'string' && msg.includes('[vite] http proxy error')) return;
+    baseLogger.error(msg, options);
+  },
+};
 
 // Vite's default behavior: when an upstream server is unreachable
 // (ECONNREFUSED, ECONNRESET, ETIMEDOUT) the proxy returns HTTP 500 with no
@@ -31,6 +46,7 @@ function proxyUnreachable(targetLabel: string) {
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
+  customLogger: quietLogger,
   server: {
     port: 5173,
     strictPort: true,
