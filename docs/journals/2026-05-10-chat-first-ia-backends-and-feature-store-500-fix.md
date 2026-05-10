@@ -90,3 +90,24 @@ apps/web/src/data/catalog/features/_loader.ts:
 - `apps/catalog-api/db/schema-campaigns.ts`, `schema-boards.ts` (new)
 - `apps/catalog-api/drizzle/0011_campaigns_boards.sql` (migration)
 - `packages/contracts/src/campaign.ts`, `board.ts` (type extensions)
+
+---
+
+## Addendum (2026-05-10 PM) — Long-Tail Boot Starvation
+
+After shipping the wire-level + client-level error fixes above, the recurring "Feature Store unavailable" pattern returned in a different form. Even with proper 502 envelope + actionable banner, the loader would give up forever after 3 retries totaling ~7s. Common trigger: cook commands that rebuild the workspace cause catalog-api's NestJS `--watch` to take >7s to fully recover, leaving the user stuck on the unavailable page until manual Retry click or hard reload.
+
+### Root cause
+`_loader.ts` had a fixed `RETRY_BACKOFF_MS = [1_000, 2_000, 4_000]`. After exhausting it, `scheduleNextRetry` returned silently — status stayed at 'error' indefinitely. Sufficient for a 5-second cold start; insufficient for cook-induced rebuilds that take 10–30s.
+
+### Fix
+- `_loader.ts`: extend retry chain with **unbounded 8s tail** (`STEADY_RETRY_MS = 8_000`). Loader now keeps polling every 8s until catalog-api answers, instead of giving up.
+- `_loader.ts`: install one-time recovery hooks on `window.online` and `document.visibilitychange` events. When tab refocuses or network reconnects while in 'error' state, immediately attempt a fresh fetch (cancels any pending timer).
+- Vite proxy error log: `customLogger` filter for `[vite] http proxy error` lines so the dev console isn't spammed during NestJS hot-reload windows.
+
+### Prevention
+Do NOT shrink the retry chain. Do NOT add retry caps. The unbounded tail is intentional — dev ergonomics demand the page recovers automatically when the backend comes up, even if that takes 30+ seconds. If you need to bound retries, add a kill switch via env flag, not a hardcoded ceiling.
+
+### Files modified (addendum)
+- `apps/web/src/data/catalog/features/_loader.ts` (unbounded backoff + recovery hooks)
+- `apps/web/vite.config.ts` (customLogger filter for proxy noise)

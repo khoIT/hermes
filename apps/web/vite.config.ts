@@ -1,20 +1,39 @@
-import { defineConfig, createLogger } from 'vite';
+import { defineConfig, createLogger, type Logger } from 'vite';
 import react from '@vitejs/plugin-react';
 import type { IncomingMessage, ServerResponse } from 'http';
 
-// Vite logs `[vite] http proxy error: <path>` on every connection-level
-// failure (ECONNREFUSED / ECONNRESET / ETIMEDOUT) BEFORE our `proxy.on('error')`
-// handler runs. During NestJS `--watch` reloads catalog-api drops its
-// listener for ~200ms, which spams the dev console with noise that's
-// harmless (the loader already retries with 1s/2s/4s backoff). Filter
-// these specific lines out of the logger.
+// Vite spams `[vite] http proxy error: <path>` + the full stack on every
+// connection-level failure (ECONNREFUSED / ECONNRESET / ETIMEDOUT) during
+// the brief catalog-api startup window (NestJS `--watch` compiles for a
+// few seconds before binding :3001). The web loader recovers automatically
+// (1s/2s/4s burst + unbounded 8s tail + visibility recovery hook), so the
+// log spam is pure noise.
+//
+// What Vite logs internally:
+//   logger.error(chalk.red('http proxy error:') + '\n' + err.stack, {error})
+// The `[vite]` prefix is added by the logger's render step, NOT present in
+// the msg string. So our filter matches on the raw substring `http proxy error`
+// (and double-checks the LogErrorOptions.error code is a transient code).
+//
+// NOTE: explicit delegation (not spread) because Vite mutates the logger's
+// `hasWarned` state at runtime; a spread would freeze that state at config
+// load time and break duplicate-warning suppression elsewhere in Vite.
+const TRANSIENT_PROXY_CODES = new Set(['ECONNREFUSED', 'ECONNRESET', 'ETIMEDOUT', 'ENOTFOUND']);
 const baseLogger = createLogger();
-const quietLogger = {
-  ...baseLogger,
-  error(msg: string, options?: Parameters<typeof baseLogger.error>[1]) {
-    if (typeof msg === 'string' && msg.includes('[vite] http proxy error')) return;
+const quietLogger: Logger = {
+  info: (msg, options) => baseLogger.info(msg, options),
+  warn: (msg, options) => baseLogger.warn(msg, options),
+  warnOnce: (msg, options) => baseLogger.warnOnce(msg, options),
+  error: (msg, options) => {
+    const isProxyMsg = typeof msg === 'string' && msg.includes('http proxy error');
+    const errCode = (options?.error as NodeJS.ErrnoException | undefined)?.code;
+    const transient = !!errCode && TRANSIENT_PROXY_CODES.has(errCode);
+    if (isProxyMsg && transient) return;
     baseLogger.error(msg, options);
   },
+  clearScreen: (type) => baseLogger.clearScreen(type),
+  hasErrorLogged: (error) => baseLogger.hasErrorLogged(error),
+  get hasWarned() { return baseLogger.hasWarned; },
 };
 
 // Vite's default behavior: when an upstream server is unreachable
