@@ -445,7 +445,7 @@ export default function SegmentsLibraryPage() {
                     seg={s}
                     last={i === gSegs.length - 1}
                     onView={() => navigate(`/segments/${s.id}`)}
-                    onEdit={() => navigate(`/segments/new?from=draft-${s.id}`)}
+                    onEdit={() => navigate(`/segments/${s.id}/predicate?edit=1`)}
                   />
                 ))}
               </div>

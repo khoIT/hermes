@@ -18,10 +18,8 @@ const SEGMENT_TABS: SegmentTab[] = [
   { label: 'Overview',     sub: '',             end: true },
   { label: 'Composition',  sub: 'composition' },
   { label: 'Users',        sub: 'users' },
+  { label: 'Predicate',    sub: 'predicate' },
   { label: 'Campaigns',    sub: 'campaigns' },
-  { label: 'Monitoring',   sub: 'monitoring' },
-  { label: 'Threshold',    sub: 'threshold' },
-  { label: 'Canvas',       sub: 'canvas' },
 ];
 
 interface DetailTabsProps {

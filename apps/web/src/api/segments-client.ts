@@ -1,26 +1,35 @@
 /**
- * segments-client — minimal fetch wrapper for catalog-api segments.
+ * segments-client — fetch wrapper for catalog-api segments.
  * Falls back to a localStorage stub when the backend is unavailable so
  * the demo still produces a navigable /segments/:id page.
+ *
+ * Override map: catalog `allSegments` is a static module import, so
+ * predicate edits must round-trip through `segmentOverrides` to be
+ * visible to consumers. `useSegment(id)` (in segment-overrides.ts)
+ * reads override-then-catalog.
  */
 import { authFetch } from './auth-fetch';
+import type { PredicateAST } from '@hermes/contracts';
+import { applySegmentOverride } from '../utils/segment-overrides';
 
 const API_BASE = '/api/v1';
 
 export interface CreateSegmentPayload {
   name: string;
   description?: string;
-  /** Predicate JSON; loosely typed at this layer. */
   predicate?: unknown;
-  /** Chat thread that originated this segment via action card. */
   sourceThreadId?: string;
 }
 
 export interface CreateSegmentResult {
   id: string;
   name: string;
-  /** True when the response came from the live backend, false when stubbed. */
   live: boolean;
+}
+
+export interface UpdateSegmentPayload {
+  predicate?: PredicateAST;
+  displayName?: string;
 }
 
 const STUB_KEY = 'hermes.stub.segments';
@@ -50,5 +59,39 @@ export async function createSegment(payload: CreateSegmentPayload): Promise<Crea
   } catch (err) {
     console.warn('[segments-client] live POST failed, stubbing:', err);
     return stubCreate(payload);
+  }
+}
+
+/**
+ * PATCH /api/v1/segments/:id with the new predicate (or other patch fields).
+ * Always writes the override map locally so the UI re-renders even when the
+ * backend route isn't available — demo machines stay navigable.
+ */
+export async function updateSegment(id: string, patch: UpdateSegmentPayload): Promise<{ live: boolean }> {
+  applySegmentOverride(id, patch);
+  try {
+    const res = await authFetch(`${API_BASE}/segments/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(patch),
+    });
+    if (!res.ok) {
+      throw new Error(`PATCH /segments/${id} ${res.status}`);
+    }
+    return { live: true };
+  } catch (err) {
+    console.warn('[segments-client] live PATCH failed, override-only:', err);
+    return { live: false };
+  }
+}
+
+/** Trigger a backend rebuild — best-effort; falls back to no-op for the demo. */
+export async function rebuildSegment(id: string): Promise<{ live: boolean }> {
+  try {
+    const res = await authFetch(`${API_BASE}/segments/${id}/rebuild`, {
+      method: 'POST',
+    });
+    return { live: res.ok };
+  } catch {
+    return { live: false };
   }
 }

@@ -1,6 +1,13 @@
 /**
  * ActionCardSegment — POSTs to /api/v1/segments on Confirm, then swaps to
  * confirmed view with View link to /segments/:id.
+ *
+ * Canonical chat-side segment creation flow:
+ *   1. createSegment({ name, description, sourceThreadId }) → POST /api/v1/segments
+ *   2. navigate(`/segments/${result.id}`) → lands on Overview tab
+ *   3. user clicks Predicate tab → reads predicate
+ *   4. (optional) clicks Edit → updateSegment(id, patch) on Save (override-map refresh)
+ *   5. SourceThreadPill on detail header returns to source thread
  */
 import React from 'react';
 import { useNavigate } from 'react-router-dom';

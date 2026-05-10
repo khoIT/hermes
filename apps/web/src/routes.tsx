@@ -4,7 +4,7 @@
  * to either the chat landing or the canonical loss-streak thread.
  */
 import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 
 // -- Welcome (former Home, moved in Phase 10)
 import WelcomePage from './modules/welcome/page';
@@ -37,12 +37,14 @@ import ExploreStubPage from './modules/explore/stub';
 // -- Module 03: Segments
 import SegmentsLibraryPage      from './modules/segments/library';
 import SegmentsCanvasPage       from './modules/segments/canvas';
-import SegmentsThresholdPage    from './modules/segments/threshold-deep';
 import SegmentsHandoffPage      from './modules/segments/handoff-modal';
-import SegmentsMonitoringPage   from './modules/segments/monitoring';
 import SegmentsPatternsPage     from './modules/segments/patterns';
+import SegmentsOverviewPage     from './modules/segments/overview';
+import SegmentsCompositionPage  from './modules/segments/composition';
+import SegmentsUsersPage        from './modules/segments/users';
+import SegmentsPredicatePage    from './modules/segments/predicate';
+import SegmentsCampaignsTabPage from './modules/segments/campaigns-tab';
 import { SegmentDetailLayout }  from './modules/segments/_components/detail-layout';
-import { ComingSoon }           from './components/empty-state/coming-soon';
 
 // -- Module 04: Campaigns
 import CampaignsLibraryPage     from './modules/campaigns/library';
@@ -54,6 +56,12 @@ import CampaignPrelaunchPage    from './modules/campaigns/prelaunch';
 import CampaignHandoffPage      from './modules/campaigns/handoff-modal';
 import CampaignMonitoringPage   from './modules/campaigns/monitoring';
 import CampaignsPatternsPage    from './modules/campaigns/patterns';
+
+/** Navigate that preserves the current search string + hash. */
+function RedirectWithSearch({ to }: { to: string }) {
+  const { search, hash } = useLocation();
+  return <Navigate to={`${to}${search}${hash}`} replace />;
+}
 
 export function AppRoutes() {
   return (
@@ -93,16 +101,18 @@ export function AppRoutes() {
       <Route path="/segments"                    element={<SegmentsLibraryPage />} />
       <Route path="/segments/new"                element={<SegmentsCanvasPage />} />
       <Route path="/segments/patterns"           element={<SegmentsPatternsPage />} />
-      {/* Segment detail — nested under SegmentDetailLayout for sub-tab strip */}
+      {/* Segment detail — nested under SegmentDetailLayout for hero header + sub-tab strip */}
       <Route path="/segments/:id" element={<SegmentDetailLayout />}>
-        <Route index               element={<SegmentsMonitoringPage />} />
-        <Route path="threshold"    element={<SegmentsThresholdPage />} />
+        <Route index               element={<SegmentsOverviewPage />} />
+        <Route path="composition"  element={<SegmentsCompositionPage />} />
+        <Route path="users"        element={<SegmentsUsersPage />} />
+        <Route path="predicate"    element={<SegmentsPredicatePage />} />
+        <Route path="campaigns"    element={<SegmentsCampaignsTabPage />} />
         <Route path="handoff"      element={<SegmentsHandoffPage />} />
-        <Route path="monitoring"   element={<SegmentsMonitoringPage />} />
-        <Route path="composition"  element={<ComingSoon title="Composition" body="Per-feature breakdown of who lands in this segment — cohort heatmap by tenure, drop-off curve by predicate clause, and overlap with sibling segments." />} />
-        <Route path="users"        element={<ComingSoon title="Users" body="Sample of frozen UIDs in the latest build with last-event timestamps. Useful for spot-checking that the predicate is selecting the right people." />} />
-        <Route path="campaigns"    element={<ComingSoon title="Campaigns" body="Cross-reference of every campaign that targets this segment — status, last send, observed lift." />} />
-        <Route path="canvas"       element={<ComingSoon title="Canvas" body="Visual canvas view of the segment predicate — node-style representation of cascading clauses with feature pills." />} />
+        {/* Redirects for legacy URLs — preserve search/hash */}
+        <Route path="canvas"       element={<RedirectWithSearch to="../predicate" />} />
+        <Route path="monitoring"   element={<RedirectWithSearch to=".." />} />
+        <Route path="threshold"    element={<RedirectWithSearch to="../predicate" />} />
       </Route>
 
       {/* 09-17 — Campaigns */}
