@@ -7,6 +7,10 @@ import { SidebarItem } from './sidebar-item';
 import { SidebarSubheader } from './sidebar-subheader';
 import { ChatContextMenu } from './chat-context-menu';
 import { getRecent, type RecentModule } from '../../utils/recent-items-store';
+import { useI18n } from '../../i18n/i18n-provider';
+import {
+  localizedSegmentNameById, localizedCampaignNameById, localizedThreadTitleById,
+} from '../../i18n/use-localized-names';
 
 interface RecentItemsProps {
   module: RecentModule;
@@ -26,6 +30,7 @@ export function RecentItems({ module, seeAllTo, hrefFor, visible = 4, subheader,
   // Re-read on render — sidebar mounts once, so we expose a cheap re-fetch
   // hook via window event for other code paths to trigger.
   const [rawItems, setItems] = React.useState(() => getRecent(module));
+  const { lang } = useI18n();
 
   React.useEffect(() => {
     const handler = () => setItems(getRecent(module));
@@ -34,6 +39,13 @@ export function RecentItems({ module, seeAllTo, hrefFor, visible = 4, subheader,
   }, [module]);
 
   const items = filter ? rawItems.filter(i => filter({ id: i.id, title: i.title })) : rawItems;
+
+  const localize = (id: string, title: string): string => {
+    if (module === 'segments')  return localizedSegmentNameById(id, title, lang);
+    if (module === 'campaigns') return localizedCampaignNameById(id, title, lang);
+    if (module === 'chats')     return localizedThreadTitleById(id, title, lang);
+    return title;
+  };
 
   if (items.length === 0) {
     return (
@@ -50,17 +62,20 @@ export function RecentItems({ module, seeAllTo, hrefFor, visible = 4, subheader,
   return (
     <>
       {subheader && <SidebarSubheader>{subheader}</SidebarSubheader>}
-      {shown.map(item => (
-        <SidebarItem
-          key={item.id}
-          label={item.title}
-          to={item.href ?? hrefFor?.(item.id) ?? `${seeAllTo}/${item.id}`}
-          indent
-          trailing={module === 'chats' ? (
-            <ChatContextMenu threadId={item.id} threadTitle={item.title} />
-          ) : undefined}
-        />
-      ))}
+      {shown.map(item => {
+        const label = localize(item.id, item.title);
+        return (
+          <SidebarItem
+            key={item.id}
+            label={label}
+            to={item.href ?? hrefFor?.(item.id) ?? `${seeAllTo}/${item.id}`}
+            indent
+            trailing={module === 'chats' ? (
+              <ChatContextMenu threadId={item.id} threadTitle={label} />
+            ) : undefined}
+          />
+        );
+      })}
       {items.length > visible && (
         <SidebarItem
           label={`See all... (${items.length})`}

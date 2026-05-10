@@ -9,6 +9,8 @@ import { Search } from 'lucide-react';
 import { T, Icon } from '../../theme';
 import { listThreads } from '../../utils/chat-store';
 import { bucketByDate, BUCKET_LABELS, type DateBucket } from '../../utils/date-buckets';
+import { useI18n } from '../../i18n/i18n-provider';
+import { localizedThreadTitleById } from '../../i18n/use-localized-names';
 
 interface CmdKModalProps {
   open: boolean;
@@ -25,11 +27,18 @@ const ORDERED_BUCKETS: DateBucket[] = ['today', 'yesterday', 'last7Days', 'older
 
 export function CmdKModal({ open, onClose }: CmdKModalProps) {
   const navigate = useNavigate();
+  const { lang } = useI18n();
   const [query, setQuery] = React.useState('');
   const [focused, setFocused] = React.useState(0);
   const inputRef = React.useRef<HTMLInputElement>(null);
 
-  const threads = React.useMemo(() => listThreads() as ThreadRow[], [open, query]);
+  // Localize titles upfront so search matches the language the user sees.
+  const threads = React.useMemo(
+    () => (listThreads() as ThreadRow[]).map(t => ({
+      ...t, title: localizedThreadTitleById(t.id, t.title, lang),
+    })),
+    [open, lang],
+  );
 
   const filtered = React.useMemo(() => {
     if (!query.trim()) return threads;
@@ -85,7 +94,7 @@ export function CmdKModal({ open, onClose }: CmdKModalProps) {
         onKeyDown={onKeyDown}
         style={{
           width: 600, maxWidth: '92vw', maxHeight: 500,
-          background: '#fff', borderRadius: 12,
+          background: T.surface, borderRadius: 12,
           boxShadow: '0 20px 50px rgba(0,0,0,0.3)',
           display: 'flex', flexDirection: 'column',
           fontFamily: T.fSans,

@@ -8,6 +8,7 @@ import type { HermesCampaign, HermesCampaignGoal4r, HermesTriggerType } from '@h
 import { T, Badge } from '../../theme';
 import { BarSparkline } from './bar-sparkline';
 import type { CampaignFixture } from '../../data/catalog/_welcome-fixtures';
+import { useLocalizedCampaignName } from '../../i18n/use-localized-names';
 
 interface ActiveCampaignRowProps {
   campaign: HermesCampaign;
@@ -41,6 +42,7 @@ export const ActiveCampaignRow = React.memo<ActiveCampaignRowProps>(({
 }) => {
   const navigate = useNavigate();
   const [hover, setHover] = React.useState(false);
+  const localizedName = useLocalizedCampaignName(campaign);
   const lift = fixture?.weekLift ?? null;
   const measuring = lift === null;
   const liftColor = measuring
@@ -80,7 +82,7 @@ export const ActiveCampaignRow = React.memo<ActiveCampaignRowProps>(({
           overflow: 'hidden',
           textOverflow: 'ellipsis',
         }}>
-          {campaign.displayName}
+          {localizedName}
         </div>
         <div style={{
           fontFamily: T.fMono,

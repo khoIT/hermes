@@ -15,6 +15,7 @@ import { T } from '../../theme';
 import { allSegments } from '../../data/catalog/segments';
 import type { HermesSegment } from '@hermes/contracts';
 import { useTopbarTrailing } from '../../utils/topbar-trailing-context';
+import { useLocalizedSegmentName } from '../../i18n/use-localized-names';
 import {
   FilterDropdownChip,
   PopoverChip,
@@ -116,6 +117,7 @@ function SegmentRow({
   seg, onView, onEdit, last,
 }: { seg: HermesSegment; onView: () => void; onEdit: () => void; last: boolean }) {
   const [hovered, setHovered] = React.useState(false);
+  const localizedName = useLocalizedSegmentName(seg);
   const spark = synthSpark(seg);
   const authorLabel =
     seg.author === 'agent-drafted' ? 'Agent-drafted' :
@@ -147,7 +149,7 @@ function SegmentRow({
             fontStyle: 'italic', fontSize: 15,
             color: T.n900, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
           }}>
-            {seg.displayName}
+            {localizedName}
           </span>
           {seg.drift && (
             <span style={{
@@ -322,12 +324,12 @@ export default function SegmentsLibraryPage() {
   const campaignActiveCount = campaignFilter !== 'Any' ? 1 : 0;
 
   return (
-    <div style={{ height: '100%', background: '#fff', overflowY: 'auto' }}>
+    <div style={{ height: '100%', background: T.surface, overflowY: 'auto' }}>
       {/* Sticky filter strip — Group by · 4R Goal · Status · Open campaigns.
           Mirrors Feature Store FilterBar so cross-module filter UX matches. */}
       <div style={{
         position: 'sticky', top: 0, zIndex: 14,
-        background: '#fff', borderBottom: `1px solid ${HAIRLINE}`,
+        background: T.surface, borderBottom: `1px solid ${HAIRLINE}`,
         padding: '12px 32px',
       }}>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
@@ -407,7 +409,7 @@ export default function SegmentsLibraryPage() {
                 style={{
                   display: 'inline-flex', alignItems: 'center', gap: 5,
                   fontFamily: T.fSans, fontSize: 12, color: T.n700,
-                  background: '#fff', border: `1px solid ${T.n300}`,
+                  background: T.surface, border: `1px solid ${T.n300}`,
                   borderRadius: 99, padding: '4px 12px', cursor: 'pointer',
                 }}
                 onMouseEnter={e => { e.currentTarget.style.borderColor = ACCENT; e.currentTarget.style.color = ACCENT; }}
@@ -445,7 +447,7 @@ export default function SegmentsLibraryPage() {
               {/* Card */}
               <div style={{
                 border: `1px solid ${HAIRLINE}`,
-                borderRadius: 8, background: '#fff',
+                borderRadius: 8, background: T.surface,
                 overflow: 'hidden',
               }}>
                 {gSegs.map((s, i) => (

@@ -7,7 +7,8 @@ import { useNavigate } from 'react-router-dom';
 import { MessageSquare, ChevronRight } from 'lucide-react';
 import { T, Icon } from '../../theme';
 import { listThreads } from '../../utils/chat-store';
-import { useT } from '../../i18n/i18n-provider';
+import { useT, useI18n } from '../../i18n/i18n-provider';
+import { localizedThreadTitleById } from '../../i18n/use-localized-names';
 
 interface ThreadEntry {
   id: string;
@@ -32,6 +33,7 @@ function relativeTime(iso: string): string {
 export function RecentThreadsPanel() {
   const navigate = useNavigate();
   const t = useT();
+  const { lang } = useI18n();
   const [threads, setThreads] = React.useState<ThreadEntry[]>([]);
 
   React.useEffect(() => {
@@ -71,8 +73,12 @@ export function RecentThreadsPanel() {
           {t('welcome.recentThreads.empty')}
         </div>
       ) : (
-        threads.map(t => (
-          <Row key={t.id} thread={t} onClick={() => navigate(`/chat/${t.id}`)} />
+        threads.map(th => (
+          <Row
+            key={th.id}
+            thread={{ ...th, title: localizedThreadTitleById(th.id, th.title, lang) }}
+            onClick={() => navigate(`/chat/${th.id}`)}
+          />
         ))
       )}
     </div>

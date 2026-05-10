@@ -16,6 +16,7 @@ import { T } from '../../../theme';
 import type { HermesSegment } from '@hermes/contracts';
 import { SourceThreadPill } from '../../../components/chat-rail/source-thread-pill';
 import { toast } from '../../../components/ui/toast';
+import { useLocalizedSegmentName } from '../../../i18n/use-localized-names';
 
 interface Props { segment: HermesSegment }
 
@@ -30,11 +31,12 @@ function fmtBuild(iso?: string): string {
 
 export function SegmentDetailHeader({ segment }: Props) {
   const navigate = useNavigate();
+  const localizedName = useLocalizedSegmentName(segment);
   return (
     <div style={{
       padding: '20px 32px 16px',
       borderBottom: `1px solid ${HAIRLINE}`,
-      background: '#fff',
+      background: T.surface,
     }}>
       {/* Breadcrumb */}
       <div style={{
@@ -46,7 +48,7 @@ export function SegmentDetailHeader({ segment }: Props) {
           Segments
         </Link>
         <span style={{ margin: '0 6px', color: T.n300 }}>/</span>
-        <span style={{ color: T.brand }}>{segment.displayName}</span>
+        <span style={{ color: T.brand }}>{localizedName}</span>
       </div>
 
       {/* Hero row + action bar */}
@@ -58,7 +60,7 @@ export function SegmentDetailHeader({ segment }: Props) {
             color: T.n950, lineHeight: 1, letterSpacing: '0.005em',
             textTransform: 'uppercase',
           }}>
-            {segment.displayName}
+            {localizedName}
           </h1>
           <div style={{
             marginTop: 4, fontFamily: T.fMono, fontSize: 11, color: T.n500,
@@ -143,7 +145,7 @@ function ActionBar({ onSendCampaign, onRebuild }: ActionBarProps) {
         onClick={() => setOverflowOpen(o => !o)}
         aria-label="More actions"
         style={{
-          fontFamily: T.fSans, color: T.n700, background: '#fff',
+          fontFamily: T.fSans, color: T.n700, background: T.surface,
           border: `1px solid ${T.n200}`, borderRadius: 7,
           width: 30, height: 30, display: 'inline-flex',
           alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
@@ -157,7 +159,7 @@ function ActionBar({ onSendCampaign, onRebuild }: ActionBarProps) {
           style={{
             position: 'absolute', top: 'calc(100% + 4px)', right: 0,
             zIndex: 30, minWidth: 160, padding: 4,
-            background: '#fff', border: `1px solid ${T.n200}`,
+            background: T.surface, border: `1px solid ${T.n200}`,
             borderRadius: 8, boxShadow: '0 8px 24px rgba(0,0,0,0.08)',
           }}
         >
@@ -193,7 +195,7 @@ function ToolbarButton({ icon, label, primary, onClick }: ToolbarButtonProps) {
       style={{
         fontFamily: T.fSans, fontSize: 12, fontWeight: primary ? 600 : 500,
         color: primary ? '#fff' : T.n700,
-        background: primary ? T.brand : '#fff',
+        background: primary ? T.brand : T.surface,
         border: `1px solid ${primary ? T.brand : T.n200}`,
         borderRadius: 7, padding: '7px 12px',
         display: 'inline-flex', alignItems: 'center', gap: 6,
