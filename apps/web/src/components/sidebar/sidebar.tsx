@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import {
-  Plus, Clock, Grid, Layers, FileText, Users,
+  Plus, Clock, Layers, FileText, Users,
   Filter, RefreshCw, Send, BookOpen,
 } from 'lucide-react';
 import { T } from '../../theme';
@@ -14,6 +14,7 @@ import { SidebarItem } from './sidebar-item';
 import { RecentItems } from './recent-items';
 import { WorkspacePill } from './workspace-pill';
 import { BottomRow } from './bottom-row';
+import { SidebarFeatureStoreSection } from './sidebar-feature-store-section';
 import { getCollapsed, onCollapsedChange } from '../../utils/sidebar-collapsed-store';
 
 const SIDEBAR_WIDTH_EXPANDED = 260;
@@ -76,19 +77,7 @@ export function Sidebar() {
           />
         </SidebarSection>
 
-        <SidebarSection
-          id="features"
-          icon={Grid}
-          label="Feature Store"
-          to="/feature-store"
-          collapsed={collapsed}
-        >
-          <RecentItems
-            module="features"
-            seeAllTo="/feature-store"
-            hrefFor={name => `/feature-store/${name}`}
-          />
-        </SidebarSection>
+        <SidebarFeatureStoreSection collapsed={collapsed} />
 
         <SidebarSection
           id="boards"

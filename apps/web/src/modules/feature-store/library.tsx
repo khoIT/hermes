@@ -5,14 +5,13 @@
  */
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { T, Button } from '../../theme';
+import { T } from '../../theme';
 import { allFeatures, getAllFeatures, subscribeFeatures } from '../../data/catalog/features/index';
 import { useFeatureLoadStatus } from '../../data/catalog/features/_use-features';
 import { FeaturesUnavailable } from '../../components/features-unavailable';
 import { allSegments } from '../../data/catalog/segments';
 import { allCampaigns } from '../../data/catalog/campaigns';
-import { StatStrip } from './_components/stat-strip';
-import { FilterRail } from './_components/filter-rail';
+import { FilterBar } from './_components/filter-bar';
 import { GroupByControl } from './_components/group-by-control';
 import { FeatureRowCard } from './_components/feature-row-card';
 import { SortControl } from './_components/sort-control';
@@ -20,6 +19,7 @@ import { sortFeatures, type SortStrategy } from './_logic/sort';
 import { groupFeatures, type GroupByStrategy } from './_logic/group';
 import { applyFilter, EMPTY_FILTER, type FilterState } from './_logic/filter';
 import { computeUsageCounts } from './_logic/usage-count';
+import { DRIFT_THRESHOLD } from './_logic/thresholds';
 import type { FeatureUsage } from './_logic/usage-count';
 import type { HermesFeature } from '@hermes/contracts';
 
@@ -60,7 +60,7 @@ export default function FeatureStoreLibraryPage() {
   const [sort, setSort] = React.useState<SortStrategy>('default');
 
   const driftedCount = React.useMemo(
-    () => features.filter((f) => f.analytics.driftScore >= 0.4).length,
+    () => features.filter((f) => f.analytics.driftScore >= DRIFT_THRESHOLD).length,
     [features],
   );
   const recentlyAddedCount = React.useMemo(() => {
@@ -97,16 +97,12 @@ export default function FeatureStoreLibraryPage() {
     <div style={{ minHeight: '100vh', background: T.n50 }}>
       {/* ── Page header (compressed — breadcrumb owns title) ──────────────── */}
       <div style={{
-        padding: '16px 40px 0',
+        padding: '12px 40px 8px',
         background: '#fff', borderBottom: `1px solid ${T.n200}`,
       }}>
-        {/* Hairline StatStrip */}
-        <StatStrip features={features} />
-
         {/* Entry-points strip — 28px chip row */}
         <div style={{
           display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap',
-          padding: '4px 0 12px',
         }}>
           {ENTRY_POINTS.map((ep) => {
             const active =
@@ -160,48 +156,41 @@ export default function FeatureStoreLibraryPage() {
         </div>
       </div>
 
-      {/* ── Body: filter rail + grouped list ──────────────────────────────── */}
-      <div style={{ display: 'flex', padding: '24px 40px', gap: 0, alignItems: 'flex-start' }}>
-        {/* Filter rail */}
-        <FilterRail
-          features={features}
-          state={filterState}
-          onChange={setFilterState}
-        />
+      {/* ── Filter bar — sticky horizontal strip (Phase 2) ────────────────── */}
+      <FilterBar features={features} state={filterState} onChange={setFilterState} />
 
-        {/* Main list */}
-        <div style={{ flex: 1, minWidth: 0 }}>
-          {/* Toolbar: group-by + result count */}
-          <div style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            marginBottom: 16, gap: 12, flexWrap: 'wrap',
-          }}>
-            <GroupByControl value={groupBy} onChange={setGroupBy} />
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <SortControl value={sort} onChange={setSort} />
-              <span style={{ fontFamily: T.fMono, fontSize: 11, color: T.n400 }}>
-                {totalVisible} feature{totalVisible !== 1 ? 's' : ''}
-                {totalVisible < features.length ? ` of ${features.length}` : ''}
-              </span>
-            </div>
+      {/* ── Body: single-column grouped list ──────────────────────────────── */}
+      <div style={{ padding: '16px 40px 32px' }}>
+        {/* Toolbar: group-by + result count */}
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          marginBottom: 16, gap: 12, flexWrap: 'wrap',
+        }}>
+          <GroupByControl value={groupBy} onChange={setGroupBy} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <SortControl value={sort} onChange={setSort} />
+            <span style={{ fontFamily: T.fMono, fontSize: 11, color: T.n400 }}>
+              {totalVisible} feature{totalVisible !== 1 ? 's' : ''}
+              {totalVisible < features.length ? ` of ${features.length}` : ''}
+            </span>
           </div>
-
-          {/* Groups */}
-          {groups.length === 0 ? (
-            <div style={{ fontFamily: T.fSans, fontSize: 13, color: T.n400, padding: '32px 0', textAlign: 'center' }}>
-              No features match the current filters.
-            </div>
-          ) : (
-            groups.map((group) => (
-              <FeatureGroupSection
-                key={group.groupName}
-                groupName={group.groupName}
-                features={group.features}
-                usageMap={USAGE_MAP}
-              />
-            ))
-          )}
         </div>
+
+        {/* Groups */}
+        {groups.length === 0 ? (
+          <div style={{ fontFamily: T.fSans, fontSize: 13, color: T.n400, padding: '32px 0', textAlign: 'center' }}>
+            No features match the current filters.
+          </div>
+        ) : (
+          groups.map((group) => (
+            <FeatureGroupSection
+              key={group.groupName}
+              groupName={group.groupName}
+              features={group.features}
+              usageMap={USAGE_MAP}
+            />
+          ))
+        )}
       </div>
     </div>
   );
