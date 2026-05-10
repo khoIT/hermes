@@ -11,6 +11,7 @@ import { thread006Turns } from './threads/thread-006-cfm-tier-roi-research';
 import { thread007Turns } from './threads/thread-007-cfm-loss-streak-multi';
 import { thread008Turns } from './threads/thread-008-pt-whale-recall';
 import { threadDemoLivops2026Turns } from './threads/thread-demo-livops-2026';
+import { threadDemoAgentLivops2026Turns } from './threads/thread-demo-agent-livops-2026';
 
 
 export interface RegistryEntry {
@@ -42,6 +43,13 @@ const ENTRIES: Array<[string, string, RegistryEntry]> = [
   ['thread-008', 'Tighten cohort',               { assistantMsg: thread008Turns.tighten }],
   ['thread-008', 'Compare to active whales',     { assistantMsg: thread008Turns.active }],
   ['thread-008', 'Build at-risk whale segment',  { assistantMsg: thread008Turns.build, isTerminal: true }],
+
+  // ─── thread-demo-agent-livops-2026: AGENT-FIRST arc — Diagnose → Segment →
+  //     Campaign → Retrospective. Sibling of canonical analyst arc; same
+  //     CFM ARPDAU subject, but tool-call chips + provenance + T4 retro.
+  ['thread-demo-agent-livops-2026', 'Build a rescue segment',          { assistantMsg: threadDemoAgentLivops2026Turns.segment }],
+  ['thread-demo-agent-livops-2026', 'Launch the rescue campaign',      { assistantMsg: threadDemoAgentLivops2026Turns.campaign }],
+  ['thread-demo-agent-livops-2026', 'Show me the 2-week retrospective', { assistantMsg: threadDemoAgentLivops2026Turns.retrospective, isTerminal: true }],
 
   // ─── thread-demo-livops-2026: full arc Board → Segment → Campaign ────────
   // Canonical path

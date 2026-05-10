@@ -125,3 +125,25 @@ export interface PinToBoardPayload {
 export interface SoftHintPayload {
   text: string;
 }
+
+/**
+ * Tool-call chip — single line surfacing a query/computation the agent ran.
+ * Renders as a pill with mono font, dim background, optional duration/row count.
+ * Used to make the "agent doing work" feel concrete in the agent-first demo arc.
+ */
+export interface ToolCallPayload {
+  /** Short label, shown in mono. e.g. "Querying cfm_vn.ranked_match" */
+  label: string;
+  /** Optional postfix detail. e.g. "n=2.1M · 1.4s" */
+  detail?: string;
+  /** Status — controls dot color. Default 'done'. */
+  status?: 'running' | 'done';
+}
+
+/**
+ * Provenance footer — small grey caption beneath a chart/table.
+ * Used to show data source, time window, sample size — grounds claims.
+ */
+export interface ProvenancePayload {
+  text: string;
+}

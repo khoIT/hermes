@@ -22,11 +22,22 @@ import { ActionCardCampaign } from '../../components/chat/action-cards/action-ca
 import { TypingDots } from '../../components/chat-rail/typing-dots';
 import { ActiveThreadProvider } from '../../utils/active-thread-context';
 import { threadDemoLivops2026Turns } from '../../data/chat/threads/thread-demo-livops-2026';
+import { threadDemoAgentLivops2026Turns } from '../../data/chat/threads/thread-demo-agent-livops-2026';
 import type {
   ActionCardSegmentPayload, ActionCardCampaignPayload,
 } from '../../data/chat/response-types';
 
-const DEMO_THREAD_ID = 'thread-demo-livops-2026';
+/** Threads that hard-reset to slim shape on entry and auto-play T1. The
+ *  canonical analyst arc + the agent-first arc both follow this pattern. */
+const DEMO_THREAD_T1: Record<string, typeof threadDemoLivops2026Turns.t1> = {
+  'thread-demo-livops-2026':       threadDemoLivops2026Turns.t1,
+  'thread-demo-agent-livops-2026': threadDemoAgentLivops2026Turns.t1,
+};
+/** First-user-message id used as the hard-reset anchor, per-thread. */
+const DEMO_FIRST_USER_MSG_ID: Record<string, string> = {
+  'thread-demo-livops-2026':       'm-demo-u1',
+  'thread-demo-agent-livops-2026': 'm-agent-u1',
+};
 
 function useThread(id: string | undefined): [Conversation | null, () => void] {
   const [version, setVersion] = React.useState(0);
@@ -67,32 +78,35 @@ export default function ChatThreadPage() {
     }, delayMs);
   }, [refresh]);
 
-  // Demo arc: every entry to /chat/thread-demo-livops-2026 hard-resets to
-  // slim shape (just the initial user prompt) so the demo is repeatable. Guard
-  // ref prevents the reset from firing again as the user advances T1 → T2 → T3
-  // within the same mount.
+  // Demo arcs: every entry hard-resets the thread to slim shape (just the
+  // initial user prompt) so the demo is repeatable. Covers both the canonical
+  // analyst arc and the agent-first arc. Guard ref prevents the reset from
+  // firing again as the user advances T1 → T2 → T3 within the same mount.
   const lastResetIdRef = React.useRef<string | null>(null);
   React.useLayoutEffect(() => {
-    if (id !== DEMO_THREAD_ID) return;
+    if (!id || !DEMO_THREAD_T1[id]) return;
     if (lastResetIdRef.current === id) return;
     lastResetIdRef.current = id;
     const current = getThread(id);
     if (!current || current.messages.length <= 1) return;
+    const firstMsgId = DEMO_FIRST_USER_MSG_ID[id];
     putThread({
       ...current,
-      messages: current.messages.filter(m => m.id === 'm-demo-u1'),
+      messages: current.messages.filter(m => m.id === firstMsgId),
       updatedAt: current.createdAt,
     });
     refresh();
   }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Demo arc auto-play: when the demo thread is in slim shape, schedule T1
-  // with the typing-dot delay.
+  // Demo arc auto-play: when a demo thread is in slim shape, schedule T1
+  // with the typing-dot delay. Per-thread T1 lookup.
   React.useEffect(() => {
-    if (id !== DEMO_THREAD_ID) return;
+    if (!id) return;
+    const t1 = DEMO_THREAD_T1[id];
+    if (!t1) return;
     if (pendingThreadId === id) return;
     if (!conv || conv.messages.length !== 1) return;
-    const { id: _id, createdAt: _ca, ...t1Rest } = threadDemoLivops2026Turns.t1;
+    const { id: _id, createdAt: _ca, ...t1Rest } = t1;
     delayedAppend(id, t1Rest);
   }, [id, conv, pendingThreadId, delayedAppend]);
 

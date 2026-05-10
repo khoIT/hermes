@@ -12,6 +12,7 @@ import type {
   NarrativePayload, H2Payload, WidgetPayload, InsightsPayload,
   ActionCardSegmentPayload, ActionCardCampaignPayload,
   FeatureChipPayload, PinToBoardPayload, SoftHintPayload,
+  ToolCallPayload, ProvenancePayload,
 } from '../../data/chat/response-types';
 import { NarrativePara } from './narrative-para';
 import { ResponseSection } from './response-section';
@@ -22,6 +23,7 @@ import { ResponseActionBar } from './response-action-bar';
 import { FollowUps } from './follow-ups';
 import { PinToBoardSection } from './sections/pin-to-board-section';
 import { SoftHint } from './sections/soft-hint';
+import { ToolCallChip, ProvenanceCaption } from './tool-call-chip';
 import { UniversalCtaRow } from './universal-cta-row';
 
 interface AssistantResponseProps {
@@ -119,6 +121,12 @@ export function AssistantResponse({
             );
           case 'soft_hint':
             return <SoftHint key={i} text={(s.payload as SoftHintPayload).text} />;
+          case 'tool_call': {
+            const p = s.payload as ToolCallPayload;
+            return <ToolCallChip key={i} label={p.label} detail={p.detail} status={p.status} />;
+          }
+          case 'provenance':
+            return <ProvenanceCaption key={i} text={(s.payload as ProvenancePayload).text} />;
           default:
             return null;
         }

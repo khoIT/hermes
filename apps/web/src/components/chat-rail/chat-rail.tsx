@@ -18,6 +18,7 @@ import { respondToText } from '../../utils/chat-respond';
 import { pushRecent } from '../../utils/recent-items-store';
 import { notifyRecentChanged } from '../sidebar/recent-items';
 import { threadDemoLivops2026Turns } from '../../data/chat/threads/thread-demo-livops-2026';
+import { threadDemoAgentLivops2026Turns } from '../../data/chat/threads/thread-demo-agent-livops-2026';
 import { resolvePageContext, type ContextGetters, type PageContext } from '../../utils/page-context-resolver';
 import { allFeatures, getFeatureByName } from '../../data/catalog/features';
 import { allSegments } from '../../data/catalog/segments';
@@ -118,16 +119,20 @@ export function ChatRail({ open, onClose }: ChatRailProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeThreadId, tick]);
 
-  // Demo arc auto-play: when the demo thread becomes active and is in slim
+  // Demo arc auto-play: when a demo thread becomes active and is in slim
   // shape (only the initial user prompt), schedule T1 with the typing-dot
-  // delay. Covers both the explicit prompt click and rail auto-resume cases.
+  // delay. Covers both the canonical analyst arc and the agent-first arc.
   React.useEffect(() => {
     if (!activeThreadId) return;
-    if (activeThreadId !== 'thread-demo-livops-2026') return;
+    const t1 =
+      activeThreadId === 'thread-demo-livops-2026'       ? threadDemoLivops2026Turns.t1 :
+      activeThreadId === 'thread-demo-agent-livops-2026' ? threadDemoAgentLivops2026Turns.t1 :
+      null;
+    if (!t1) return;
     if (pendingThreadId === activeThreadId) return;
     const conv = getThread(activeThreadId);
     if (!conv || conv.messages.length !== 1) return;
-    const { id: _id, createdAt: _ca, ...t1Rest } = threadDemoLivops2026Turns.t1;
+    const { id: _id, createdAt: _ca, ...t1Rest } = t1;
     delayedAppend(activeThreadId, t1Rest);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeThreadId, tick]);

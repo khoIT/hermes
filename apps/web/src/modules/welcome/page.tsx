@@ -11,6 +11,7 @@ import { KpiStrip } from './kpi-strip';
 import { ActiveCampaignsPanel } from './active-campaigns-panel';
 import { StartSomethingPanel } from './start-something-panel';
 import { RecentThreadsPanel } from './recent-threads-panel';
+import { HermesNoticedPanel } from './hermes-noticed-panel';
 
 export default function WelcomePage() {
   return (
@@ -33,6 +34,7 @@ export default function WelcomePage() {
         <ActiveCampaignsPanel />
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           <StartSomethingPanel />
+          <HermesNoticedPanel />
           <RecentThreadsPanel />
         </div>
       </div>

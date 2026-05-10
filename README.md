@@ -80,7 +80,7 @@ Feature Store routes render against live data without extra terminals.
 ```
 hermes/
 ├── apps/
-│   ├── web/              Vite + React 18 · 23 screens · 5 modules
+│   ├── web/              Vite + React 18 · ~24 screens · chat-driven (welcome, chat, segments, campaigns, feature-store, canvas)
 │   ├── catalog-api/      NestJS · metadata service (latent)
 │   └── query-svc/        NestJS · audience query service (latent)
 ├── packages/
@@ -101,13 +101,17 @@ hermes/
 
 | Module | Purpose | Screens |
 |--------|---------|---------|
-| **Feature Store** | Inventory of 67 features · latency tiers · dual-target definitions | 2 |
-| **Segments** | AND-of-OR predicate composition · threshold playground · handoff | 6 |
-| **Campaigns** | Activation authoring · 3 trigger types · journey · monitoring | 9 |
-| **Agents** | AI recommendations · inbox (4 tabs) · opportunity card · drafts | 5 |
-| **Explore** | Discovery surface (nav-only, deferred) | 1 |
+| **Welcome** | LiveOps cockpit — KPI strip, active campaigns, `Hermes noticed` (agent-first demo entry), recent threads | 1 |
+| **Feature Store** | Inventory of 76 features · latency tiers · dual-target definitions | 2 |
+| **Segments** | AND-of-OR predicate composition · threshold playground · handoff · monitoring | 6+ |
+| **Campaigns** | Activation authoring · trigger types · journey · monitoring | 6 |
+| **Chat** | Multi-turn analyst threads + agent-first thread + chat-rail (right gutter) | 2 |
+| **Canvas** | Pinable boards (segments, charts, lineage snapshots) | 2 |
+| **Knowledge / Funnels / Retentions / Playbooks / Explore** | Stubs for future surfaces | 5 |
 
-**All 23 screens routed via TanStack Router · hardcoded demo data (no fetch).**
+**Agent-attribution surfaces** (opportunities, drafts, retrospectives) are integrated into chat threads and the `HermesNoticedPanel` on Welcome — there is no longer a separate `agents/` module. The original `modules/agents/` (Inbox · Opportunity · Drafts · Activity · Settings) was superseded in Phase 12 by the chat-driven experience.
+
+**Demo data is hardcoded; live wiring (catalog-api features) is on by default for the Feature Store.**
 
 ---
 
@@ -149,23 +153,31 @@ Both substrates read shared 67-feature registry. Semantic Management Layer ensur
 
 ---
 
-## Demo Flow (13 Steps)
+## Demo Flows
 
-1. Open Hermes landing
-2. Browse Feature Store → click `consecutive_ranked_losses_streak`
-3. "Use in segment" → Segment canvas
-4. Compose AND-of-OR, adjust threshold slider
-5. Save → Segment handoff modal (Substrate B)
-6. "Use in campaign" → Real-time campaign canvas
-7. Add `event_match_end` trigger + variants
-8. Activate → Campaign handoff modal (Substrate A + B)
-9. View monitoring 2 weeks later (+8.2% lift)
-10. Click Agents module
-11. Open CFM Loss Streak opportunity
-12. Approve & draft → Canvas in review mode
-13. Build → Handoff modal with agent attribution
+The demo offers **two parallel paths** sharing the same CFM ARPDAU subject:
 
-**All 13 steps work end-to-end.** No dead ends. May 12 ready.
+### Path A — Conversational analyst (canonical)
+1. Open Hermes Welcome (`/`)
+2. Click `Why is CFM ARPDAU dipping last quarter?` (scripted prompt)
+3. T1 auto-plays — 3-beat deduction (decompose → cohort split → streak cliff)
+4. Pin charts to **LiveOps 2026** board
+5. Follow-up `Who's most at risk right now?` → T2 (3-filter rescue cohort)
+6. Follow-up `Build a rescue intervention` → T3 (campaign action card)
+7. Cross to canvas / segments / campaigns surfaces via action cards
+
+### Path B — Agent-first (new, additive)
+1. Open Hermes Welcome (`/`)
+2. Click the **`Hermes noticed`** card ("CFM ARPDAU is down 7% vs last 4 weeks…")
+3. Lands in `/chat/thread-demo-agent-livops-2026`
+4. T1 auto-plays — observation + visible **tool-call chips** + chart **provenance footers**
+5. Follow-up `Build a rescue segment` → T2 (3 filters, each grounded in Jan A/B data)
+6. Follow-up `Launch the rescue campaign` → T3 (cost + holdout + auto-pause guardrail)
+7. Follow-up `Show me the 2-week retrospective` → T4 (`+27pp lift`, with Shapley attribution surprise)
+
+Both paths terminate with a complete artifact trail (segment + campaign on Substrate B, handoff on Substrate A + B). Path B additionally closes the loop with a post-launch retrospective.
+
+**Both paths are May-12 ready.** No dead ends.
 
 ---
 

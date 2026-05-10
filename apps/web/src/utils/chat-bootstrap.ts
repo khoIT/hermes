@@ -27,9 +27,10 @@ import { thread006 } from '../data/chat/threads/thread-006-cfm-tier-roi-research
 import { thread007 } from '../data/chat/threads/thread-007-cfm-loss-streak-multi';
 import { thread008 } from '../data/chat/threads/thread-008-pt-whale-recall';
 import { threadDemoLivops2026 } from '../data/chat/threads/thread-demo-livops-2026';
+import { threadDemoAgentLivops2026 } from '../data/chat/threads/thread-demo-agent-livops-2026';
 import { pushRecent, clearRecent, getRecent } from './recent-items-store';
 
-const BOOTSTRAP_VERSION = 'v10-260510-2208';
+const BOOTSTRAP_VERSION = 'v11-260510-2300';
 const VERSION_KEY = 'hermes.chat.bootstrap.version';
 
 // Stale segment-recent IDs to scrub on each bootstrap version bump.
@@ -47,7 +48,17 @@ const THREADS: Conversation[] = [
   threadDemoLivops2026,
 ];
 
-const CANONICAL_IDS = new Set(THREADS.map(t => t.id));
+/** Hidden threads — saved to chat-store so /chat/<id> resolves, but NOT
+ *  pushed into "Recent threads" / sidebar All-Chats. Surface for these is the
+ *  HermesNoticedPanel on /welcome (agent-first demo path). */
+const HIDDEN_THREADS: Conversation[] = [
+  threadDemoAgentLivops2026,
+];
+
+const CANONICAL_IDS = new Set([
+  ...THREADS.map(t => t.id),
+  ...HIDDEN_THREADS.map(t => t.id),
+]);
 
 let bootstrapped = false;
 
@@ -60,6 +71,7 @@ export function bootstrapChatThreads(): void {
     // Already on current canonical set — still upsert to pick up any fixture
     // content edits without disturbing user-created threads or recents order.
     for (const t of THREADS) putThread(t);
+    for (const t of HIDDEN_THREADS) putThread(t);
     return;
   }
 
@@ -79,6 +91,11 @@ export function bootstrapChatThreads(): void {
     putThread(t);
     pushRecent('chats', { id: t.id, title: t.title, updatedAt: t.updatedAt });
   }
+
+  // 3b. Seed hidden threads (agent-first demo path). Saved to chat-store so
+  //     /chat/<id> resolves, but NOT pushed to recents — they surface via the
+  //     HermesNoticedPanel on /welcome instead.
+  for (const t of HIDDEN_THREADS) putThread(t);
 
   // 4. Prune stale segment-recent entries (legacy `s_<timestamp>` ids).
   pruneStaleSegmentRecents();

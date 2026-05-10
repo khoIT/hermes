@@ -215,12 +215,14 @@ through a single source of truth at `apps/web/src/components/_logic/latency-labe
 | Components | shadcn/ui + custom | Primitives + domain-specific (OpportunityCard, etc.) |
 
 **Modules:**
+- `modules/welcome/` — LiveOps cockpit (KPIs, active campaigns, `HermesNoticedPanel`, recent threads)
 - `modules/feature-store/` — Library + detail view, histogram, lineage
 - `modules/segments/` — Library + canvas (AND-of-OR) + threshold playground + handoff modal
-- `modules/campaigns/` — Library + 3 canvas variants + journey + prelaunch + handoff modal
-- `modules/agents/` — Inbox (4 tabs) + opportunity detail + drafts + activity + settings
-- `modules/explore/` — Nav-only stub (full module deferred post-May-12)
-- `modules/_shared/` — Reusable components (OpportunityCard, LatencyBadge, PredicateComposer, etc.)
+- `modules/campaigns/` — Library + canvas variants + journey + prelaunch + handoff modal
+- `modules/chat/` — Landing + thread page; multi-turn scripted threads (`thread-demo-livops-2026` analyst arc, `thread-demo-agent-livops-2026` agent-first arc)
+- `modules/canvas/` — Boards (pinable widget snapshots from chat / feature-store / segments)
+- `modules/knowledge/`, `modules/funnels/`, `modules/retentions/`, `modules/playbooks/`, `modules/explore/` — Stubs for future surfaces
+- Agent-attribution surfaces (opportunities, drafts, activity, retrospectives) are integrated into chat threads + the `HermesNoticedPanel` on Welcome; the original standalone `modules/agents/` from earlier phases was superseded in Phase 12
 
 **Port:** 5173 (dev), 3000 (prod via `serve`)
 

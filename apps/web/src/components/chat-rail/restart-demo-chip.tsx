@@ -1,7 +1,7 @@
 /**
  * RestartDemoChip — small recovery chip rendered in the demo thread header
- * when threadId === 'thread-demo-livops-2026'. Resets the thread to its
- * canonical fixture state without relying on bootstrap (bootstrapped flag
+ * when threadId is one of the canonical demo threads. Resets the thread to
+ * its canonical fixture state without relying on bootstrap (bootstrapped flag
  * stays true across remounts so re-bootstrap never fires).
  *
  * Implementation: delete thread from localStorage, re-seed via putThread
@@ -10,13 +10,17 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { T } from '../../theme';
-import { deleteThread, putThread } from '../../utils/chat-store';
+import { deleteThread, putThread, type Conversation } from '../../utils/chat-store';
 import { threadDemoLivops2026 } from '../../data/chat/threads/thread-demo-livops-2026';
+import { threadDemoAgentLivops2026 } from '../../data/chat/threads/thread-demo-agent-livops-2026';
 
-const DEMO_THREAD_ID = 'thread-demo-livops-2026';
+const DEMO_FIXTURES: Record<string, Conversation> = {
+  'thread-demo-livops-2026':       threadDemoLivops2026,
+  'thread-demo-agent-livops-2026': threadDemoAgentLivops2026,
+};
 
 interface RestartDemoChipProps {
-  /** Only renders when the active thread is the demo thread. */
+  /** Only renders when the active thread is one of the canonical demo threads. */
   threadId: string;
 }
 
@@ -24,15 +28,16 @@ export const RestartDemoChip = React.memo<RestartDemoChipProps>(
   function RestartDemoChip({ threadId }) {
     const navigate = useNavigate();
 
-    if (threadId !== DEMO_THREAD_ID) return null;
+    const fixture = DEMO_FIXTURES[threadId];
+    if (!fixture) return null;
 
     const handleRestart = () => {
       // Delete accumulated state, re-seed from fixture directly (no bootstrap
       // dependency — bootstrapped flag persists across remounts and prevents
       // re-bootstrap from running, causing "Thread not found" otherwise).
-      deleteThread(DEMO_THREAD_ID);
-      putThread(threadDemoLivops2026);
-      navigate(`/chat/${DEMO_THREAD_ID}`);
+      deleteThread(threadId);
+      putThread(fixture);
+      navigate(`/chat/${threadId}`);
     };
 
     return (

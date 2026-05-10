@@ -72,33 +72,43 @@ pnpm refresh-cfm-data
 
 ## 3. Screen Map — Where Each PRD Screen Lives
 
+> **Note (2026-05-10, Phase 12):** The original `modules/agents/` module
+> (Inbox · Opportunity · Drafts · Activity · Settings) has been superseded by
+> the **chat-driven** experience: `modules/welcome/` (cockpit), `modules/chat/`
+> (full thread + chat-rail), `modules/canvas/` (boards), and the agent-first
+> demo path on /welcome (`HermesNoticedPanel` → `thread-demo-agent-livops-2026`).
+> Agent-attribution surfaces (opportunities, drafts, activity) are intentionally
+> not separate screens in the current build — they are integrated into chat
+> threads + welcome cards. References below to a discrete `agents/` module are
+> historical and have been removed from the screen map.
+
 | ID | Screen | File | Module | Status |
 |---|---|---|---|---|
-| 00 | Landing | `modules/home/page.tsx` | shared | ✓ |
+| 00 | Welcome (cockpit) | `modules/welcome/page.tsx` | welcome | ✓ |
 | 01 | Feature Store Library | `modules/feature-store/library.tsx` | feature-store | ✓ |
 | 02 | Feature Detail | `modules/feature-store/detail.tsx` | feature-store | ✓ |
 | 03 | Segment Library | `modules/segments/library.tsx` | segments | ✓ |
 | 04 | Segment Canvas (AND-of-OR) | `modules/segments/canvas.tsx` | segments | ✓ |
 | 05 | Threshold Playground | `modules/segments/threshold-deep.tsx` | segments | ✓ |
 | 06 | Segment Handoff Modal | `modules/segments/handoff-modal.tsx` | segments | ✓ |
-| 07 | Segment Monitoring | `modules/segments/monitoring.tsx` | segments | ✓ |
-| 08 | Segment Patterns | `modules/segments/patterns.tsx` | segments | ✓ |
-| 09 | Campaign Library | `modules/campaigns/library.tsx` | campaigns | ✓ |
-| 10 | Campaign Canvas (Real-time) | `modules/campaigns/canvas/realtime.tsx` | campaigns | ✓ |
-| 11 | Campaign Canvas (Scheduled) | `modules/campaigns/canvas/scheduled.tsx` | campaigns | ✓ |
-| 12 | Campaign Canvas (One-time) | `modules/campaigns/canvas/onetime.tsx` | campaigns | ✓ |
-| 13 | Campaign Journey | `modules/campaigns/journey.tsx` | campaigns | ✓ |
-| 14 | Campaign Prelaunch | `modules/campaigns/prelaunch.tsx` | campaigns | ✓ |
-| 15 | Campaign Handoff Modal | `modules/campaigns/handoff-modal.tsx` | campaigns | ✓ |
-| 16 | Campaign Monitoring | `modules/campaigns/monitoring.tsx` | campaigns | ✓ |
-| 17 | Campaign Patterns | `modules/campaigns/patterns.tsx` | campaigns | ✓ |
-| 18 | Agent Inbox | `modules/agents/inbox.tsx` | agents | ✓ |
-| 19 | Opportunity Detail | `modules/agents/opportunity-detail.tsx` | agents | ✓ |
-| 20 | Draft Canvas (Review) | `modules/agents/drafts.tsx` | agents | ✓ |
-| 21 | Agent Activity | `modules/agents/activity.tsx` | agents | ✓ |
-| 22 | Agent Settings | `modules/agents/settings.tsx` | agents | ✓ |
+| 07 | Segment Patterns | `modules/segments/patterns.tsx` | segments | ✓ |
+| 08 | Campaign Library | `modules/campaigns/library.tsx` | campaigns | ✓ |
+| 09 | Campaign Prelaunch / Canvas | `modules/campaigns/prelaunch.tsx` | campaigns | ✓ |
+| 10 | Campaign Journey | `modules/campaigns/journey.tsx` | campaigns | ✓ |
+| 11 | Campaign Handoff Modal | `modules/campaigns/handoff-modal.tsx` | campaigns | ✓ |
+| 12 | Campaign Monitoring | `modules/campaigns/monitoring.tsx` | campaigns | ✓ |
+| 13 | Campaign Patterns | `modules/campaigns/patterns.tsx` | campaigns | ✓ |
+| 14 | Chat Landing | `modules/chat/landing-page.tsx` | chat | ✓ |
+| 15 | Chat Thread | `modules/chat/thread-page.tsx` | chat | ✓ |
+| 16 | Canvas Library | `modules/canvas/list-page.tsx` | canvas | ✓ |
+| 17 | Canvas Detail (Board) | `modules/canvas/detail-page.tsx` | canvas | ✓ |
+| 18 | Knowledge | `modules/knowledge/page.tsx` | knowledge | ✓ |
+| 19 | Funnels (stub) | `modules/funnels/list-page.tsx` | funnels | stub |
+| 20 | Retentions (stub) | `modules/retentions/list-page.tsx` | retentions | stub |
+| 21 | Playbooks (stub) | `modules/playbooks/list-page.tsx` | playbooks | stub |
+| 22 | Explore (stub) | `modules/explore/stub.tsx` | explore | stub |
 
-**Navigation route structure:** Home → Feature Store / Explore / Segments / Campaigns / Agents (left sidebar, Agents rightmost).
+**Navigation route structure:** Welcome (`/`) → Feature Store / Segments / Campaigns / Canvas / Chat. Chat-rail anchors the right gutter on detail pages. The `HermesNoticedPanel` on Welcome surfaces the agent-first demo entry (`/chat/thread-demo-agent-livops-2026`).
 
 ---
 
@@ -107,15 +117,19 @@ pnpm refresh-cfm-data
 ### 4.1 Handcrafted Catalog Data
 ```
 apps/web/src/data/catalog/
-├── features.ts          67 features (domains, latency tiers, definitions, lineage)
-├── events.ts            47 events (per-event metadata, payloads)
-├── segments.ts          5 demo + 6 fictional segments for UX variety
-├── campaigns.ts         5 representative campaigns + trigger variants
-└── agents/
-    ├── opportunities.ts 9 opportunities (window, confidence, evidence)
-    ├── drafts.ts        3 user-created drafts
-    ├── recommendations.ts 2 analysis recommendations
-    └── activity.ts      3 approval/rejection records
+├── features/             67 features split by domain (latency tiers, definitions, lineage)
+├── events.ts             47 events (per-event metadata, payloads)
+├── segments.ts           demo + fictional segments for UX variety
+└── campaigns.ts          representative campaigns + trigger variants
+```
+
+### 4.2 Chat Threads
+```
+apps/web/src/data/chat/threads/
+├── thread-001..008                     scripted research/segment-build threads
+├── thread-demo-livops-2026.ts          CANONICAL analyst arc (T1→T2→T3 + 6 alts)
+└── thread-demo-agent-livops-2026.ts    AGENT-FIRST arc (T1→T2→T3→T4 retro,
+                                        with tool-call chips + provenance)
 ```
 
 **How to add a new feature:**
