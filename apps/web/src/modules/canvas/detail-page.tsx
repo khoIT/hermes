@@ -101,7 +101,7 @@ export default function CanvasDetailPage() {
           {sec.cards.length === 0 ? (
             <div style={{
               padding: 32, textAlign: 'center', color: T.n500, fontSize: 13,
-              border: `1px dashed ${T.n200}`, borderRadius: 10, background: '#fff',
+              border: `1px dashed ${T.n200}`, borderRadius: 10, background: T.surface,
             }}>
               Pin a widget from chat to see it here.
             </div>
@@ -121,7 +121,7 @@ export default function CanvasDetailPage() {
                   style={{
                     position: 'absolute', top: 12, right: -36,
                     width: 24, height: 24, borderRadius: 9999,
-                    background: '#fff', border: `1px solid ${T.n200}`,
+                    background: T.surface, border: `1px solid ${T.n200}`,
                     cursor: 'pointer',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                   }}

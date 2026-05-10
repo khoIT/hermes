@@ -149,7 +149,7 @@ export default function FeatureStoreDetailPage() {
       <div
         style={{
           padding: '24px 40px 0',
-          background: '#fff',
+          background: T.surface,
           borderBottom: `1px solid ${T.n200}`,
         }}
       >
@@ -358,7 +358,7 @@ export default function FeatureStoreDetailPage() {
               style={{
                 border: `1px solid ${T.n200}`,
                 borderRadius: 8,
-                background: '#fff',
+                background: T.surface,
                 overflow: 'hidden',
               }}
             >
@@ -413,7 +413,7 @@ export default function FeatureStoreDetailPage() {
             style={{
               border: `1px solid ${T.n200}`,
               borderRadius: 8,
-              background: '#fff',
+              background: T.surface,
               padding: '12px',
             }}
           >
@@ -458,13 +458,13 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ feature, storageDescription }
 
     <DescriptionBlock feature={feature} />
 
-    <section style={{ background: '#fff', border: `1px solid ${T.n200}`, borderRadius: 10, padding: 20 }}>
+    <section style={{ background: T.surface, border: `1px solid ${T.n200}`, borderRadius: 10, padding: 20 }}>
       <DefinitionSideBySide feature={feature} />
     </section>
 
     <section
       style={{
-        background: '#fff',
+        background: T.surface,
         border: `1px solid ${T.n200}`,
         borderRadius: 10,
         padding: '14px 20px',

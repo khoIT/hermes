@@ -16,7 +16,7 @@ export function SegmentOverlapTable({ segmentId }: Props) {
   if (rows.length === 0) return null;
   return (
     <div style={{
-      background: '#fff', border: `1px solid ${T.n200}`, borderRadius: 10,
+      background: T.surface, border: `1px solid ${T.n200}`, borderRadius: 10,
       padding: '12px 14px',
     }}>
       <CardHeader title="Segment Overlap" />

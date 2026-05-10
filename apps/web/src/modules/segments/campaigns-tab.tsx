@@ -50,7 +50,7 @@ export default function SegmentsCampaignsTabPage() {
         padding: '60px 32px', maxWidth: 720, margin: '0 auto',
       }}>
         <div style={{
-          background: '#fff', border: `1px solid ${T.n200}`, borderRadius: 12,
+          background: T.surface, border: `1px solid ${T.n200}`, borderRadius: 12,
           padding: '48px 24px', textAlign: 'center',
           display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14,
         }}>
@@ -87,7 +87,7 @@ export default function SegmentsCampaignsTabPage() {
               onClick={() => navigate('/campaigns/patterns')}
               style={{
                 fontFamily: T.fSans, fontSize: 12, color: T.n700,
-                background: '#fff', border: `1px solid ${T.n200}`,
+                background: T.surface, border: `1px solid ${T.n200}`,
                 borderRadius: 7, padding: '8px 14px', cursor: 'pointer',
               }}
             >
@@ -108,7 +108,7 @@ export default function SegmentsCampaignsTabPage() {
         {' '}campaign{matched.length === 1 ? '' : 's'} targeting this segment
       </div>
       <div style={{
-        background: '#fff', border: `1px solid ${T.n200}`, borderRadius: 10,
+        background: T.surface, border: `1px solid ${T.n200}`, borderRadius: 10,
         overflow: 'hidden',
       }}>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>

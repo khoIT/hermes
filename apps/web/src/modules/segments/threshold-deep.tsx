@@ -52,7 +52,7 @@ export default function SegmentsThresholdPage() {
       </div>
 
       {grid.length > 0 && (
-        <div style={{ marginBottom: 20, background: '#fff', border: `1px solid ${T.n200}`, borderRadius: 8, overflow: 'hidden' }}>
+        <div style={{ marginBottom: 20, background: T.surface, border: `1px solid ${T.n200}`, borderRadius: 8, overflow: 'hidden' }}>
           <div style={{
             display: 'grid', gridTemplateColumns: '1fr 1fr 1fr',
             padding: '8px 14px', fontFamily: T.fSans, fontSize: 10, fontWeight: 600,

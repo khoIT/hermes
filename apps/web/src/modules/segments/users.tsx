@@ -49,7 +49,7 @@ export default function SegmentsUsersPage() {
           onClick={onExport}
           style={{
             fontFamily: T.fSans, fontSize: 12, fontWeight: 500, color: T.n700,
-            background: '#fff', border: `1px solid ${T.n200}`,
+            background: T.surface, border: `1px solid ${T.n200}`,
             borderRadius: 7, padding: '7px 12px',
             display: 'inline-flex', alignItems: 'center', gap: 6, cursor: 'pointer',
           }}

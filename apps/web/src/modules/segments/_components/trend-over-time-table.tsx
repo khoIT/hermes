@@ -12,7 +12,7 @@ export function TrendOverTimeTable({ segmentId }: Props) {
   const rows = React.useMemo(() => getTrendOverTime(segmentId), [segmentId]);
   return (
     <div style={{
-      background: '#fff', border: `1px solid ${T.n200}`, borderRadius: 10,
+      background: T.surface, border: `1px solid ${T.n200}`, borderRadius: 10,
       padding: '12px 14px',
     }}>
       <CardHeader title="Trend Over Time" />

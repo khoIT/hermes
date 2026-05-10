@@ -93,7 +93,7 @@ export default function CanvasListPage() {
               onClick={() => navigate(`/canvas/${b.id}`)}
               style={{
                 textAlign: 'left',
-                background: '#fff', border: `1px solid ${T.n200}`, borderRadius: 10,
+                background: T.surface, border: `1px solid ${T.n200}`, borderRadius: 10,
                 padding: 18, cursor: 'pointer',
                 fontFamily: T.fSans,
                 transition: 'box-shadow .12s, border-color .12s',

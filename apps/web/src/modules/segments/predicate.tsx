@@ -219,7 +219,7 @@ function SaveRibbon({ dirty, onSave, onDiscard }: {
     <div style={{
       position: 'fixed', bottom: 16, left: '50%', transform: 'translateX(-50%)',
       zIndex: 25, display: 'flex', alignItems: 'center', gap: 12,
-      background: '#fff', border: `1px solid ${T.n200}`, borderRadius: 10,
+      background: T.surface, border: `1px solid ${T.n200}`, borderRadius: 10,
       boxShadow: '0 8px 24px rgba(0,0,0,0.08)',
       padding: '8px 12px',
     }}>
@@ -233,7 +233,7 @@ function SaveRibbon({ dirty, onSave, onDiscard }: {
         onClick={onDiscard}
         style={{
           fontFamily: T.fSans, fontSize: 12, color: T.n700,
-          background: '#fff', border: `1px solid ${T.n200}`,
+          background: T.surface, border: `1px solid ${T.n200}`,
           borderRadius: 7, padding: '6px 12px', cursor: 'pointer',
         }}
       >Discard</button>
