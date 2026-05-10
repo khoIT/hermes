@@ -86,7 +86,10 @@ export const GroupBlock = React.memo<Props>(({
       borderRadius: 8,
       background: '#fff',
       marginBottom: 8,
-      overflow: 'hidden',
+      // overflow:visible so the InlineSwapPopover (position:absolute, drops
+      // below its row) isn't clipped by the group's bottom edge. Inner
+      // header/footer corners get explicit border-radii so the #fafaf6 fill
+      // doesn't leak past the rounded parent border.
     }}>
       {/* Group header — reference style */}
       <div style={{
@@ -94,6 +97,7 @@ export const GroupBlock = React.memo<Props>(({
         padding: '9px 14px',
         background: '#fafaf6',
         borderBottom: `1px solid ${T.n100}`,
+        borderTopLeftRadius: 7, borderTopRightRadius: 7,
       }}>
         <span style={{ fontFamily: T.fSans, fontSize: 12.5, color: T.n700, flex: 1 }}>
           <span style={{ fontFamily: T.fMono, fontWeight: 600, color: T.n800 }}>
@@ -202,7 +206,11 @@ export const GroupBlock = React.memo<Props>(({
       })}
 
       {/* Add OR row footer */}
-      <div style={{ padding: '8px 14px', background: '#fafaf6', borderTop: `1px solid ${T.n100}` }}>
+      <div style={{
+        padding: '8px 14px', background: '#fafaf6',
+        borderTop: `1px solid ${T.n100}`,
+        borderBottomLeftRadius: 7, borderBottomRightRadius: 7,
+      }}>
         <button
           onClick={onOpenOrRowPicker}
           style={{
