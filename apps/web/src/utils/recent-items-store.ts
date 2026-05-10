@@ -75,3 +75,29 @@ export function setSectionExpanded(section: string, expanded: boolean): void {
     /* no-op */
   }
 }
+
+// ── Sidebar auto-expand helpers ───────────────────────────────────────────────
+
+/**
+ * Maps route prefixes to sidebar section ids.
+ * Section id must match the `id` prop on the corresponding <SidebarSection>.
+ */
+const SIDEBAR_SECTION_ROUTES: Record<string, string[]> = {
+  features:  ['/feature-store'],
+  segments:  ['/segments'],
+  boards:    ['/canvas'],
+  campaigns: ['/campaigns'],
+};
+
+/**
+ * Returns the sidebar section id whose route prefix matches `pathname`,
+ * or null when no match (e.g. root `/` or unrelated routes).
+ */
+export function getSidebarSectionForPath(pathname: string): string | null {
+  for (const [sectionId, prefixes] of Object.entries(SIDEBAR_SECTION_ROUTES)) {
+    if (prefixes.some(p => pathname === p || pathname.startsWith(p + '/'))) {
+      return sectionId;
+    }
+  }
+  return null;
+}

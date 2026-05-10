@@ -41,6 +41,15 @@ export function SidebarSection({
     flat ? false : getSectionExpanded(id)
   );
 
+  // Re-read persisted state when another part of the app (e.g. Sidebar auto-expand
+  // on route change) writes to localStorage and fires this event.
+  React.useEffect(() => {
+    if (flat) return;
+    const handler = () => setExpanded(getSectionExpanded(id));
+    window.addEventListener('hermes:sidebar-expand-changed', handler);
+    return () => window.removeEventListener('hermes:sidebar-expand-changed', handler);
+  }, [id, flat]);
+
   const onToggle = React.useCallback(() => {
     if (flat) return;
     setExpanded(prev => {

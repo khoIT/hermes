@@ -45,6 +45,15 @@ export function SidebarItem({
       : location.pathname === prefix || location.pathname.startsWith(prefix + '/')
   );
 
+  // Scroll active item into view when it becomes active (e.g. after section auto-expands).
+  // block:'nearest' is a no-op when the item is already visible — no jank.
+  const scrollRef = React.useRef<HTMLDivElement>(null);
+  React.useEffect(() => {
+    if (isActive) {
+      scrollRef.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+  }, [isActive]);
+
   // ── Collapsed icon-only row ──────────────────────────────────────────────
   if (collapsed && !indent) {
     const inner = (
@@ -56,12 +65,14 @@ export function SidebarItem({
       />
     );
     if (!to) {
-      return <div onClick={onClick} role="button" tabIndex={0}>{inner}</div>;
+      return <div ref={scrollRef} onClick={onClick} role="button" tabIndex={0}>{inner}</div>;
     }
     return (
-      <NavLink to={to} onClick={onClick} style={{ textDecoration: 'none', display: 'block' }}>
-        {inner}
-      </NavLink>
+      <div ref={scrollRef}>
+        <NavLink to={to} onClick={onClick} style={{ textDecoration: 'none', display: 'block' }}>
+          {inner}
+        </NavLink>
+      </div>
     );
   }
 
@@ -123,12 +134,14 @@ export function SidebarItem({
   );
 
   if (!to) {
-    return <div onClick={onClick} role="button" tabIndex={0}>{inner}</div>;
+    return <div ref={scrollRef} onClick={onClick} role="button" tabIndex={0}>{inner}</div>;
   }
   return (
-    <NavLink to={to} onClick={onClick} style={{ textDecoration: 'none', display: 'block' }}>
-      {inner}
-    </NavLink>
+    <div ref={scrollRef}>
+      <NavLink to={to} onClick={onClick} style={{ textDecoration: 'none', display: 'block' }}>
+        {inner}
+      </NavLink>
+    </div>
   );
 }
 

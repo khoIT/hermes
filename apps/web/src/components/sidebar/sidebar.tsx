@@ -4,6 +4,7 @@
  * so there's no width flash. Items per brainstorm §3.2.
  */
 import React from 'react';
+import { useLocation } from 'react-router-dom';
 import {
   Plus, Clock, Layers, FileText, Users,
   Filter, RefreshCw, Send, BookOpen, MoreHorizontal,
@@ -17,6 +18,7 @@ import { BottomRow } from './bottom-row';
 import { SidebarFeatureStoreSection } from './sidebar-feature-store-section';
 import { CollapseToggle } from './collapse-toggle';
 import { getCollapsed, onCollapsedChange } from '../../utils/sidebar-collapsed-store';
+import { getSidebarSectionForPath, setSectionExpanded } from '../../utils/recent-items-store';
 
 const SIDEBAR_WIDTH_EXPANDED = 260;
 const SIDEBAR_WIDTH_COLLAPSED = 60;
@@ -27,6 +29,19 @@ export function Sidebar() {
   const [collapsed, setCollapsedState] = React.useState<boolean>(() => getCollapsed());
 
   React.useEffect(() => onCollapsedChange(setCollapsedState), []);
+
+  // Auto-expand the matching section when the route changes.
+  // One-shot: writes to localStorage so the section re-reads its persisted state,
+  // then notifies mounted sections via a custom event. User can still collapse
+  // manually after — the next route change to the same section will re-open it.
+  const { pathname } = useLocation();
+  React.useEffect(() => {
+    const sectionId = getSidebarSectionForPath(pathname);
+    if (sectionId) {
+      setSectionExpanded(sectionId, true);
+      window.dispatchEvent(new Event('hermes:sidebar-expand-changed'));
+    }
+  }, [pathname]);
 
   const width = collapsed ? SIDEBAR_WIDTH_COLLAPSED : SIDEBAR_WIDTH_EXPANDED;
 
