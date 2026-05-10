@@ -117,7 +117,7 @@ export function AppRoutes() {
       <Route path="/campaigns/:id"                element={<CampaignMonitoringPage />} />
 
       {/* /agents/* — deleted; redirect to canonical surface */}
-      <Route path="/agents/op/cfm-loss-streak" element={<Navigate to="/chat/thread-003" replace />} />
+      <Route path="/agents/op/cfm-loss-streak" element={<Navigate to="/chat/thread-007" replace />} />
       <Route path="/agents/settings"           element={<Navigate to="/account" replace />} />
       <Route path="/agents/compose"            element={<Navigate to="/" replace />} />
       <Route path="/agents/op/:id"             element={<Navigate to="/" replace />} />

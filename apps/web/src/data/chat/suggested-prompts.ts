@@ -1,31 +1,51 @@
 /**
- * Suggested prompts shown on the chat landing page (PRD §4.2 + brainstorm §3.6).
- * Hermes-flavored, NOT verbatim Actioneer.
+ * Suggested prompts shown on the chat landing page + chat rail empty state.
+ *
+ * Plan 260510-1519: replaces 5 generic prompts with 4 categorized scripted
+ * prompts under 2 pills (Deep research → Board, Find features → Segment).
+ * Each prompt maps to a thread fixture (thread-005..008) seeded by
+ * chat-bootstrap; clicking a prompt creates a new thread and plays its
+ * pre-baked T1 response, then T2/T3 advance via multi-turn-registry.
  */
+
+export type PromptCategory = 'research' | 'segment';
+
 export interface SuggestedPrompt {
   id: string;
   text: string;
+  category: PromptCategory;
+  /** Thread fixture id whose T1 response answers this prompt. */
+  threadId: string;
 }
 
 export const SUGGESTED_PROMPTS: SuggestedPrompt[] = [
   {
-    id: 'cpi-ltv',
-    text: 'Does higher CPI actually produce higher LTV players? Show the correlation across channels',
+    id: 'pt6-gem-burn',
+    category: 'research',
+    threadId: 'thread-005',
+    text: 'Compare PT-6 vs PT-10 gem-burn — did the hoarder branch drain stockpiles?',
   },
   {
-    id: 'segment-drift',
-    text: 'Which segments are drifting outside their expected envelope this week?',
+    id: 'cfm-tier-roi',
+    category: 'research',
+    threadId: 'thread-006',
+    text: 'How are CFM-11 year-end tiers performing on reward-cost vs retention?',
   },
   {
-    id: 'd7-cfm-cohort',
-    text: 'Show D7 retention for CFM 5-game-targeting cohort vs. control',
+    id: 'cfm-loss-streak',
+    category: 'segment',
+    threadId: 'thread-007',
+    text: 'Players hitting consecutive ranked losses — how to intervene?',
   },
   {
-    id: 'churn-features',
-    text: 'What features predict churn for high-spend players?',
-  },
-  {
-    id: 'create-segment-spent-50',
-    text: 'Create a segment of users who spent over $50 in the last 30 days and are at high churn risk',
+    id: 'pt-whale-recall',
+    category: 'segment',
+    threadId: 'thread-008',
+    text: 'Find at-risk PT whales who haven\'t logged in this week',
   },
 ];
+
+export const CATEGORY_LABEL: Record<PromptCategory, string> = {
+  research: 'Deep research → Board',
+  segment: 'Find features → Segment',
+};

@@ -19,8 +19,12 @@ export interface ResponseSection {
     | 'insights'
     | 'action_card_segment'
     | 'action_card_campaign'
-    | 'follow_ups';
-  /** Free-form payload — concrete schemas defined in data/chat/response-types.ts (Phase 3). */
+    | 'follow_ups'
+    // Phase 2 (260510-1519): scripted multi-turn extensions
+    | 'feature_chip'
+    | 'pin_to_board'
+    | 'soft_hint';
+  /** Free-form payload — concrete schemas defined in data/chat/response-types.ts. */
   payload?: unknown;
 }
 

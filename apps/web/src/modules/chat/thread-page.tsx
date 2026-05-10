@@ -87,7 +87,7 @@ export default function ChatThreadPage() {
     // message renders first and the thread layout settles before the
     // (potentially large) widget body lands.
     setTimeout(() => {
-      const response = respondToText(text);
+      const response = respondToText(text, conv.id);
       appendMessage(conv.id, response);
       refresh();
     }, 250);
@@ -118,6 +118,7 @@ export default function ChatThreadPage() {
               <AssistantResponse
                 key={m.id}
                 message={m}
+                threadMessages={conv.messages}
                 onFollowUp={handleSubmit}
                 renderActionCard={(type, payload) =>
                   type === 'action_card_segment'

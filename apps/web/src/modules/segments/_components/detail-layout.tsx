@@ -12,16 +12,17 @@ import { notifyRecentChanged } from '../../../components/sidebar/recent-items';
 export function SegmentDetailLayout() {
   const { id } = useParams<{ id: string }>();
 
-  // Track recent: log a visit once we have a known segment id.
+  // Track recent: log a visit for any segment id, even those not in the
+  // static catalog (e.g. live-created via /api or stubbed by segments-client
+  // when the user lands here from a chat action card).
   React.useEffect(() => {
     if (!id) return;
     const seg = allSegments.find(s => s.id === id);
-    if (!seg) return;
     pushRecent('segments', {
-      id: seg.id,
-      title: seg.displayName,
+      id,
+      title: seg?.displayName ?? id,
       updatedAt: new Date().toISOString(),
-      href: `/segments/${seg.id}`,
+      href: `/segments/${id}`,
     });
     notifyRecentChanged();
   }, [id]);

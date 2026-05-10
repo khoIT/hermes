@@ -11,13 +11,17 @@ import type { ChatMessage } from '../../utils/chat-store';
 import type {
   NarrativePayload, H2Payload, WidgetPayload, InsightsPayload,
   ActionCardSegmentPayload, ActionCardCampaignPayload,
+  FeatureChipPayload, PinToBoardPayload, SoftHintPayload,
 } from '../../data/chat/response-types';
 import { NarrativePara } from './narrative-para';
 import { ResponseSection } from './response-section';
 import { Widget } from './widgets/widget';
+import { FeatureChip } from './widgets/feature-chip';
 import { BulletedInsights } from './bulleted-insights';
 import { ResponseActionBar } from './response-action-bar';
 import { FollowUps } from './follow-ups';
+import { PinToBoardSection } from './sections/pin-to-board-section';
+import { SoftHint } from './sections/soft-hint';
 
 interface AssistantResponseProps {
   message: ChatMessage;
@@ -31,10 +35,12 @@ interface AssistantResponseProps {
     payload: ActionCardSegmentPayload | ActionCardCampaignPayload,
     messageId: string,
   ) => React.ReactNode;
+  /** Full thread message list — used by pin_to_board to look up upstream widget snapshots. */
+  threadMessages?: ChatMessage[];
 }
 
 export function AssistantResponse({
-  message, onFollowUp, onPin, renderActionCard,
+  message, onFollowUp, onPin, renderActionCard, threadMessages,
 }: AssistantResponseProps) {
   // Aggregate narrative text for Copy action
   const copyText = React.useMemo(() => {
@@ -86,6 +92,21 @@ export function AssistantResponse({
             return renderActionCard
               ? <React.Fragment key={i}>{renderActionCard(s.type, s.payload as any, message.id)}</React.Fragment>
               : <ActionCardPlaceholder key={i} kind={s.type} />;
+          case 'feature_chip': {
+            const p = s.payload as FeatureChipPayload;
+            return <FeatureChip key={i} name={p.featureName} />;
+          }
+          case 'pin_to_board':
+            return (
+              <PinToBoardSection
+                key={i}
+                payload={s.payload as PinToBoardPayload}
+                message={message}
+                threadMessages={threadMessages}
+              />
+            );
+          case 'soft_hint':
+            return <SoftHint key={i} text={(s.payload as SoftHintPayload).text} />;
           default:
             return null;
         }

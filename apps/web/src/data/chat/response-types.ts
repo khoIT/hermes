@@ -93,3 +93,21 @@ export interface ActionCardCampaignPayload {
   description?: string;
   createdId?: string;
 }
+
+// ─── Phase 2 (260510-1519): scripted multi-turn extensions ──────────────────
+
+export interface FeatureChipPayload {
+  /** Technical feature name; component fetches /api/v1/features/:name. */
+  featureName: string;
+}
+
+export interface PinToBoardPayload {
+  /** Display name of the target board (auto-create if missing). */
+  boardName: string;
+  /** Stable id of the widget already rendered upstream in this thread. */
+  widgetSnapshotId: string;
+}
+
+export interface SoftHintPayload {
+  text: string;
+}
