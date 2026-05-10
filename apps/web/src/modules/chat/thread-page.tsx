@@ -111,11 +111,11 @@ export default function ChatThreadPage() {
     }}>
       <div style={{ flex: 1, paddingBottom: 80 }}>
         {first?.role === 'user' && first.text && (
-          <ThreadHeader question={first.text} threadId={id} />
+          <ThreadHeader question={first.text} threadId={id} artifact={first.artifact} />
         )}
         {rest.map(m =>
           m.role === 'user'
-            ? <UserMessage key={m.id} text={m.text ?? ''} />
+            ? <UserMessage key={m.id} text={m.text ?? ''} artifact={m.artifact} />
             : (
               <AssistantResponse
                 key={m.id}

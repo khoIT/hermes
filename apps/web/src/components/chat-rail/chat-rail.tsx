@@ -26,10 +26,10 @@ import { ChatInputBox } from '../chat/chat-input-box';
 import { ChatRailHeader } from './chat-rail-header';
 import { ChatRailEmpty } from './chat-rail-empty';
 import { CompactThreadView } from './compact-thread-view';
-import { PageContextChip } from './page-context-chip';
 import { RecentThreadsSection } from './recent-threads-section';
 import { ScriptedPromptsSection } from './scripted-prompts-section';
 import { RAIL_WIDTH } from '../../utils/chat-rail-store';
+import type { MessageArtifact } from '../../utils/chat-store';
 
 interface ChatRailProps {
   open: boolean;
@@ -60,7 +60,6 @@ export function ChatRail({ open, onClose }: ChatRailProps) {
   const { pathname } = useLocation();
   const [activeThreadId, setActiveThreadId] = React.useState<string | null>(null);
   const [tick, setTick] = React.useState(0);
-  const [chipDismissedFor, setChipDismissedFor] = React.useState<string | null>(null);
   /** Set when the user clicked "+ New" so auto-resume doesn't re-fill the rail. */
   const userClearedRef = React.useRef(false);
 
@@ -70,12 +69,6 @@ export function ChatRail({ open, onClose }: ChatRailProps) {
     () => resolvePageContext(pathname, GETTERS),
     [pathname]
   );
-
-  // Reset dismissed-chip state when artifact id changes.
-  React.useEffect(() => {
-    if (ctx?.entityId !== chipDismissedFor) setChipDismissedFor(null);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ctx?.entityId]);
 
   // Auto-resume most recent thread the first time the rail opens without an
   // active thread. After "+ New" or explicit clear, stay in empty state.
@@ -95,7 +88,7 @@ export function ChatRail({ open, onClose }: ChatRailProps) {
 
   const conversation = activeThreadId ? getThread(activeThreadId) : null;
   const headerTitle = conversation?.title ?? 'Chat';
-  const showChip = !!ctx && chipDismissedFor !== ctx.entityId;
+  const headerSubtitle = ctx?.label;
 
   const refresh = () => setTick(t => t + 1);
 
@@ -107,18 +100,19 @@ export function ChatRail({ open, onClose }: ChatRailProps) {
 
   const submit = (text: string) => {
     let activeId = activeThreadId;
-    const finalText = showChip && ctx ? `[${ctx.label}]\n${text}` : text;
+    const artifact: MessageArtifact | undefined = ctx
+      ? { kind: ctx.kind, label: ctx.label, entityId: ctx.entityId }
+      : undefined;
 
     if (!activeId) {
-      activeId = createThread(finalText);
+      activeId = createThread(text, artifact);
       userClearedRef.current = false;
       setActiveThreadId(activeId);
-      pushRecent('chats', { id: activeId, title: finalText, updatedAt: new Date().toISOString() });
+      pushRecent('chats', { id: activeId, title: text, updatedAt: new Date().toISOString() });
     } else {
-      appendMessage(activeId, { role: 'user', text: finalText });
+      appendMessage(activeId, { role: 'user', text, ...(artifact ? { artifact } : {}) });
     }
     appendMessage(activeId, respondToText(text, activeId));
-    if (ctx?.entityId) setChipDismissedFor(ctx.entityId);
     notifyRecentChanged();
     refresh();
   };
@@ -156,10 +150,11 @@ export function ChatRail({ open, onClose }: ChatRailProps) {
     <aside
       style={{
         width: RAIL_WIDTH, flexShrink: 0,
-        background: T.n50,
-        borderLeft: '1px solid rgba(0,0,0,0.06)',
+        background: '#F9F6F2',
+        borderRadius: 18,
+        overflow: 'hidden',
         display: 'flex', flexDirection: 'column',
-        height: '100vh', position: 'sticky', top: 0,
+        height: '100%',
         zIndex: 15,
       }}
       aria-label="Chat rail"
@@ -170,10 +165,11 @@ export function ChatRail({ open, onClose }: ChatRailProps) {
         onTitleClick={onTitleClick}
         onNew={onNew}
         onClose={onClose}
+        subtitle={headerSubtitle}
       />
       <div
         key={tick}
-        style={{ flex: 1, minHeight: 0, overflowY: 'auto', background: T.n50 }}
+        style={{ flex: 1, minHeight: 0, overflowY: 'auto', background: '#F9F6F2' }}
       >
         {!conversation
           ? (
@@ -188,14 +184,6 @@ export function ChatRail({ open, onClose }: ChatRailProps) {
         padding: 10, background: '#fff',
         borderTop: `1px solid ${T.n200}`,
       }}>
-        {showChip && ctx && (
-          <div style={{ marginBottom: 8 }}>
-            <PageContextChip
-              context={ctx}
-              onClear={() => setChipDismissedFor(ctx.entityId)}
-            />
-          </div>
-        )}
         <ChatInputBox
           onSubmit={submit}
           compact

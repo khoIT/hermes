@@ -13,6 +13,7 @@ import { UserMessage } from '../chat/user-message';
 import { AssistantResponse } from '../chat/assistant-response';
 import { ActionCardSegment } from '../chat/action-cards/action-card-segment';
 import { ActionCardCampaign } from '../chat/action-cards/action-card-campaign';
+import { MessageArtifactBadge } from '../chat/message-artifact-badge';
 
 interface CompactThreadViewProps {
   conversation: Conversation;
@@ -31,17 +32,17 @@ export function CompactThreadView({ conversation, onFollowUp }: CompactThreadVie
       {conversation.messages.map((m, idx) => {
         if (m.role === 'user') {
           return idx === 0 ? (
-            <div
-              key={m.id}
-              style={{
+            <div key={m.id} style={{ margin: '0 0 12px' }}>
+              {m.artifact && <MessageArtifactBadge artifact={m.artifact} />}
+              <div style={{
                 fontFamily: T.fSans, fontSize: 14, fontWeight: 600,
-                color: T.n900, margin: '0 0 12px',
-              }}
-            >
-              {m.text}
+                color: T.n900,
+              }}>
+                {m.text}
+              </div>
             </div>
           ) : (
-            <UserMessage key={m.id} text={m.text ?? ''} />
+            <UserMessage key={m.id} text={m.text ?? ''} artifact={m.artifact} />
           );
         }
         return (

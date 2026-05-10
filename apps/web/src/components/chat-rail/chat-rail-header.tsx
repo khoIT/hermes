@@ -13,36 +13,55 @@ interface ChatRailHeaderProps {
   onTitleClick?: () => void;
   onNew: () => void;
   onClose: () => void;
+  /** Optional second line — current page's artifact context. */
+  subtitle?: string;
 }
 
 export function ChatRailHeader({
-  title, titleClickable, onTitleClick, onNew, onClose,
+  title, titleClickable, onTitleClick, onNew, onClose, subtitle,
 }: ChatRailHeaderProps) {
   return (
     <div style={{
       display: 'flex', alignItems: 'center', gap: 8,
-      padding: '10px 12px', height: 44, boxSizing: 'border-box',
+      padding: subtitle ? '8px 12px' : '10px 12px',
+      minHeight: 44, boxSizing: 'border-box',
       borderBottom: `1px solid ${T.n200}`,
       background: '#fff',
       fontFamily: T.fSans,
     }}>
-      <button
-        onClick={titleClickable ? onTitleClick : undefined}
-        disabled={!titleClickable}
-        title={titleClickable ? 'Open in full chat' : undefined}
-        style={{
-          flex: 1, minWidth: 0, textAlign: 'left',
-          background: 'transparent', border: 'none',
-          padding: 0,
-          cursor: titleClickable ? 'pointer' : 'default',
-          fontFamily: T.fSans, fontSize: 13, fontWeight: 600, color: T.n900,
-          whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-        }}
-        onMouseEnter={e => { if (titleClickable) e.currentTarget.style.color = T.brand; }}
-        onMouseLeave={e => { if (titleClickable) e.currentTarget.style.color = T.n900; }}
-      >
-        {title}
-      </button>
+      <div style={{
+        flex: 1, minWidth: 0,
+        display: 'flex', flexDirection: 'column', gap: 1,
+      }}>
+        <button
+          onClick={titleClickable ? onTitleClick : undefined}
+          disabled={!titleClickable}
+          title={titleClickable ? 'Open in full chat' : undefined}
+          style={{
+            textAlign: 'left',
+            background: 'transparent', border: 'none',
+            padding: 0,
+            cursor: titleClickable ? 'pointer' : 'default',
+            fontFamily: T.fSans, fontSize: 13, fontWeight: 600, color: T.n900,
+            whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+          }}
+          onMouseEnter={e => { if (titleClickable) e.currentTarget.style.color = T.brand; }}
+          onMouseLeave={e => { if (titleClickable) e.currentTarget.style.color = T.n900; }}
+        >
+          {title}
+        </button>
+        {subtitle && (
+          <div
+            title={subtitle}
+            style={{
+              fontFamily: T.fSans, fontSize: 11, color: T.n500,
+              whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+            }}
+          >
+            {subtitle}
+          </div>
+        )}
+      </div>
       <button onClick={onNew} aria-label="New chat" title="New chat" style={iconBtn}>
         <Icon icon={Plus} size={14} color={T.n600} />
       </button>

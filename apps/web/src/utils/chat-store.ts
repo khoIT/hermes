@@ -10,6 +10,20 @@ const threadKey = (id: string) => `hermes.chat.${VERSION}.thread.${id}`;
 
 export type ChatRole = 'user' | 'assistant';
 
+/**
+ * Snapshot of the artifact the user was viewing in the main panel when this
+ * message was sent. Captured at submit-time and rendered as a per-message
+ * badge so future scrolls of the thread show the context behind each turn.
+ * Only set on user messages; assistant messages inherit context implicitly.
+ */
+export interface MessageArtifact {
+  kind: 'feature' | 'segment' | 'board' | 'campaign';
+  /** Display label e.g. "Segments · Organic Power Users". */
+  label: string;
+  /** Stable id (segment id, board id, campaign id, feature name). */
+  entityId: string;
+}
+
 /** A discriminated union of body sections for assistant messages. Phase 3 widgets land here. */
 export interface ResponseSection {
   type:
@@ -45,6 +59,8 @@ export interface ChatMessage {
    * Non-breaking optional field; ignored by all non-Phase-3 renderers.
    */
   suppressUniversalCtas?: boolean;
+  /** Artifact the user was viewing when this user message was sent. */
+  artifact?: MessageArtifact;
   createdAt: string;
 }
 
@@ -99,7 +115,7 @@ function deriveTitle(text: string): string {
 }
 
 /** Create a new thread seeded with a single user message. Returns thread id. */
-export function createThread(initialMessage: string): string {
+export function createThread(initialMessage: string, artifact?: MessageArtifact): string {
   const id = `t-${uid()}`;
   const now = new Date().toISOString();
   const conv: Conversation = {
@@ -109,6 +125,7 @@ export function createThread(initialMessage: string): string {
       id: `m-${uid()}`,
       role: 'user',
       text: initialMessage,
+      ...(artifact ? { artifact } : {}),
       createdAt: now,
     }],
     createdAt: now,

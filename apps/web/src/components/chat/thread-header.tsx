@@ -6,16 +6,20 @@ import React from 'react';
 import { HelpCircle } from 'lucide-react';
 import { T } from '../../theme';
 import { RestartDemoChip } from '../chat-rail/restart-demo-chip';
+import type { MessageArtifact } from '../../utils/chat-store';
+import { MessageArtifactBadge } from './message-artifact-badge';
 
 interface ThreadHeaderProps {
   question: string;
   /** Thread id — used to conditionally render RestartDemoChip. */
   threadId?: string;
+  artifact?: MessageArtifact;
 }
 
-export function ThreadHeader({ question, threadId }: ThreadHeaderProps) {
+export function ThreadHeader({ question, threadId, artifact }: ThreadHeaderProps) {
   return (
     <div style={{ margin: '32px 0 24px', maxWidth: 820 }}>
+      {artifact && <MessageArtifactBadge artifact={artifact} />}
       <h1 style={{
         fontFamily: T.fSans, fontSize: 26, fontWeight: 600,
         color: T.n950, lineHeight: 1.3, letterSpacing: '-0.01em',
