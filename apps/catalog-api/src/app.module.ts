@@ -17,6 +17,8 @@ import { PipelinesModule } from './pipelines/pipelines.module';
 import { SchedulerModule } from './scheduler/scheduler.module';
 import { ConnectorsModule } from './connectors/connectors.module';
 import { FeaturesModule } from './features/features.module';
+import { CampaignsModule } from './campaigns/campaigns.module';
+import { BoardsModule } from './boards/boards.module';
 
 @Module({
   imports: [
@@ -42,6 +44,8 @@ import { FeaturesModule } from './features/features.module';
     SchedulerModule,
     ConnectorsModule,
     FeaturesModule,
+    CampaignsModule,
+    BoardsModule,
   ],
   providers: [
     { provide: APP_FILTER, useClass: HttpErrorFilter },

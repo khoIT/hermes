@@ -1,38 +1,30 @@
 /**
- * Route table — all 23 PRD screen IDs mapped to placeholder page components.
- * URL scheme per phase-05-web-shell.md implementation step 1.
- *
- * Screen IDs:
- *  00 home
- *  01 fs_library         /feature-store
- *  02 fs_detail          /feature-store/:name
- *  (explore stub)        /explore
- *  03 seg_library        /segments
- *  04 seg_canvas         /segments/new
- *  05 seg_threshold_deep /segments/:id/threshold
- *  06 seg_handoff        /segments/:id/handoff
- *  07 seg_monitoring     /segments/:id
- *  08 seg_patterns       /segments/patterns
- *  09 cmp_library        /campaigns
- *  10 cmp_canvas_rt      /campaigns/new/realtime
- *  11 cmp_canvas_sched   /campaigns/new/scheduled
- *  12 cmp_canvas_onetime /campaigns/new/onetime
- *  13 cmp_journey        /campaigns/:id/journey
- *  14 cmp_prelaunch      /campaigns/:id/prelaunch
- *  15 cmp_handoff        /campaigns/:id/handoff
- *  16 cmp_monitoring     /campaigns/:id
- *  17 cmp_patterns       /campaigns/patterns
- *  18 ag_inbox           /agents
- *  19 ag_op_detail       /agents/op/:id
- *  20 ag_drafts          /agents/drafts
- *  21 ag_activity        /agents/activity
- *  22 ag_settings        /agents/settings
+ * Route table — chat-first IA. Root `/` is the chat landing, `/welcome` is
+ * the moved dashboard. The former `/agents/*` routes are 301-style redirected
+ * to either the chat landing or the canonical loss-streak thread.
  */
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 
-// -- Module: Home
-import HomePage from './modules/home/page';
+// -- Welcome (former Home, moved in Phase 10)
+import WelcomePage from './modules/welcome/page';
+
+// -- Chat module
+import ChatLandingPage from './modules/chat/landing-page';
+import ChatThreadPage from './modules/chat/thread-page';
+
+// -- Sidebar stub modules
+import PlaybooksListPage from './modules/playbooks/list-page';
+import FunnelsListPage from './modules/funnels/list-page';
+import RetentionsListPage from './modules/retentions/list-page';
+import KnowledgePage from './modules/knowledge/page';
+import DataPage from './modules/data/page';
+import SettingsPage from './modules/settings/page';
+import AccountPage from './modules/account/page';
+
+// -- Boards (Phase 6)
+import CanvasListPage from './modules/canvas/list-page';
+import CanvasDetailPage from './modules/canvas/detail-page';
 
 // -- Module 01: Feature Store
 import FeatureStoreLibraryPage  from './modules/feature-store/library';
@@ -61,19 +53,31 @@ import CampaignHandoffPage      from './modules/campaigns/handoff-modal';
 import CampaignMonitoringPage   from './modules/campaigns/monitoring';
 import CampaignsPatternsPage    from './modules/campaigns/patterns';
 
-// -- Module 05: Agents
-import AgentsInboxPage          from './modules/agents/inbox';
-import AgentsOpportunityDetailPage from './modules/agents/opportunity-detail';
-import AgentsDraftsPage         from './modules/agents/drafts';
-import AgentsActivityPage       from './modules/agents/activity';
-import AgentsSettingsPage       from './modules/agents/settings';
-import AgentsComposePage        from './modules/agents/compose/compose-page';
-
 export function AppRoutes() {
   return (
     <Routes>
-      {/* 00 — Home */}
-      <Route path="/" element={<HomePage />} />
+      {/* Chat landing at root */}
+      <Route path="/" element={<ChatLandingPage />} />
+
+      {/* Welcome — moved dashboard */}
+      <Route path="/welcome" element={<WelcomePage />} />
+
+      {/* Chat thread + index */}
+      <Route path="/chat"     element={<ChatLandingPage />} />
+      <Route path="/chat/:id" element={<ChatThreadPage />} />
+
+      {/* Boards / Canvas */}
+      <Route path="/canvas"           element={<CanvasListPage />} />
+      <Route path="/canvas/:boardId"  element={<CanvasDetailPage />} />
+
+      {/* Sidebar stub modules */}
+      <Route path="/playbooks"   element={<PlaybooksListPage />} />
+      <Route path="/funnels"     element={<FunnelsListPage />} />
+      <Route path="/retentions"  element={<RetentionsListPage />} />
+      <Route path="/knowledge"   element={<KnowledgePage />} />
+      <Route path="/data"        element={<DataPage />} />
+      <Route path="/settings"    element={<SettingsPage />} />
+      <Route path="/account"     element={<AccountPage />} />
 
       {/* 01-02 — Feature Store */}
       <Route path="/feature-store"       element={<FeatureStoreLibraryPage />} />
@@ -102,13 +106,14 @@ export function AppRoutes() {
       <Route path="/campaigns/:id/handoff"        element={<CampaignHandoffPage />} />
       <Route path="/campaigns/:id"                element={<CampaignMonitoringPage />} />
 
-      {/* 18-22 — Agents */}
-      <Route path="/agents"             element={<AgentsInboxPage />} />
-      <Route path="/agents/compose"     element={<AgentsComposePage />} />
-      <Route path="/agents/drafts"      element={<AgentsDraftsPage />} />
-      <Route path="/agents/activity"    element={<AgentsActivityPage />} />
-      <Route path="/agents/settings"    element={<AgentsSettingsPage />} />
-      <Route path="/agents/op/:id"      element={<AgentsOpportunityDetailPage />} />
+      {/* /agents/* — deleted; redirect to canonical surface */}
+      <Route path="/agents/op/cfm-loss-streak" element={<Navigate to="/chat/thread-003" replace />} />
+      <Route path="/agents/settings"           element={<Navigate to="/account" replace />} />
+      <Route path="/agents/compose"            element={<Navigate to="/" replace />} />
+      <Route path="/agents/op/:id"             element={<Navigate to="/" replace />} />
+      <Route path="/agents/drafts"             element={<Navigate to="/" replace />} />
+      <Route path="/agents/activity"           element={<Navigate to="/" replace />} />
+      <Route path="/agents"                    element={<Navigate to="/" replace />} />
 
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/" replace />} />

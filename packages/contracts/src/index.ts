@@ -19,6 +19,7 @@ export * from './segment.js';
 export * from './feature.js';
 export * from './model.js';
 export * from './campaign.js';
+export * from './board.js';
 export * from './user.js';
 export * from './audit.js';
 export * from './auth.js';

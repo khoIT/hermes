@@ -321,3 +321,16 @@ export {
   featureAnalytics180d,
   featurePipelineRuns,
 } from './schema-features';
+
+// ─── Campaigns + Boards (chat-first IA, plan 260510-0151) ──────────
+// Re-exported so drizzle-kit's single-schema config picks them up and
+// existing `from '../db/schema'` import sites keep working.
+export {
+  campaigns,
+  campaignChangelog,
+} from './schema-campaigns';
+
+export {
+  boards,
+  boardCards,
+} from './schema-boards';

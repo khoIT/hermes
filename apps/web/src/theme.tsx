@@ -37,9 +37,9 @@ export const cx = (...args: (string | false | null | undefined)[]): string =>
 // Uses lucide-react's named exports so tree-shaking works at build time.
 // Callers import the icon component and pass it via the `icon` prop.
 export type LucideIcon = React.ComponentType<{
-  size?: number;
+  size?: string | number;
   color?: string;
-  strokeWidth?: number;
+  strokeWidth?: string | number;
   style?: React.CSSProperties;
   className?: string;
 }>;
