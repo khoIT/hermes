@@ -4,10 +4,16 @@
  * schema, and populates the in-process snapshot consumed by
  * `getAllFeatures()` / `subscribeFeatures()`.
  *
- * Phase 06 hard cut: there is NO static-JSON fallback. If the API
- * fetch fails the snapshot stays empty and Feature Store routes
- * render `<FeaturesUnavailable />`. Other modules read whatever the
- * snapshot holds at the time of subscription.
+ * Two failure modes:
+ *   1. Netlify (frontend-only deploy): /api/v1/features returns 502 with
+ *      envelope `{ code: 'DEMO_MODE_API_DISABLED' }`. Loader switches to
+ *      the build-time-baked /_catalog.json (synthetic analytics, see
+ *      apps/web/scripts/export-feature-catalog.ts). Demo stays interactive.
+ *   2. Dev/local (catalog-api down): /api/v1/features returns 502 with
+ *      envelope `{ code: 'UPSTREAM_UNREACHABLE' }` from the Vite proxy,
+ *      OR network error. No static fallback — snapshot stays empty,
+ *      Feature Store routes render `<FeaturesUnavailable />` so the
+ *      operator sees the actionable "run pnpm dev" guidance.
  *
  * Boot semantics: the awaited promise resolves after the FIRST
  * attempt (success or failure) so React render isn't blocked. On
@@ -30,6 +36,7 @@
 import type { HermesFeature } from '@hermes/contracts';
 
 const FEATURES_URL = '/api/v1/features';
+const STATIC_FALLBACK_URL = '/_catalog.json';
 const DEFAULT_BOOT_TIMEOUT_MS = 8_000;
 const RETRY_BACKOFF_MS = [1_000, 2_000, 4_000];
 const STEADY_RETRY_MS = 8_000;
@@ -108,6 +115,26 @@ function installRecoveryHooks(): void {
   });
 }
 
+/**
+ * Fetch the build-time-baked catalog from /_catalog.json. Used when
+ * /api/v1/features returns DEMO_MODE_API_DISABLED (Netlify frontend-only
+ * deploy). Returns true if the static catalog loaded successfully; false
+ * lets the caller emit the canonical error.
+ */
+async function loadStaticFallback(opts: LoaderOpts): Promise<boolean> {
+  try {
+    const res = await fetch(STATIC_FALLBACK_URL);
+    if (!res.ok) return false;
+    const json = await res.json();
+    if (!Array.isArray(json)) return false;
+    setStatus('ready');
+    opts.onReady?.(json as HermesFeature[]);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 async function runAttempt(opts: LoaderOpts, retryIdx: number): Promise<void> {
   const timeoutMs = opts.timeoutMs ?? DEFAULT_BOOT_TIMEOUT_MS;
   setStatus('loading');
@@ -125,15 +152,20 @@ async function runAttempt(opts: LoaderOpts, retryIdx: number): Promise<void> {
       // isn't listening on :3001. 500/504 fall back here as a safety net
       // in case some env still emits Vite's default ECONNREFUSED→500.
       if ([500, 502, 503, 504].includes(res.status)) {
+        let body: { message?: string; code?: string } | null = null;
         try {
-          const body = await res.json() as { message?: string; code?: string };
-          if (body.message) throw new Error(`${res.status} · ${body.message}`);
-        } catch (parseErr) {
-          if (parseErr instanceof Error && /^\d{3} ·/.test(parseErr.message)) {
-            throw parseErr;
-          }
+          body = await res.json() as { message?: string; code?: string };
+        } catch {
           // body wasn't JSON — fall through to canonical message
         }
+        // Netlify (frontend-only) returns 502 with this envelope from
+        // /api-disabled.json. There's no catalog-api host — switch to the
+        // static catalog shipped at /_catalog.json instead of erroring out.
+        if (body?.code === 'DEMO_MODE_API_DISABLED') {
+          const ok = await loadStaticFallback(opts);
+          if (ok) return;
+        }
+        if (body?.message) throw new Error(`${res.status} · ${body.message}`);
         throw new Error(`${res.status} · catalog-api not reachable on :3001 · run \`pnpm --filter @hermes/catalog-api dev\``);
       }
       throw new Error(`HTTP ${res.status}`);
