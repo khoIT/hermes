@@ -46,7 +46,7 @@ pnpm dev    # postgres + catalog-api :3001 + query-svc :3002 + web :5173
 
 Open `http://localhost:5173/feature-store` in a browser. Everything below assumes that command is running.
 
-If the page shows **Feature Store unavailable**, the catalog-api process likely crashed (Vite kept running). Restart just it with `pnpm --filter @hermes/catalog-api dev`, or re-run `pnpm dev`. Health check: `curl http://127.0.0.1:3001/api/v1/health` should return 200.
+If the page shows **Feature Store unavailable**, the catalog-api process likely crashed (Vite kept running). The banner now reads `502 · catalog-api not reachable on :3001 · run \`pnpm --filter @hermes/catalog-api dev\`` because Vite's proxy translates ECONNREFUSED to a 502 with an `UPSTREAM_UNREACHABLE` envelope. Restart just it with `pnpm --filter @hermes/catalog-api dev`, or re-run `pnpm dev`. Health check: `curl http://127.0.0.1:3001/api/v1/health` should return 200.
 
 ---
 

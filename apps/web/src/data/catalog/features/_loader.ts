@@ -81,19 +81,21 @@ async function runAttempt(opts: LoaderOpts, retryIdx: number): Promise<void> {
     const res = await fetch(FEATURES_URL, { signal: controller.signal });
     clearTimeout(timer);
     if (!res.ok) {
-      // Recognised: catalog-api returns 503 with a DB_UNAVAILABLE envelope
-      // when the Postgres container is restarting. Surface a clearer reason.
-      if (res.status === 503) {
+      // Catalog-api emits 503 + DB_UNAVAILABLE envelope when Postgres is
+      // restarting. Vite's proxy emits 502 (with our UPSTREAM_UNREACHABLE
+      // envelope, configured in vite.config.ts) when catalog-api itself
+      // isn't listening on :3001. 500/504 fall back here as a safety net
+      // in case some env still emits Vite's default ECONNREFUSED→500.
+      if ([500, 502, 503, 504].includes(res.status)) {
         try {
-          const body = await res.json() as { message?: string };
-          throw new Error(body.message ? `503 · ${body.message}` : '503 · backend unavailable');
-        } catch {
-          throw new Error('503 · backend unavailable');
+          const body = await res.json() as { message?: string; code?: string };
+          if (body.message) throw new Error(`${res.status} · ${body.message}`);
+        } catch (parseErr) {
+          if (parseErr instanceof Error && /^\d{3} ·/.test(parseErr.message)) {
+            throw parseErr;
+          }
+          // body wasn't JSON — fall through to canonical message
         }
-      }
-      // 502/504 from the Vite proxy means the upstream catalog-api wasn't
-      // listening on :3001 (process not running, crashed, or wrong port).
-      if (res.status === 502 || res.status === 504) {
         throw new Error(`${res.status} · catalog-api not reachable on :3001 · run \`pnpm --filter @hermes/catalog-api dev\``);
       }
       throw new Error(`HTTP ${res.status}`);
