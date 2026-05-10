@@ -44,6 +44,24 @@ export function SegmentSizeChart({ segment }: Props) {
     [segment.id, days, data],
   );
 
+  // Track inner width so the SVG viewBox stretches to the actual rendered
+  // width — without this the default xMidYMid-meet aspect-ratio leaves
+  // matching gutters on both sides of the chart on wide screens.
+  const canvasWrapRef = React.useRef<HTMLDivElement>(null);
+  const [innerWidth, setInnerWidth] = React.useState(760);
+  React.useEffect(() => {
+    const el = canvasWrapRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(entries => {
+      for (const e of entries) {
+        const w = Math.round(e.contentRect.width);
+        if (w > 0) setInnerWidth(w);
+      }
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
   return (
     <div style={{
       background: '#fff', border: `1px solid ${T.n200}`, borderRadius: 10,
@@ -76,7 +94,9 @@ export function SegmentSizeChart({ segment }: Props) {
         </div>
       </div>
 
-      <ChartCanvas data={series} type={chart} height={280} />
+      <div ref={canvasWrapRef} style={{ width: '100%' }}>
+        <ChartCanvas data={series} type={chart} height={280} width={innerWidth} />
+      </div>
 
       <div style={{
         display: 'flex', justifyContent: 'flex-end', marginTop: 8,
@@ -103,9 +123,9 @@ interface CanvasProps {
   data: Array<{ date: string; count: number }>;
   type: ChartType;
   height: number;
+  width: number;
 }
 
-const W = 760;
 const PAD = { t: 12, r: 16, b: 26, l: 50 };
 
 function fmtTick(n: number) {
@@ -114,8 +134,9 @@ function fmtTick(n: number) {
   return String(n);
 }
 
-function ChartCanvas({ data, type, height }: CanvasProps) {
+function ChartCanvas({ data, type, height, width }: CanvasProps) {
   if (!data.length) return null;
+  const W = Math.max(width, PAD.l + PAD.r + 20);
   const innerW = W - PAD.l - PAD.r;
   const innerH = height - PAD.t - PAD.b;
   const counts = data.map(d => d.count);
@@ -135,6 +156,9 @@ function ChartCanvas({ data, type, height }: CanvasProps) {
   return (
     <svg
       viewBox={`0 0 ${W} ${height}`}
+      width={W}
+      height={height}
+      preserveAspectRatio="none"
       style={{ width: '100%', height, display: 'block' }}
       aria-label="Segment size over time"
     >

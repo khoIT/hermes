@@ -12,6 +12,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ActionCardShell, type ActionCardStatus } from './action-card-shell';
+import { SegmentFeaturePills } from './segment-feature-pills';
 import { createSegment } from '../../../api/segments-client';
 import { pushRecent } from '../../../utils/recent-items-store';
 import { notifyRecentChanged } from '../../sidebar/recent-items';
@@ -87,6 +88,7 @@ export function ActionCardSegment({ payload }: Props) {
       subline={payload.description}
       error={error}
       viewHref={createdId ? `/segments/${createdId}` : undefined}
+      inlineExtras={payload.features?.length ? <SegmentFeaturePills features={payload.features} /> : undefined}
       onConfirm={onConfirm}
       onRefine={() => navigate('/segments/new?from=chat')}
       onView={() => createdId && navigate(`/segments/${createdId}`)}

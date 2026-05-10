@@ -44,9 +44,18 @@ const ENTRIES: Array<[string, string, RegistryEntry]> = [
   ['thread-008', 'Build at-risk whale segment',  { assistantMsg: thread008Turns.build, isTerminal: true }],
 
   // ─── thread-demo-livops-2026: full arc Board → Segment → Campaign ────────
+  // Canonical path
   ['thread-demo-livops-2026', "Who's most at risk right now?",  { assistantMsg: threadDemoLivops2026Turns.atRisk }],
   ['thread-demo-livops-2026', 'Build a rescue intervention',    { assistantMsg: threadDemoLivops2026Turns.campaign }],
-  // "Activate" chip removed from T3 followUps; no registry entry needed.
+  // T1 alt branches (each ends with a chip back to canonical)
+  ['thread-demo-livops-2026', 'Compare to Q1 2026',             { assistantMsg: threadDemoLivops2026Turns.q1Compare }],
+  ['thread-demo-livops-2026', 'Show competitor benchmarks',     { assistantMsg: threadDemoLivops2026Turns.competitorBench }],
+  // T2 alt branches (each ends with a chip back to canonical)
+  ['thread-demo-livops-2026', 'Tighten to non-paying only',     { assistantMsg: threadDemoLivops2026Turns.tightenNonPaying }],
+  ['thread-demo-livops-2026', 'Show 7d retention impact',       { assistantMsg: threadDemoLivops2026Turns.show7dRetention }],
+  // T3 alt branches (terminal — campaign is configured)
+  ['thread-demo-livops-2026', 'Tweak holdout %',                { assistantMsg: threadDemoLivops2026Turns.tweakHoldout, isTerminal: true }],
+  ['thread-demo-livops-2026', 'Add a control variant',          { assistantMsg: threadDemoLivops2026Turns.addControl, isTerminal: true }],
 ];
 
 const REGISTRY = new Map<string, RegistryEntry>(

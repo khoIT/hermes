@@ -15,10 +15,13 @@ import { T } from '../../theme';
 import { allSegments } from '../../data/catalog/segments';
 import type { HermesSegment } from '@hermes/contracts';
 import { useTopbarTrailing } from '../../utils/topbar-trailing-context';
+import {
+  FilterDropdownChip,
+  PopoverChip,
+} from '../feature-store/_components/filter-dropdown-chip';
 
 // ── Design constants matching reference ─────────────────────────────────────
 const ACCENT = '#f05a22';
-const SURFACE = '#fafaf8';
 const HAIRLINE = '#eeece6';
 
 type Goal4r = 'retain' | 'revenue' | 'reactivate' | 'recruit' | 'all';
@@ -231,19 +234,6 @@ const iconBtnStyle: React.CSSProperties = {
   transition: 'background .1s',
 };
 
-// ── Sidebar section label ─────────────────────────────────────────────────
-function SideLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <span style={{
-      display: 'block', marginBottom: 8,
-      fontFamily: T.fMono, fontSize: 10.5, fontWeight: 600,
-      color: T.n500, textTransform: 'uppercase', letterSpacing: '0.07em',
-    }}>
-      {children}
-    </span>
-  );
-}
-
 // ── Main page ─────────────────────────────────────────────────────────────
 export default function SegmentsLibraryPage() {
   const navigate = useNavigate();
@@ -274,8 +264,22 @@ export default function SegmentsLibraryPage() {
   const filtered = React.useMemo(() => {
     let segs = allSegments as HermesSegment[];
     if (filterGoal !== 'all') segs = segs.filter(s => s.goal4r === filterGoal);
+    if (statusFilters.size > 0) {
+      segs = segs.filter(s => {
+        const drift = (s as HermesSegment & { drift?: boolean }).drift;
+        if (statusFilters.has('Drift detected') && drift) return true;
+        if (statusFilters.has('Active') && s.status === 'active') return true;
+        if (statusFilters.has('Draft') && s.status === 'draft') return true;
+        if (statusFilters.has('Stale') && s.status === 'stale') return true;
+        return false;
+      });
+    }
+    if (campaignFilter !== 'Any') {
+      const want = campaignFilter === 'Yes';
+      segs = segs.filter(s => ((s.usedByCampaigns ?? 0) > 0) === want);
+    }
     return segs;
-  }, [filterGoal]);
+  }, [filterGoal, statusFilters, campaignFilter]);
 
   const grouped = React.useMemo(() => {
     const groups: Record<string, HermesSegment[]> = {};
@@ -294,84 +298,89 @@ export default function SegmentsLibraryPage() {
   const derived = allSegments.filter(s => s.type === 'derived-from-journey').length;
   const drift   = allSegments.filter(s => (s as HermesSegment & { drift?: boolean }).drift).length;
 
-  // Sidebar button style
-  const sideBtn = (selected: boolean): React.CSSProperties => ({
-    padding: '6px 8px', borderRadius: 5, textAlign: 'left', fontSize: 12.5,
-    fontFamily: T.fSans, cursor: 'pointer', width: '100%',
-    background: selected ? '#eeece6' : 'transparent',
-    color: selected ? T.n900 : T.n500,
-    fontWeight: selected ? 500 : 400,
-    border: 'none',
-    transition: 'background .1s, color .1s',
-  });
+  const goalCounts = React.useMemo(() => {
+    const m: Record<string, number> = { retain: 0, revenue: 0, reactivate: 0, recruit: 0 };
+    for (const s of allSegments) m[s.goal4r] = (m[s.goal4r] ?? 0) + 1;
+    return m;
+  }, []);
+
+  const statusCounts = {
+    Active: active,
+    'Drift detected': drift,
+    Stale: allSegments.filter(s => s.status === 'stale').length,
+    Draft: draft,
+  };
+
+  const toggleStatus = (s: StatusFilter) => {
+    const next = new Set(statusFilters);
+    if (next.has(s)) next.delete(s); else next.add(s);
+    setStatusFilters(next);
+  };
+
+  const groupByActiveCount = groupBy !== 'goal' ? 1 : 0;
+  const goalActiveCount = filterGoal !== 'all' ? 1 : 0;
+  const campaignActiveCount = campaignFilter !== 'Any' ? 1 : 0;
 
   return (
-    <div style={{
-      display: 'grid', gridTemplateColumns: '224px 1fr',
-      height: '100%', background: '#fff',
-    }}>
-      {/* Left sidebar */}
-      <aside style={{
-        background: SURFACE, borderRight: `1px solid #e8e5de`,
-        padding: '20px 16px', overflowY: 'auto',
+    <div style={{ height: '100%', background: '#fff', overflowY: 'auto' }}>
+      {/* Sticky filter strip — Group by · 4R Goal · Status · Open campaigns.
+          Mirrors Feature Store FilterBar so cross-module filter UX matches. */}
+      <div style={{
+        position: 'sticky', top: 0, zIndex: 14,
+        background: '#fff', borderBottom: `1px solid ${HAIRLINE}`,
+        padding: '12px 32px',
       }}>
-        <SideLabel>Group by</SideLabel>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 2, marginBottom: 22 }}>
-          {([['goal','4R goal'],['owner','Owner'],['type','Type'],['none','None']] as [GroupBy, string][]).map(([k, l]) => (
-            <button key={k} onClick={() => setGroupBy(k)} style={sideBtn(groupBy === k)}>{l}</button>
-          ))}
-        </div>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+          <FilterDropdownChip label="Group by" activeCount={groupByActiveCount}>
+            {([['goal','4R goal'],['owner','Owner'],['type','Type'],['none','None']] as [GroupBy, string][]).map(([k, l]) => (
+              <PopoverChip
+                key={k}
+                label={l}
+                active={groupBy === k}
+                onClick={() => setGroupBy(k)}
+              />
+            ))}
+          </FilterDropdownChip>
 
-        <SideLabel>4R goal</SideLabel>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 2, marginBottom: 22 }}>
-          {([['all','All'],['retain','Retain'],['revenue','Revenue'],['reactivate','Reactivate'],['recruit','Recruit']] as [Goal4r, string][]).map(([k, l]) => (
-            <button key={k} onClick={() => setFilterGoal(k)} style={sideBtn(filterGoal === k)}>{l}</button>
-          ))}
-        </div>
+          <FilterDropdownChip label="4R Goal" activeCount={goalActiveCount}>
+            {([['all','All',undefined],['retain','Retain',goalCounts.retain],['revenue','Revenue',goalCounts.revenue],['reactivate','Reactivate',goalCounts.reactivate],['recruit','Recruit',goalCounts.recruit]] as [Goal4r, string, number | undefined][]).map(([k, l, count]) => (
+              <PopoverChip
+                key={k}
+                label={l}
+                count={count}
+                active={filterGoal === k}
+                onClick={() => setFilterGoal(k)}
+              />
+            ))}
+          </FilterDropdownChip>
 
-        <SideLabel>Status</SideLabel>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 2, marginBottom: 22 }}>
-          {(['Active','Drift detected','Stale','Draft'] as StatusFilter[]).map(s => (
-            <label key={s} style={{
-              display: 'flex', alignItems: 'center', gap: 8,
-              padding: '4px 8px', fontSize: 12.5, color: T.n500, cursor: 'pointer',
-              fontFamily: T.fSans,
-            }}>
-              <input
-                type="checkbox"
-                checked={statusFilters.has(s)}
-                onChange={e => {
-                  const next = new Set(statusFilters);
-                  e.target.checked ? next.add(s) : next.delete(s);
-                  setStatusFilters(next);
-                }}
-                style={{ accentColor: T.n800 }}
-              /> {s}
-            </label>
-          ))}
-        </div>
+          <FilterDropdownChip label="Status" activeCount={statusFilters.size}>
+            {(['Active','Drift detected','Stale','Draft'] as StatusFilter[]).map(s => (
+              <PopoverChip
+                key={s}
+                label={s}
+                count={statusCounts[s]}
+                active={statusFilters.has(s)}
+                onClick={() => toggleStatus(s)}
+              />
+            ))}
+          </FilterDropdownChip>
 
-        <SideLabel>Has open campaigns</SideLabel>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          {(['Yes','No','Any'] as CampaignFilter[]).map(s => (
-            <label key={s} style={{
-              display: 'flex', alignItems: 'center', gap: 8,
-              padding: '4px 8px', fontSize: 12.5, color: T.n500, cursor: 'pointer',
-              fontFamily: T.fSans,
-            }}>
-              <input
-                type="radio" name="oc"
-                checked={campaignFilter === s}
-                onChange={() => setCampaignFilter(s)}
-                style={{ accentColor: T.n800 }}
-              /> {s}
-            </label>
-          ))}
+          <FilterDropdownChip label="Open campaigns" activeCount={campaignActiveCount}>
+            {(['Any','Yes','No'] as CampaignFilter[]).map(s => (
+              <PopoverChip
+                key={s}
+                label={s}
+                active={campaignFilter === s}
+                onClick={() => setCampaignFilter(s)}
+              />
+            ))}
+          </FilterDropdownChip>
         </div>
-      </aside>
+      </div>
 
       {/* Main column */}
-      <div style={{ overflowY: 'auto' }}>
+      <div>
         {/* Header — H1 dropped (breadcrumb owns title); CTA hoisted to topbar */}
         <div style={{ padding: '16px 32px 8px', borderBottom: `1px solid ${HAIRLINE}` }}>
           {/* Stat strip prose — hairline */}
@@ -384,7 +393,7 @@ export default function SegmentsLibraryPage() {
           </p>
 
           {/* Start from pills */}
-          <div style={{ display: 'flex', gap: 8, alignItems: 'center', paddingTop: 4, marginBottom: 4 }}>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center', paddingTop: 4, marginBottom: 4, flexWrap: 'wrap' }}>
             <span style={{ fontFamily: T.fSans, fontSize: 12, color: T.n500, marginRight: 4 }}>Start from:</span>
             {[
               { label: 'A goal', icon: <Target size={12} strokeWidth={1.75} />, action: () => navigate('/segments/new') },

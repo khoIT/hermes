@@ -12,11 +12,12 @@ import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { T } from '../../theme';
 import {
-  appendMessage, createThread, getThread, listThreads,
+  appendMessage, createThread, getThread, listThreads, putThread,
 } from '../../utils/chat-store';
 import { respondToText } from '../../utils/chat-respond';
 import { pushRecent } from '../../utils/recent-items-store';
 import { notifyRecentChanged } from '../sidebar/recent-items';
+import { threadDemoLivops2026Turns } from '../../data/chat/threads/thread-demo-livops-2026';
 import { resolvePageContext, type ContextGetters, type PageContext } from '../../utils/page-context-resolver';
 import { allFeatures, getFeatureByName } from '../../data/catalog/features';
 import { allSegments } from '../../data/catalog/segments';
@@ -62,8 +63,12 @@ export function ChatRail({ open, onClose }: ChatRailProps) {
   const { pathname } = useLocation();
   const [activeThreadId, setActiveThreadId] = React.useState<string | null>(null);
   const [tick, setTick] = React.useState(0);
+  /** Thread id where an assistant turn is pending (typing dots showing). */
+  const [pendingThreadId, setPendingThreadId] = React.useState<string | null>(null);
   /** Set when the user clicked "+ New" so auto-resume doesn't re-fill the rail. */
   const userClearedRef = React.useRef(false);
+  /** Active timer for delayed-append; cleared on rail close / new chat. */
+  const pendingTimerRef = React.useRef<number | null>(null);
 
   // Drag-to-resize. Width is local state (read once from storage); persisted
   // on pointerUp to avoid thrashing localStorage during the drag.
@@ -113,13 +118,61 @@ export function ChatRail({ open, onClose }: ChatRailProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeThreadId, tick]);
 
+  // Demo arc auto-play: when the demo thread becomes active and is in slim
+  // shape (only the initial user prompt), schedule T1 with the typing-dot
+  // delay. Covers both the explicit prompt click and rail auto-resume cases.
+  React.useEffect(() => {
+    if (!activeThreadId) return;
+    if (activeThreadId !== 'thread-demo-livops-2026') return;
+    if (pendingThreadId === activeThreadId) return;
+    const conv = getThread(activeThreadId);
+    if (!conv || conv.messages.length !== 1) return;
+    const { id: _id, createdAt: _ca, ...t1Rest } = threadDemoLivops2026Turns.t1;
+    delayedAppend(activeThreadId, t1Rest);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeThreadId, tick]);
+
   const conversation = activeThreadId ? getThread(activeThreadId) : null;
   const headerTitle = conversation?.title ?? 'Chat';
   const headerSubtitle = ctx?.label;
 
   const refresh = () => setTick(t => t + 1);
 
+  /**
+   * Append `msg` to `threadId` after `delayMs`, showing typing dots in between.
+   * Cancels any prior pending timer so rapid clicks don't queue. Returns nothing.
+   */
+  const delayedAppend = React.useCallback((
+    threadId: string,
+    msg: Parameters<typeof appendMessage>[1],
+    delayMs = 800,
+  ) => {
+    if (pendingTimerRef.current) window.clearTimeout(pendingTimerRef.current);
+    setPendingThreadId(threadId);
+    pendingTimerRef.current = window.setTimeout(() => {
+      appendMessage(threadId, msg);
+      pendingTimerRef.current = null;
+      setPendingThreadId(null);
+      notifyRecentChanged();
+      refresh();
+    }, delayMs);
+  }, []);
+
+  // Cancel any in-flight pending timer when the rail closes.
+  React.useEffect(() => {
+    if (!open && pendingTimerRef.current) {
+      window.clearTimeout(pendingTimerRef.current);
+      pendingTimerRef.current = null;
+      setPendingThreadId(null);
+    }
+  }, [open]);
+
   const onNew = () => {
+    if (pendingTimerRef.current) {
+      window.clearTimeout(pendingTimerRef.current);
+      pendingTimerRef.current = null;
+      setPendingThreadId(null);
+    }
     userClearedRef.current = true;
     setActiveThreadId(null);
     refresh();
@@ -139,9 +192,10 @@ export function ChatRail({ open, onClose }: ChatRailProps) {
     } else {
       appendMessage(activeId, { role: 'user', text, ...(artifact ? { artifact } : {}) });
     }
-    appendMessage(activeId, respondToText(text, activeId));
     notifyRecentChanged();
     refresh();
+    // Assistant response plays after typing-dot delay for a "loading" feel.
+    delayedAppend(activeId, respondToText(text, activeId));
   };
 
   const onTitleClick = () => {
@@ -160,11 +214,33 @@ export function ChatRail({ open, onClose }: ChatRailProps) {
    * Picking a scripted prompt routes to the canonical pre-seeded thread when
    * one exists (avoids duplicate `t-XXXXX` clones in the sidebar). Falls back
    * to the legacy create+respond path for prompts without a seeded fixture.
-   * The follow-up chips on T1 then play through multi-turn-registry.
+   *
+   * The demo arc thread (thread-demo-livops-2026) gets special handling: each
+   * click resets it to the slim `[user msg 1]` shape and auto-plays T1 after
+   * the typing-dot delay. This makes the demo repeatable and gives the
+   * "loading data → typed answer" feel on the very first turn.
+   * Follow-ups (T1 → T2/alts, T2 → T3/alts) play through multi-turn-registry.
    */
   const onPickScriptedPrompt = (prompt: { text: string; threadId?: string }) => {
     const seeded = prompt.threadId ? getThread(prompt.threadId) : null;
     if (seeded) {
+      // Demo thread: hard-reset to slim shape, then auto-play T1 with delay.
+      if (prompt.threadId === 'thread-demo-livops-2026') {
+        const slim = {
+          ...seeded,
+          messages: seeded.messages.filter(m => m.id === 'm-demo-u1'),
+          updatedAt: seeded.createdAt,
+        };
+        putThread(slim);
+        pushRecent('chats', { id: slim.id, title: slim.title, updatedAt: slim.updatedAt });
+        notifyRecentChanged();
+        userClearedRef.current = false;
+        setActiveThreadId(slim.id);
+        refresh();
+        const { id: _id, createdAt: _ca, ...t1Rest } = threadDemoLivops2026Turns.t1;
+        delayedAppend(slim.id, t1Rest);
+        return;
+      }
       pushRecent('chats', { id: seeded.id, title: seeded.title, updatedAt: seeded.updatedAt });
       notifyRecentChanged();
       userClearedRef.current = false;
@@ -173,12 +249,12 @@ export function ChatRail({ open, onClose }: ChatRailProps) {
       return;
     }
     const id = createThread(prompt.text);
-    appendMessage(id, respondToText(prompt.text, id));
     pushRecent('chats', { id, title: prompt.text, updatedAt: new Date().toISOString() });
     notifyRecentChanged();
     userClearedRef.current = false;
     setActiveThreadId(id);
     refresh();
+    delayedAppend(id, respondToText(prompt.text, id));
   };
 
   if (!open) return null;
@@ -234,7 +310,13 @@ export function ChatRail({ open, onClose }: ChatRailProps) {
               scriptedPromptsSlot={<ScriptedPromptsSection onPick={onPickScriptedPrompt} />}
             />
           )
-          : <CompactThreadView conversation={conversation} onFollowUp={submit} />}
+          : (
+            <CompactThreadView
+              conversation={conversation}
+              onFollowUp={submit}
+              pending={pendingThreadId === conversation.id}
+            />
+          )}
       </div>
       <div style={{
         padding: 10, background: '#fff',

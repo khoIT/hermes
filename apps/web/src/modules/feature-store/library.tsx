@@ -5,6 +5,7 @@
  */
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Plus } from 'lucide-react';
 import { T } from '../../theme';
 import { allFeatures, getAllFeatures, subscribeFeatures } from '../../data/catalog/features/index';
 import { useFeatureLoadStatus } from '../../data/catalog/features/_use-features';
@@ -22,19 +23,22 @@ import { computeUsageCounts } from './_logic/usage-count';
 import { DRIFT_THRESHOLD } from './_logic/thresholds';
 import type { FeatureUsage } from './_logic/usage-count';
 import type { HermesFeature } from '@hermes/contracts';
+import { useTopbarTrailing } from '../../utils/topbar-trailing-context';
+
+const ACCENT = '#f05a22';
 
 // ── Precompute usage map at module load (stable across renders) ──────────────
 const USAGE_MAP = computeUsageCounts(allFeatures, allSegments, allCampaigns);
 
-// Entry-points labels — badge count for "Drift detected" computed at render time.
-type EntryPointKey = 'domain' | 'register' | 'recent' | 'drift';
+// Entry-points labels — `register` removed: hoisted to topbar trailing slot
+// so the primary CTA mirrors `/segments` (`+ New segment`).
+type EntryPointKey = 'domain' | 'recent' | 'drift';
 interface EntryPoint {
   key: EntryPointKey;
   label: string;
 }
 const ENTRY_POINTS: EntryPoint[] = [
   { key: 'domain', label: 'Browse by domain' },
-  { key: 'register', label: 'Register a new feature' },
   { key: 'recent', label: 'Recently added' },
   { key: 'drift', label: 'Drift detected' },
 ];
@@ -43,6 +47,27 @@ export default function FeatureStoreLibraryPage() {
   const navigate = useNavigate();
   const [groupBy, setGroupBy] = React.useState<GroupByStrategy>('domain');
   const [filterState, setFilterState] = React.useState<FilterState>(EMPTY_FILTER);
+
+  // Hoist `+ Register feature` CTA into the topbar trailing slot (mirrors
+  // `/segments` page so primary creation actions live in the same location
+  // across modules).
+  useTopbarTrailing(
+    <button
+      onClick={() => navigate('/feature-store/new')}
+      style={{
+        display: 'inline-flex', alignItems: 'center', gap: 6,
+        fontFamily: T.fSans, fontSize: 13, fontWeight: 600, color: '#fff',
+        background: ACCENT, border: 'none',
+        borderRadius: 7, padding: '8px 14px', cursor: 'pointer',
+        height: 36,
+      }}
+      onMouseEnter={e => { e.currentTarget.style.background = '#d94d1a'; }}
+      onMouseLeave={e => { e.currentTarget.style.background = ACCENT; }}
+    >
+      <Plus size={13} strokeWidth={2} /> Register feature
+    </button>,
+    [],
+  );
 
   const loadStatus = useFeatureLoadStatus();
 
@@ -78,7 +103,6 @@ export default function FeatureStoreLibraryPage() {
   const totalVisible = filtered.length;
 
   const onEntryPointClick = (key: EntryPointKey) => {
-    if (key === 'register') return navigate('/feature-store/new');
     if (key === 'drift') {
       setFilterState({ ...filterState, driftedOnly: true });
       setSort('most-drifted');

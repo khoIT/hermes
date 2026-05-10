@@ -27,10 +27,16 @@ import { thread006 } from '../data/chat/threads/thread-006-cfm-tier-roi-research
 import { thread007 } from '../data/chat/threads/thread-007-cfm-loss-streak-multi';
 import { thread008 } from '../data/chat/threads/thread-008-pt-whale-recall';
 import { threadDemoLivops2026 } from '../data/chat/threads/thread-demo-livops-2026';
-import { pushRecent, clearRecent } from './recent-items-store';
+import { pushRecent, clearRecent, getRecent } from './recent-items-store';
 
-const BOOTSTRAP_VERSION = 'v9-260510-2144';
+const BOOTSTRAP_VERSION = 'v10-260510-2208';
 const VERSION_KEY = 'hermes.chat.bootstrap.version';
+
+// Stale segment-recent IDs to scrub on each bootstrap version bump.
+// Catalog-api once minted ids in `s_${Date.now()}` form; those rows are
+// no longer reachable from the static catalog, but the sidebar Recent
+// list still surfaces them. Drop on boot.
+const STALE_SEGMENT_ID_RE = /^s_\d+$/;
 
 /** Canonical fixture set — order matters: insertion order drives recent-items.
  *  threadDemoLivops2026 is last in the array so it is pushed FIRST to recents
@@ -74,7 +80,21 @@ export function bootstrapChatThreads(): void {
     pushRecent('chats', { id: t.id, title: t.title, updatedAt: t.updatedAt });
   }
 
+  // 4. Prune stale segment-recent entries (legacy `s_<timestamp>` ids).
+  pruneStaleSegmentRecents();
+
   writeVersion(BOOTSTRAP_VERSION);
+}
+
+function pruneStaleSegmentRecents(): void {
+  try {
+    const cur = getRecent('segments');
+    const next = cur.filter(item => !STALE_SEGMENT_ID_RE.test(item.id));
+    if (next.length === cur.length) return;
+    localStorage.setItem('hermes.recent.v1.segments', JSON.stringify(next));
+  } catch {
+    /* no-op — localStorage unavailable */
+  }
 }
 
 function readVersion(): string | null {

@@ -90,6 +90,13 @@ export interface ActionCardSegmentPayload {
    * than create a fresh empty one.
    */
   targetSegmentId?: string;
+  /**
+   * Technical feature names referenced by the predicate. Rendered inline as
+   * compact click-through pills inside the segment card so the segment +
+   * its inputs read as a single artifact (instead of orphaned chips above).
+   * Click → /feature-store/:name. Backward-compatible: omit to skip.
+   */
+  features?: string[];
 }
 
 export interface ActionCardCampaignPayload {

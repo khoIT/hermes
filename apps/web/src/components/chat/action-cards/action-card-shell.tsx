@@ -20,6 +20,8 @@ interface ActionCardShellProps {
   error?: string;
   /** When confirmed, deep-link to the new artifact's detail page. */
   viewHref?: string;
+  /** Optional inline content rendered between subline and CTA row (e.g. feature pills). */
+  inlineExtras?: React.ReactNode;
   onConfirm?: () => void;
   onRefine?: () => void;
   onCancel?: () => void;
@@ -28,7 +30,7 @@ interface ActionCardShellProps {
 
 export function ActionCardShell(props: ActionCardShellProps) {
   const {
-    kind, status, name, subline, error,
+    kind, status, name, subline, error, inlineExtras,
     viewHref, onConfirm, onRefine, onCancel, onView,
   } = props;
 
@@ -60,6 +62,7 @@ export function ActionCardShell(props: ActionCardShellProps) {
             </button>
           )}
         </div>
+        {inlineExtras && <div style={{ marginTop: 10 }}>{inlineExtras}</div>}
       </div>
     );
   }
@@ -81,6 +84,7 @@ export function ActionCardShell(props: ActionCardShellProps) {
             {subline}
           </div>
         )}
+        {inlineExtras && <div style={{ marginTop: 10 }}>{inlineExtras}</div>}
       </div>
 
       {status === 'error' && error && (

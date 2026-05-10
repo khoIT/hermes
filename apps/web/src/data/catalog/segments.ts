@@ -254,8 +254,12 @@ const segCfmLowCoinVip2026: HermesSegment = {
 // ---------------------------------------------------------------------------
 const segCfmLossStreakNonPaying: HermesSegment = {
   id: 'seg-cfm-loss-streak-non-paying-2026-0508-a3f9',
-  displayName: 'CFM · Loss Streak · Non-Paying · Ranked',
+  displayName: 'CFM · Loss Streak · Engaged · Lapsed-Payer',
   game: 'CFM',
+  // Predicate mirrors the demo arc thread T2 (thread-demo-livops-2026):
+  // streak ≥ 5 (severity) ∧ session_count_7d ≥ 3 (engagement floor) ∧
+  // last_purchase_days_ago ≥ 30 (monetization fit). All three earn their
+  // place via the Jan 2026 A/B (see chat T2 narrative + bar widgets).
   predicate: {
     groups: [
       {
@@ -269,10 +273,17 @@ const segCfmLossStreakNonPaying: HermesSegment = {
             substrate: 'B',
           },
           {
-            feature: 'is_paying_user_lifetime',
-            op: 'is_false',
-            value: false,
+            feature: 'session_count_7d',
+            op: '>=',
+            value: 3,
             latencyTier: '<1h',
+            substrate: 'B',
+          },
+          {
+            feature: 'last_purchase_days_ago',
+            op: '>=',
+            value: 30,
+            latencyTier: '<1d',
             substrate: 'B',
           },
         ],
@@ -284,10 +295,10 @@ const segCfmLossStreakNonPaying: HermesSegment = {
   },
   goal4r: 'retain',
   owner: 'khoi.tn',
-  lastBuildAt: '2026-05-08T06:14:42+07:00',
-  audienceSize: 23890,
-  lifecycleBreakdown: { nru: 0.08, mid: 0.52, veteran: 0.40 },
-  spendTierBreakdown: { free: 1.0, low: 0, mid: 0, high: 0, whale: 0 },
+  lastBuildAt: '2026-05-10T09:02:00+07:00',
+  audienceSize: 2950,
+  lifecycleBreakdown: { nru: 0.04, mid: 0.58, veteran: 0.38 },
+  spendTierBreakdown: { free: 0.40, low: 0.25, mid: 0.20, high: 0.10, whale: 0.05 },
   type: 'hand-built',
   author: 'agent-drafted',
   agentRef: 'ag-op-1042',

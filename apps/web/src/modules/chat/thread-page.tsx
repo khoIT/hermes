@@ -8,7 +8,7 @@ import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { T } from '../../theme';
 import {
-  getThread, appendMessage, type Conversation,
+  getThread, appendMessage, putThread, type Conversation,
 } from '../../utils/chat-store';
 import { respondToText } from '../../utils/chat-respond';
 import { pushRecent } from '../../utils/recent-items-store';
@@ -19,10 +19,14 @@ import { AssistantResponse } from '../../components/chat/assistant-response';
 import { ChatInputBox } from '../../components/chat/chat-input-box';
 import { ActionCardSegment } from '../../components/chat/action-cards/action-card-segment';
 import { ActionCardCampaign } from '../../components/chat/action-cards/action-card-campaign';
+import { TypingDots } from '../../components/chat-rail/typing-dots';
 import { ActiveThreadProvider } from '../../utils/active-thread-context';
+import { threadDemoLivops2026Turns } from '../../data/chat/threads/thread-demo-livops-2026';
 import type {
   ActionCardSegmentPayload, ActionCardCampaignPayload,
 } from '../../data/chat/response-types';
+
+const DEMO_THREAD_ID = 'thread-demo-livops-2026';
 
 function useThread(id: string | undefined): [Conversation | null, () => void] {
   const [version, setVersion] = React.useState(0);
@@ -38,6 +42,64 @@ export default function ChatThreadPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [conv, refresh] = useThread(id);
+
+  /** Thread id where an assistant turn is pending (typing dots showing). */
+  const [pendingThreadId, setPendingThreadId] = React.useState<string | null>(null);
+  const pendingTimerRef = React.useRef<number | null>(null);
+
+  /**
+   * Append `msg` to `threadId` after `delayMs`, showing typing dots in between.
+   * Mirrors the chat-rail flow so /chat/:id has the same interactive feel.
+   */
+  const delayedAppend = React.useCallback((
+    threadId: string,
+    msg: Parameters<typeof appendMessage>[1],
+    delayMs = 800,
+  ) => {
+    if (pendingTimerRef.current) window.clearTimeout(pendingTimerRef.current);
+    setPendingThreadId(threadId);
+    pendingTimerRef.current = window.setTimeout(() => {
+      appendMessage(threadId, msg);
+      pendingTimerRef.current = null;
+      setPendingThreadId(null);
+      notifyRecentChanged();
+      refresh();
+    }, delayMs);
+  }, [refresh]);
+
+  // Demo arc: every entry to /chat/thread-demo-livops-2026 hard-resets to
+  // slim shape (just the initial user prompt) so the demo is repeatable. Guard
+  // ref prevents the reset from firing again as the user advances T1 → T2 → T3
+  // within the same mount.
+  const lastResetIdRef = React.useRef<string | null>(null);
+  React.useLayoutEffect(() => {
+    if (id !== DEMO_THREAD_ID) return;
+    if (lastResetIdRef.current === id) return;
+    lastResetIdRef.current = id;
+    const current = getThread(id);
+    if (!current || current.messages.length <= 1) return;
+    putThread({
+      ...current,
+      messages: current.messages.filter(m => m.id === 'm-demo-u1'),
+      updatedAt: current.createdAt,
+    });
+    refresh();
+  }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Demo arc auto-play: when the demo thread is in slim shape, schedule T1
+  // with the typing-dot delay.
+  React.useEffect(() => {
+    if (id !== DEMO_THREAD_ID) return;
+    if (pendingThreadId === id) return;
+    if (!conv || conv.messages.length !== 1) return;
+    const { id: _id, createdAt: _ca, ...t1Rest } = threadDemoLivops2026Turns.t1;
+    delayedAppend(id, t1Rest);
+  }, [id, conv, pendingThreadId, delayedAppend]);
+
+  // Cleanup pending timer on unmount.
+  React.useEffect(() => () => {
+    if (pendingTimerRef.current) window.clearTimeout(pendingTimerRef.current);
+  }, []);
 
   // Push to recent on mount + every refresh, so sidebar All Chats highlights this thread.
   React.useEffect(() => {
@@ -84,19 +146,13 @@ export default function ChatThreadPage() {
 
   const handleSubmit = (text: string) => {
     appendMessage(conv.id, { role: 'user', text });
-    // Append a scripted assistant response on the next tick so the user
-    // message renders first and the thread layout settles before the
-    // (potentially large) widget body lands.
-    setTimeout(() => {
-      const response = respondToText(text, conv.id);
-      appendMessage(conv.id, response);
-      refresh();
-    }, 250);
     pushRecent('chats', {
       id: conv.id, title: conv.title, updatedAt: new Date().toISOString(),
     });
     notifyRecentChanged();
     refresh();
+    // Assistant response plays after typing-dot delay for the "loading" feel.
+    delayedAppend(conv.id, respondToText(text, conv.id));
   };
 
   const [first, ...rest] = conv.messages;
@@ -130,6 +186,7 @@ export default function ChatThreadPage() {
               />
             )
         )}
+        {pendingThreadId === conv.id && <TypingDots />}
       </div>
 
       {/* Sticky bottom input */}

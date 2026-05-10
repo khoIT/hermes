@@ -14,14 +14,17 @@ import { AssistantResponse } from '../chat/assistant-response';
 import { ActionCardSegment } from '../chat/action-cards/action-card-segment';
 import { ActionCardCampaign } from '../chat/action-cards/action-card-campaign';
 import { MessageArtifactBadge } from '../chat/message-artifact-badge';
+import { TypingDots } from './typing-dots';
 
 interface CompactThreadViewProps {
   conversation: Conversation;
   /** Caller submits a follow-up; must append a user message + scripted response. */
   onFollowUp: (text: string) => void;
+  /** When true, render TypingDots after the last message (assistant pending). */
+  pending?: boolean;
 }
 
-export function CompactThreadView({ conversation, onFollowUp }: CompactThreadViewProps) {
+export function CompactThreadView({ conversation, onFollowUp, pending }: CompactThreadViewProps) {
   return (
     <div className="hermes-rail-compact" style={{
       padding: '12px 14px',
@@ -59,6 +62,7 @@ export function CompactThreadView({ conversation, onFollowUp }: CompactThreadVie
           />
         );
       })}
+      {pending && <TypingDots />}
     </div>
   );
 }
