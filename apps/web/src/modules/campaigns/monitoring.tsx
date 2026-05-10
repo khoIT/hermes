@@ -12,7 +12,6 @@ import { UpliftChart } from './_components/uplift-chart';
 import { ExperimentAgentPanel } from './_components/experiment-agent-panel';
 import { SampleFiresTable } from './_components/sample-fires-table';
 import { SourceThreadPill } from '../../components/chat-rail/source-thread-pill';
-import { ContinueInChatPill } from '../../components/chat-rail/continue-in-chat-pill';
 import { pushRecent } from '../../utils/recent-items-store';
 import { notifyRecentChanged } from '../../components/sidebar/recent-items';
 import { getThreadTitle } from '../../utils/thread-title-lookup';
@@ -153,7 +152,6 @@ export default function CampaignMonitoringPage() {
         </div>
       )}
 
-      <ContinueInChatPill threadId={sourceThreadId} />
       <div style={{ padding: '24px 40px', maxWidth: 1100 }}>
 
         {/* Health snapshot */}

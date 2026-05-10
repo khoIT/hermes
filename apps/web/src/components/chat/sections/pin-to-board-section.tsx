@@ -61,7 +61,7 @@ export function PinToBoardSection({
         board = await createBoard(payload.boardName);
       }
       // Pass activeThreadId so board cards track their source thread →
-      // enables SourceThreadPill and ContinueInChatPill on /canvas/:id.
+      // enables SourceThreadPill on /canvas/:id.
       await pinCard(board.id, widget, activeThreadId ?? undefined);
       pushRecent('boards', {
         id: board.id, title: board.name, updatedAt: new Date().toISOString(),

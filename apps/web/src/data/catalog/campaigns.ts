@@ -137,7 +137,7 @@ const cmpCfm407: HermesCampaign = {
   status: 'active',
   author: 'hand-built',
   // Demo thread back-link — demo action_card_campaign navigates here so the
-  // ContinueInChatPill and source-thread banner render without a live-campaign lookup.
+  // SourceThreadPill and source-thread banner render without a live-campaign lookup.
   sourceThreadId: 'thread-demo-livops-2026',
   estimatedFiresPerDay: 3420,
   estimatedUniquePlayers7d: 18200,

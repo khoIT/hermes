@@ -28,6 +28,23 @@ export function ActionCardSegment({ payload }: Props) {
   const onConfirm = async () => {
     setStatus('pending');
     setError(undefined);
+
+    // Pre-bound demo path: reuse a seeded segment with full audience metrics
+    // instead of creating a fresh empty one via the API.
+    if (payload.targetSegmentId) {
+      setCreatedId(payload.targetSegmentId);
+      setStatus('confirmed');
+      pushRecent('segments', {
+        id: payload.targetSegmentId,
+        title: payload.name,
+        updatedAt: new Date().toISOString(),
+        href: `/segments/${payload.targetSegmentId}`,
+      });
+      notifyRecentChanged();
+      toast(`Segment "${payload.name}" confirmed`, { tone: 'success' });
+      return;
+    }
+
     try {
       const result = await createSegment({
         name: payload.name,

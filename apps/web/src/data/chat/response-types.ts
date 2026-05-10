@@ -83,6 +83,13 @@ export interface ActionCardSegmentPayload {
   description?: string;
   /** Set after successful POST: id of the created segment. */
   createdId?: string;
+  /**
+   * Pre-bound segment id. When set, Confirm skips the API call and navigates
+   * to this existing segment. Used by scripted demo threads that should
+   * reuse a seeded segment (with audience metrics already wired) rather
+   * than create a fresh empty one.
+   */
+  targetSegmentId?: string;
 }
 
 export interface ActionCardCampaignPayload {

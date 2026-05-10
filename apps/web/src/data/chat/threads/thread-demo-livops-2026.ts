@@ -117,7 +117,7 @@ const T2: ChatMessage = {
       payload: {
         name: 'CFM · Loss Streak · Non-Paying · Ranked',
         description: 'consecutive_ranked_losses_streak ≥ 5 AND is_paying_user_lifetime = false AND iam_received_count_24h < 1',
-        createdId: 'seg-cfm-loss-streak-non-paying-2026-0508-a3f9',
+        targetSegmentId: 'seg-cfm-loss-streak-non-paying-2026-0508-a3f9',
       },
     },
   ],

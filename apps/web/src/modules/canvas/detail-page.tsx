@@ -11,7 +11,6 @@ import {
 } from '../../api/boards-client';
 import { Widget } from '../../components/chat/widgets/widget';
 import { SourceThreadPill } from '../../components/chat-rail/source-thread-pill';
-import { ContinueInChatPill } from '../../components/chat-rail/continue-in-chat-pill';
 import { toast } from '../../components/ui/toast';
 import { ComingSoon } from '../../components/empty-state/coming-soon';
 import { pushRecent } from '../../utils/recent-items-store';
@@ -68,11 +67,6 @@ export default function CanvasDetailPage() {
     toast('Card unpinned');
   };
 
-  // Derive board-level sourceThreadId from first card that has one.
-  const boardSourceThreadId = board.sections
-    .flatMap(s => s.cards)
-    .find(c => c.sourceThreadId)?.sourceThreadId ?? null;
-
   return (
     <div style={{ padding: '32px 48px 48px', maxWidth: 1100, margin: '0 auto', fontFamily: T.fSans }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 6 }}>
@@ -98,7 +92,6 @@ export default function CanvasDetailPage() {
         </button>
       </div>
 
-      <ContinueInChatPill threadId={boardSourceThreadId} />
       {board.sections.map(sec => (
         <section key={sec.id} style={{ marginBottom: 32 }}>
           <div style={{

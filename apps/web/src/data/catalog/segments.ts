@@ -294,7 +294,7 @@ const segCfmLossStreakNonPaying: HermesSegment = {
   drift: false,
   status: 'active',
   usedByCampaigns: 1,
-  // Phase 4: reverse-link to the demo arc thread for ContinueInChatPill
+  // Phase 4: reverse-link to the demo arc thread for SourceThreadPill
   sourceThreadId: 'thread-demo-livops-2026',
 };
 

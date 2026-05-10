@@ -48,7 +48,7 @@ export function ActionCardCampaign({ payload }: Props) {
       // Demo path: the demo thread's campaign proposal always targets the seeded
       // anchor campaign (cmp-cfm-407) which has sourceThreadId pre-set in the
       // static catalog. This ensures the monitoring page shows the source-thread
-      // banner and ContinueInChatPill without a live-campaign store lookup.
+      // banner and SourceThreadPill without a live-campaign store lookup.
       // Non-demo campaigns (no activeThreadId match) use the real result.id.
       const destinationId =
         activeThreadId === 'thread-demo-livops-2026' ? 'cmp-cfm-407' : result.id;
