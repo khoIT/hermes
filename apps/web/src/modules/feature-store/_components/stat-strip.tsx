@@ -24,14 +24,14 @@ interface StatPillProps {
 const StatPill: React.FC<StatPillProps> = ({ label, value, color = T.n600, bg = T.n100, border = T.n200 }) => (
   <div style={{
     display: 'flex', flexDirection: 'column', alignItems: 'center',
-    padding: '10px 20px', borderRadius: 8,
+    padding: '6px 14px', borderRadius: 6,
     background: bg, border: `1px solid ${border}`,
-    minWidth: 80, gap: 2,
+    minWidth: 64, gap: 0,
   }}>
-    <span style={{ fontFamily: T.fDisp, fontSize: 28, color, lineHeight: 1, textTransform: 'uppercase' }}>
+    <span style={{ fontFamily: T.fDisp, fontSize: 22, color, lineHeight: 1.05, textTransform: 'uppercase' }}>
       {value}
     </span>
-    <span style={{ fontFamily: T.fMono, fontSize: 10, color: T.n500, whiteSpace: 'nowrap', letterSpacing: '0.04em' }}>
+    <span style={{ fontFamily: T.fMono, fontSize: 9.5, color: T.n500, whiteSpace: 'nowrap', letterSpacing: '0.04em' }}>
       {label}
     </span>
   </div>
@@ -66,8 +66,8 @@ export const StatStrip: React.FC<StatStripProps> = ({ features }) => {
 
   return (
     <div style={{
-      display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap',
-      padding: '12px 0', marginBottom: 4,
+      display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap',
+      padding: '4px 0 8px',
     }}>
       {/* Total */}
       <StatPill
@@ -87,7 +87,7 @@ export const StatStrip: React.FC<StatStripProps> = ({ features }) => {
         border="#f5b8a3"
       />
 
-      <div style={{ width: 1, height: 40, background: T.n200, margin: '0 4px' }} />
+      <div style={{ width: 1, height: 28, background: T.n200, margin: '0 2px' }} />
 
       {/* Realtime tier */}
       <StatPill
@@ -116,7 +116,7 @@ export const StatStrip: React.FC<StatStripProps> = ({ features }) => {
         border={T.n200}
       />
 
-      <div style={{ width: 1, height: 40, background: T.n200, margin: '0 4px' }} />
+      <div style={{ width: 1, height: 28, background: T.n200, margin: '0 2px' }} />
 
       {/* Added this month */}
       <StatPill

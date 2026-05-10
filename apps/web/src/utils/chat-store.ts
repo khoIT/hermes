@@ -46,7 +46,7 @@ export interface Conversation {
   updatedAt: string;
 }
 
-interface ThreadIndexEntry {
+export interface ThreadIndexEntry {
   id: string;
   title: string;
   updatedAt: string;

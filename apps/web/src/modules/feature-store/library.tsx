@@ -95,74 +95,66 @@ export default function FeatureStoreLibraryPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: T.n50 }}>
-      {/* ── Page header ───────────────────────────────────────────────────── */}
+      {/* ── Page header (compressed — breadcrumb owns title) ──────────────── */}
       <div style={{
-        padding: '28px 40px 0',
+        padding: '16px 40px 0',
         background: '#fff', borderBottom: `1px solid ${T.n200}`,
       }}>
-        <div style={{
-          fontFamily: T.fSans, fontSize: 10, fontWeight: 700, color: T.n400,
-          textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4,
-        }}>
-          01 · Feature Store
-        </div>
-        <div style={{
-          fontFamily: T.fDisp, fontSize: 44, textTransform: 'uppercase',
-          color: T.n950, lineHeight: 0.95, marginBottom: 12,
-        }}>
-          Feature Store
-        </div>
-        <p style={{ fontFamily: T.fSans, fontSize: 13, color: T.n500, marginBottom: 16, maxWidth: 620 }}>
-          The Semantic Management Layer — {allFeatures.length} features compiled once,
-          materialised on the Realtime path (Substrate A · Apollo TEE) and the
-          batch path (Substrate B · Hatchet + Iceberg).
-        </p>
-
-        {/* Stat strip — uses live features so platform/drift counts update on register */}
+        {/* Hairline StatStrip */}
         <StatStrip features={features} />
 
-        {/* Entry-points strip */}
+        {/* Entry-points strip — 28px chip row */}
         <div style={{
-          display: 'flex', gap: 4, paddingBottom: 0, marginTop: 4,
-          borderTop: `1px solid ${T.n100}`, paddingTop: 12,
+          display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap',
+          padding: '4px 0 12px',
         }}>
           {ENTRY_POINTS.map((ep) => {
             const active =
               (ep.key === 'domain' && groupBy === 'domain' && !filterState.driftedOnly) ||
               (ep.key === 'drift' && filterState.driftedOnly) ||
               (ep.key === 'recent' && sort === 'recently-added');
-            const badge =
-              ep.key === 'drift' && driftedCount > 0
-                ? String(driftedCount)
-                : ep.key === 'recent' && recentlyAddedCount > 0
-                  ? String(recentlyAddedCount)
-                  : undefined;
+            const count =
+              ep.key === 'drift' ? driftedCount
+              : ep.key === 'recent' ? recentlyAddedCount
+              : ep.key === 'domain' ? features.length
+              : undefined;
             return (
-              <div key={ep.key} style={{ position: 'relative' }}>
-                <button
-                  onClick={() => onEntryPointClick(ep.key)}
-                  style={{
-                    fontFamily: T.fSans, fontSize: 12, fontWeight: 500,
-                    color: active ? T.brand : T.n600,
-                    background: 'none', border: 'none', cursor: 'pointer',
-                    padding: '6px 14px 10px',
-                    borderBottom: active ? `2px solid ${T.brand}` : '2px solid transparent',
-                    transition: 'color .12s, border-color .12s',
-                  }}
-                >
-                  {ep.label}
-                  {badge && (
-                    <span style={{
-                      marginLeft: 6, fontFamily: T.fMono, fontSize: 10, fontWeight: 700,
-                      background: ep.key === 'drift' ? '#fee2e2' : T.brandSoft,
-                      color: ep.key === 'drift' ? T.red600 : T.brand,
-                      padding: '1px 5px', borderRadius: 9999,
-                    }}>
-                      {badge}
-                    </span>
-                  )}
-                </button>
-              </div>
+              <button
+                key={ep.key}
+                onClick={() => onEntryPointClick(ep.key)}
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 6,
+                  fontFamily: T.fSans, fontSize: 12, fontWeight: 500,
+                  height: 28, padding: '0 12px', borderRadius: 9999,
+                  border: `1px solid ${active ? T.brand : T.n200}`,
+                  background: active ? T.brandSoft : '#fff',
+                  color: active ? T.brand : T.n700,
+                  cursor: 'pointer',
+                  transition: 'background .12s, color .12s, border-color .12s',
+                }}
+                onMouseEnter={e => {
+                  if (!active) {
+                    e.currentTarget.style.borderColor = T.n300;
+                    e.currentTarget.style.color = T.n900;
+                  }
+                }}
+                onMouseLeave={e => {
+                  if (!active) {
+                    e.currentTarget.style.borderColor = T.n200;
+                    e.currentTarget.style.color = T.n700;
+                  }
+                }}
+              >
+                {ep.label}
+                {count !== undefined && count > 0 && (
+                  <span style={{
+                    fontFamily: T.fMono, fontSize: 10, fontWeight: 600,
+                    color: active ? T.brand : T.n500,
+                  }}>
+                    ({count})
+                  </span>
+                )}
+              </button>
             );
           })}
         </div>

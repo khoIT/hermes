@@ -41,6 +41,8 @@ import SegmentsThresholdPage    from './modules/segments/threshold-deep';
 import SegmentsHandoffPage      from './modules/segments/handoff-modal';
 import SegmentsMonitoringPage   from './modules/segments/monitoring';
 import SegmentsPatternsPage     from './modules/segments/patterns';
+import { SegmentDetailLayout }  from './modules/segments/_components/detail-layout';
+import { ComingSoon }           from './components/empty-state/coming-soon';
 
 // -- Module 04: Campaigns
 import CampaignsLibraryPage     from './modules/campaigns/library';
@@ -91,9 +93,17 @@ export function AppRoutes() {
       <Route path="/segments"                    element={<SegmentsLibraryPage />} />
       <Route path="/segments/new"                element={<SegmentsCanvasPage />} />
       <Route path="/segments/patterns"           element={<SegmentsPatternsPage />} />
-      <Route path="/segments/:id/threshold"      element={<SegmentsThresholdPage />} />
-      <Route path="/segments/:id/handoff"        element={<SegmentsHandoffPage />} />
-      <Route path="/segments/:id"                element={<SegmentsMonitoringPage />} />
+      {/* Segment detail — nested under SegmentDetailLayout for sub-tab strip */}
+      <Route path="/segments/:id" element={<SegmentDetailLayout />}>
+        <Route index               element={<SegmentsMonitoringPage />} />
+        <Route path="threshold"    element={<SegmentsThresholdPage />} />
+        <Route path="handoff"      element={<SegmentsHandoffPage />} />
+        <Route path="monitoring"   element={<SegmentsMonitoringPage />} />
+        <Route path="composition"  element={<ComingSoon title="Composition" body="Per-feature breakdown of who lands in this segment — cohort heatmap by tenure, drop-off curve by predicate clause, and overlap with sibling segments." />} />
+        <Route path="users"        element={<ComingSoon title="Users" body="Sample of frozen UIDs in the latest build with last-event timestamps. Useful for spot-checking that the predicate is selecting the right people." />} />
+        <Route path="campaigns"    element={<ComingSoon title="Campaigns" body="Cross-reference of every campaign that targets this segment — status, last send, observed lift." />} />
+        <Route path="canvas"       element={<ComingSoon title="Canvas" body="Visual canvas view of the segment predicate — node-style representation of cascading clauses with feature pills." />} />
+      </Route>
 
       {/* 09-17 — Campaigns */}
       <Route path="/campaigns"                    element={<CampaignsLibraryPage />} />

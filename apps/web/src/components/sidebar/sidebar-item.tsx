@@ -1,6 +1,9 @@
 /**
  * SidebarItem — single nav row with icon + label + optional caret.
- * Active state: 3px brand-tinted left bar + semi-bold text. No fill (Actioneer-quiet).
+ * Active state:
+ *   - top-level: 3px brand-tinted left bar + semi-bold text
+ *   - sub-row (indent): box highlight (no left bar) so it doesn't clash with tree-line
+ *   - collapsed: icon-only with hover tooltip
  */
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
@@ -26,11 +29,13 @@ interface SidebarItemProps {
   muted?: boolean;
   /** Right-aligned trailing accessory (e.g. count badge). */
   trailing?: React.ReactNode;
+  /** Sidebar collapsed mode — render icon-only. */
+  collapsed?: boolean;
 }
 
 export function SidebarItem({
   icon, label, to, matchPrefix, expandable, expanded,
-  primary, onClick, indent, muted, trailing,
+  primary, onClick, indent, muted, trailing, collapsed,
 }: SidebarItemProps) {
   const location = useLocation();
   const prefix = matchPrefix ?? to;
@@ -40,23 +45,51 @@ export function SidebarItem({
       : location.pathname === prefix || location.pathname.startsWith(prefix + '/')
   );
 
+  // ── Collapsed icon-only row ──────────────────────────────────────────────
+  if (collapsed && !indent) {
+    const inner = (
+      <CollapsedRow
+        icon={icon}
+        label={label}
+        primary={primary}
+        isActive={isActive}
+      />
+    );
+    if (!to) {
+      return <div onClick={onClick} role="button" tabIndex={0}>{inner}</div>;
+    }
+    return (
+      <NavLink to={to} onClick={onClick} style={{ textDecoration: 'none', display: 'block' }}>
+        {inner}
+      </NavLink>
+    );
+  }
+
+  // Hide indented sub-rows entirely when collapsed (parent already gates this,
+  // but defend against indirect callers).
+  if (collapsed && indent) return null;
+
   const inner = (
     <div
       style={{
         display: 'flex', alignItems: 'center', gap: 8,
-        padding: indent ? '5px 12px 5px 36px' : '7px 12px',
+        padding: indent ? '5px 12px 5px 28px' : '7px 12px',
         position: 'relative',
         cursor: 'pointer',
         userSelect: 'none',
         borderRadius: 0,
-        background: 'transparent',
+        background: indent && isActive ? 'rgba(0,0,0,0.05)' : 'transparent',
         transition: 'background .12s',
       }}
-      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.04)'; }}
-      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+      onMouseEnter={e => {
+        if (!(indent && isActive)) e.currentTarget.style.background = 'rgba(0,0,0,0.04)';
+      }}
+      onMouseLeave={e => {
+        e.currentTarget.style.background = indent && isActive ? 'rgba(0,0,0,0.05)' : 'transparent';
+      }}
     >
-      {/* Active left bar */}
-      {isActive && (
+      {/* Active left bar — top-level only; sub-row uses box highlight above */}
+      {isActive && !indent && (
         <div style={{
           position: 'absolute', left: 0, top: 4, bottom: 4, width: 3,
           background: T.brand, borderRadius: '0 2px 2px 0',
@@ -89,19 +122,78 @@ export function SidebarItem({
     </div>
   );
 
-  // Expand-only header (no `to`, has expandable+onClick)
   if (!to) {
-    return (
-      <div onClick={onClick} role="button" tabIndex={0}>
-        {inner}
-      </div>
-    );
+    return <div onClick={onClick} role="button" tabIndex={0}>{inner}</div>;
   }
-
-  // Navigable row
   return (
     <NavLink to={to} onClick={onClick} style={{ textDecoration: 'none', display: 'block' }}>
       {inner}
     </NavLink>
+  );
+}
+
+// ── Collapsed (60px) icon-only row with hover tooltip ────────────────────────
+interface CollapsedRowProps {
+  icon?: LucideIcon;
+  label: string;
+  primary?: boolean;
+  isActive: boolean;
+}
+
+function CollapsedRow({ icon, label, primary, isActive }: CollapsedRowProps) {
+  const [hover, setHover] = React.useState(false);
+  const ref = React.useRef<HTMLDivElement>(null);
+  const [tipPos, setTipPos] = React.useState<{ top: number; left: number } | null>(null);
+
+  React.useEffect(() => {
+    if (hover && ref.current) {
+      const r = ref.current.getBoundingClientRect();
+      setTipPos({ top: r.top + r.height / 2, left: r.right + 8 });
+    } else {
+      setTipPos(null);
+    }
+  }, [hover]);
+
+  return (
+    <div
+      ref={ref}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        position: 'relative',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        height: 32, width: '100%',
+        background: hover && !isActive ? 'rgba(0,0,0,0.04)' : 'transparent',
+        cursor: 'pointer',
+        transition: 'background .12s',
+      }}
+    >
+      {isActive && (
+        <div style={{
+          position: 'absolute', left: 0, top: 4, bottom: 4, width: 3,
+          background: T.brand, borderRadius: '0 2px 2px 0',
+        }} />
+      )}
+      {primary
+        ? <Icon icon={Plus} size={16} color={T.n800} />
+        : icon
+          ? <Icon icon={icon} size={18} color={isActive ? T.n950 : T.n600} />
+          : null}
+      {hover && tipPos && (
+        <div
+          style={{
+            position: 'fixed', top: tipPos.top, left: tipPos.left,
+            transform: 'translateY(-50%)',
+            background: T.n900, color: '#fff',
+            padding: '4px 8px', borderRadius: 4,
+            fontFamily: T.fSans, fontSize: 11, fontWeight: 500,
+            whiteSpace: 'nowrap', pointerEvents: 'none',
+            zIndex: 50,
+          }}
+        >
+          {label}
+        </div>
+      )}
+    </div>
   );
 }

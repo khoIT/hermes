@@ -1,6 +1,8 @@
 /**
  * SidebarSection — wraps SidebarItem header + optional expanded content.
  * Persists expand state to localStorage via recent-items-store helpers.
+ * When sidebar is collapsed (60px rail), children + caret are hidden.
+ * When expanded, children sit inside a tree-line guide container.
  */
 import React from 'react';
 import { SidebarItem } from './sidebar-item';
@@ -23,10 +25,12 @@ interface SidebarSectionProps {
   children?: React.ReactNode;
   /** Render flat (no caret) — used for simple links. */
   flat?: boolean;
+  /** Sidebar is in 60px icon-rail mode. */
+  collapsed?: boolean;
 }
 
 export function SidebarSection({
-  id, icon, label, to, matchPrefix, children, flat,
+  id, icon, label, to, matchPrefix, children, flat, collapsed,
 }: SidebarSectionProps) {
   const [expanded, setExpanded] = React.useState(() =>
     flat ? false : getSectionExpanded(id)
@@ -41,6 +45,8 @@ export function SidebarSection({
     });
   }, [id, flat]);
 
+  const showChildren = !flat && expanded && !!children && !collapsed;
+
   return (
     <div>
       <SidebarItem
@@ -48,12 +54,20 @@ export function SidebarSection({
         label={label}
         to={to}
         matchPrefix={matchPrefix}
-        expandable={!flat}
+        expandable={!flat && !collapsed}
         expanded={expanded}
         onClick={onToggle}
+        collapsed={collapsed}
       />
-      {!flat && expanded && children && (
-        <div>{children}</div>
+      {showChildren && (
+        <div style={{ position: 'relative' }}>
+          {/* Tree-line guide */}
+          <div style={{
+            position: 'absolute', left: 23, top: 4, bottom: 4, width: 1,
+            background: 'rgba(0,0,0,0.08)', pointerEvents: 'none',
+          }} />
+          {children}
+        </div>
       )}
     </div>
   );

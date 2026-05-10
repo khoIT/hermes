@@ -14,6 +14,7 @@ import { Target, Bookmark, Layers, PenLine, Eye, Pencil, Plus } from 'lucide-rea
 import { T } from '../../theme';
 import { allSegments } from '../../data/catalog/segments';
 import type { HermesSegment } from '@hermes/contracts';
+import { useTopbarTrailing } from '../../utils/topbar-trailing-context';
 
 // ── Design constants matching reference ─────────────────────────────────────
 const ACCENT = '#f05a22';
@@ -251,6 +252,25 @@ export default function SegmentsLibraryPage() {
   const [statusFilters, setStatusFilters] = React.useState<Set<StatusFilter>>(new Set());
   const [campaignFilter, setCampaignFilter] = React.useState<CampaignFilter>('Any');
 
+  // Hoist `+ New segment` CTA into the topbar trailing slot.
+  useTopbarTrailing(
+    <button
+      onClick={() => navigate('/segments/new')}
+      style={{
+        display: 'inline-flex', alignItems: 'center', gap: 6,
+        fontFamily: T.fSans, fontSize: 13, fontWeight: 600, color: '#fff',
+        background: ACCENT, border: 'none',
+        borderRadius: 7, padding: '8px 14px', cursor: 'pointer',
+        height: 36,
+      }}
+      onMouseEnter={e => { e.currentTarget.style.background = '#d94d1a'; }}
+      onMouseLeave={e => { e.currentTarget.style.background = ACCENT; }}
+    >
+      <Plus size={13} strokeWidth={2} /> New segment
+    </button>,
+    [],
+  );
+
   const filtered = React.useMemo(() => {
     let segs = allSegments as HermesSegment[];
     if (filterGoal !== 'all') segs = segs.filter(s => s.goal4r === filterGoal);
@@ -352,34 +372,12 @@ export default function SegmentsLibraryPage() {
 
       {/* Main column */}
       <div style={{ overflowY: 'auto' }}>
-        {/* Header */}
-        <div style={{ padding: '24px 32px 8px', borderBottom: `1px solid ${HAIRLINE}` }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 6 }}>
-            <h1 style={{
-              margin: 0, fontSize: 28,
-              fontFamily: 'Georgia, "Times New Roman", serif', fontWeight: 400,
-            }}>
-              Segments
-            </h1>
-            <button
-              onClick={() => navigate('/segments/new')}
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: 6,
-                fontFamily: T.fSans, fontSize: 13, fontWeight: 600, color: '#fff',
-                background: ACCENT, border: 'none',
-                borderRadius: 7, padding: '8px 16px', cursor: 'pointer',
-              }}
-              onMouseEnter={e => { e.currentTarget.style.background = '#d94d1a'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = ACCENT; }}
-            >
-              <Plus size={13} strokeWidth={2} /> Build segment
-            </button>
-          </div>
-
-          {/* Stat strip prose */}
+        {/* Header — H1 dropped (breadcrumb owns title); CTA hoisted to topbar */}
+        <div style={{ padding: '16px 32px 8px', borderBottom: `1px solid ${HAIRLINE}` }}>
+          {/* Stat strip prose — hairline */}
           <p style={{
-            margin: '0 0 14px', maxWidth: 720,
-            fontFamily: T.fSans, fontSize: 12.5, color: T.n500, lineHeight: 1.5,
+            margin: '0 0 12px', maxWidth: 720,
+            fontFamily: T.fSans, fontSize: 12, color: T.n500, lineHeight: 1.5,
           }}>
             {allSegments.length} segments · {active} active · {draft} in draft · {derived} derived from journey branches · {drift} with drift this week.{' '}
             Frozen UID lists materialised in <span style={{ fontFamily: T.fMono, fontSize: 11.5, background: T.n100, padding: '1px 4px', borderRadius: 3 }}>state_user_segments</span>, served to Apollo via the Activation API.
