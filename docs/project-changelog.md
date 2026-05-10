@@ -1,6 +1,28 @@
 # Project Changelog
 
-**Last updated:** 2026-05-10
+**Last updated:** 2026-05-11
+
+---
+
+## 2026-05-11 — Dark-theme repair, Vietnamese name localization, sidebar dedup
+
+**Scope:** Polish round on top of the just-shipped Settings page (`3d18548`). 4 commits on `agent_demo`.
+
+**Key Changes:**
+- **Dark-theme repair (`92bc193`):** ~93 components hardcoded `'#fff'` / cream backgrounds that didn't flip with `html.dark`, producing white-on-white invisible text inside still-white cards. Added new tokens `T.shell` / `T.sidebar` / `T.topbar` (light + dark pairs) in `theme-tokens.css` + `theme.tsx`. Lifted dark `T.surface` to `#161c25` so cards read as elevated panels above the deeper shell. Migrated 22 hot-traffic files (App shell, Sidebar, Topbar, theme.tsx primitives, chat-rail x4, welcome panels x3, segments + campaigns + feature-store libraries, segment detail-header + size-chart, chat-input-box, widget-shell, action-card-shell, cmd-k-modal, search-trigger, avatar-menu, chat-context-menu, collapse-toggle). Added CSS attribute-selector safety net under `html.dark` (`[style*="background:#fff"]` etc.) scoped with `:not([data-hermes-surface])` to leave Settings opt-in cards alone.
+- **Vietnamese entity names (`02e82ac`):** Settings → Language toggle now translates segment / campaign / chat-thread names across sidebar recents, welcome panels, chat-rail, library rows, detail headers, and Cmd-K modal. New `apps/web/src/i18n/entity-names.ts` (id-keyed VI maps for 15 segments, 4 English-titled campaigns, 9 threads) + `apps/web/src/i18n/use-localized-names.ts` (hooks + pure helpers). `@hermes/contracts` schema unchanged — translation is render-time only. Message bodies stay English per "titles only" decision.
+- **Segment detail tabs + sidebar dedup (`e713e95`):** Segment sub-tab strip (`detail-tabs.tsx`) had the same hardcoded cream `rgba(249,246,242,0.92)` bug as the pre-fix Topbar; migrated to `T.topbar` + `T.n200`. Removed the standalone `+ Ask Hermes` button at the top of the sidebar — duplicative with the Chat section (routes to `/chat`) and the bottom-right Ask Hermes FAB. Chat section now uses `MessageSquare` icon (was Clock) so it reads as "ask / chat" not "history".
+- **Docs sync:** `docs/design-guidelines.md` §1.1 + §4 rewritten around current token names (`T.brand` / `T.n*` / surfaces) and new dark-mode opt-in (`data-hermes-surface`). `docs/code-standards.md` §4 rewritten — Tailwind reference dropped (web app uses inline styles), new sub-sections for theme chrome tokens and localized entity-name hooks.
+
+**Files Modified:** 33 across `apps/web/src` + 3 docs (`design-guidelines.md`, `code-standards.md`, `project-changelog.md`).
+
+**Architecture notes:**
+- Two-pronged dark strategy (token migration for hot files + CSS safety net for the rest) trades perfect coverage for shipping speed; safety net is opt-out via `data-hermes-surface`.
+- VI translation kept out of `@hermes/contracts` so catalog-api stays mono-lingual and adding more languages is just another id-keyed map (no migration).
+
+**Test Status:** Typecheck + production build both clean. Visual verification pending in browser.
+
+**Deferred:** Audit of remaining ~70 `'#fff'` literals in dark-mode-visible routes (board, canvas, feature-store detail) — safety net handles them at runtime, but explicit token migration is cleaner. Tracked as low-priority churn.
 
 ---
 

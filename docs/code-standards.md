@@ -170,48 +170,69 @@ const [globalSegments, setGlobalSegments] = useState([]); // ✗
 
 ## 4. Styling & Design Tokens
 
-### 4.1 Tailwind CSS Only
+### 4.1 Inline Styles + Design Tokens
 
-**Rule:** All styling via Tailwind utility classes. No inline `style=` or CSS modules.
+The web app uses React inline `style={{ ... }}` objects driven by tokens from `apps/web/src/theme.tsx`. Tailwind is **not** used in `apps/web` — design tokens are the single source of truth and resolve to CSS custom properties under `:root` / `html.dark` (see `theme-tokens.css`).
 
-```typescript
-// ✓ Good
-export function Card({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="rounded-md bg-gray-100 p-5 shadow-md">
-      {children}
-    </div>
-  );
+```tsx
+import { T } from '../../theme';
+
+// ✓ Good: token-driven inline styles, flips light↔dark automatically
+<div style={{
+  background: T.surface,
+  border: `1px solid ${T.n200}`,
+  borderRadius: 10,
+  color: T.n900,
+  padding: 16,
+}}>
+```
+
+```tsx
+// ✗ Bad: hardcoded hex doesn't flip with html.dark
+<div style={{ background: '#fff', color: '#171717' }}>
+```
+
+### 4.2 Theme tokens — chrome surfaces
+
+Card/popover/modal backgrounds use `T.surface` (never `'#fff'`). App chrome surfaces have dedicated tokens:
+
+| Use case                          | Token        |
+|-----------------------------------|--------------|
+| Card, popover, modal              | `T.surface`  |
+| Outer App shell (gap)             | `T.shell`    |
+| Sidebar, chat-rail aside          | `T.sidebar`  |
+| Topbar, sticky sub-tab strips     | `T.topbar`   |
+
+If a card can't be migrated to `T.surface` this round (e.g. third-party component, complex inline-style merge), opt it into the dark-mode flip by adding `data-hermes-surface="card"` on the outermost element. See `docs/design-guidelines.md` §1.1 for details.
+
+A CSS safety net under `html.dark` catches lingering `'#fff'` patterns at runtime — but it's a backstop, not a substitute for migration. Any new code must use tokens.
+
+### 4.3 Localized entity names
+
+When rendering segment / campaign / chat-thread names, route through `apps/web/src/i18n/use-localized-names.ts`. Don't render `seg.displayName` / `cmp.displayName` / `thread.title` directly in user-facing surfaces unless you know the entity is ad-hoc / user-created (no fixture-level translation).
+
+```tsx
+import { useLocalizedSegmentName } from '../../i18n/use-localized-names';
+
+function SegmentRow({ seg }: { seg: HermesSegment }) {
+  const name = useLocalizedSegmentName(seg);
+  return <span>{name}</span>;  // EN displayName when lang=en, VI map when lang=vi
 }
-
-// ✗ Bad
-const cardStyle = { padding: '20px', borderRadius: '8px' };
-return <div style={cardStyle}>{children}</div>;
 ```
 
-### 4.2 Design Token Usage
+For renders inside `.map(...)` callbacks where hooks aren't legal, use the pure helpers:
 
-All colors, spacing, fonts via `T.*` imported from `theme.tsx`:
+```ts
+import { useI18n } from '../../i18n/i18n-provider';
+import { localizedThreadTitleById } from '../../i18n/use-localized-names';
 
-```typescript
-import { T } from 'path/to/theme';
-
-// ✓ Good: Use token function
-const bgColor = T.colors.primary;
-const padding = `${T.spacing[16]}px`;
-
-// ✓ Better: Tailwind config maps tokens
-<div className={`p-[${T.spacing[20]}px] text-[${T.colors.gray700}]`}>
+const { lang } = useI18n();
+items.map(it => localizedThreadTitleById(it.id, it.title, lang));
 ```
 
-**Never:**
-```typescript
-// ✗ Bad: Hardcoded hex values
-<div style={{ backgroundColor: '#f05a22' }}>
-<div className="bg-[#f05a22]">
-```
+VI translation maps live in `apps/web/src/i18n/entity-names.ts` — extend there, not on fixture files. The `@hermes/contracts` schema stays mono-lingual on purpose.
 
-### 4.3 No New Fonts
+### 4.4 No New Fonts
 
 Only three fonts allowed:
 - `T.fSans` (Inter)

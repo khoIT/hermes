@@ -2,7 +2,9 @@
 
 **Reference:** Bedrock + Hermes PRD §4 visual language.
 
-**Authority:** `apps/web/src/theme.tsx` (single source of truth).
+**Authority:** `apps/web/src/theme.tsx` (single source of truth) + `apps/web/src/theme-tokens.css` (light/dark var values).
+
+**Last updated:** 2026-05-11 — dark-theme repair + VI localization round.
 
 ---
 
@@ -10,27 +12,82 @@
 
 ### 1.1 Colors
 
-**Source:** `apps/web/src/theme.tsx` (`T.colors`)
+Tokens are exported from the `T` object in `apps/web/src/theme.tsx` and resolve to CSS custom properties defined in `theme-tokens.css` (separate values under `:root` and `html.dark`). Toggling `html.dark` (via `ThemeProvider`) flips every consumer instantly.
 
-| Token | Value | Usage |
-|-------|-------|-------|
-| `primary` | `#f05a22` | VNG Games deep red · active campaigns · accent elements |
-| `gray-50` | `#f9fafb` | Lightest background |
-| `gray-100` | `#f3f4f6` | Card backgrounds, hover states |
-| `gray-200` | `#e5e7eb` | Borders, dividers |
-| `gray-300` | `#d1d5db` | Secondary borders |
-| `gray-400` | `#9ca3af` | Disabled text, placeholders |
-| `gray-500` | `#6b7280` | Secondary text |
-| `gray-600` | `#4b5563` | Body text, labels |
-| `gray-700` | `#374151` | Primary text |
-| `gray-800` | `#1f2937` | Headings, dark text |
-| `gray-900` | `#111827` | Darkest text |
-| `success` | `#10b981` | Positive indicators |
-| `warning` | `#f59e0b` | Caution states |
-| `error` | `#ef4444` | Destructive actions, errors |
-| `anomaly` | `var(--anomaly)` | Amber (#fbbf24) · drift warnings, anomalies in feature data |
+#### Neutral scale
 
-**No hex escapes in component code.** All colors via `T.colors` or CSS custom properties. No `#abc123` inline.
+| Token   | Light  | Dark    | Typical usage |
+|---------|--------|---------|---------------|
+| `T.n50` | #fafafa | #11161d | Page background under cards |
+| `T.n100`| #f5f5f5 | #161c25 | Hover states, soft fills |
+| `T.n200`| #e5e5e5 | #232a36 | Borders, dividers |
+| `T.n300`| #d4d4d4 | #2f3845 | Secondary borders |
+| `T.n400`| #a3a3a3 | #525c6b | Placeholders, muted icons |
+| `T.n500`| #737373 | #8a93a3 | Secondary text, captions |
+| `T.n600`| #525252 | #b1bac8 | Body labels |
+| `T.n700`| #404040 | #cdd4df | Primary text |
+| `T.n800`| #262626 | #e2e7ee | Headings |
+| `T.n900`| #171717 | #f0f3f8 | Strongest body text |
+| `T.n950`| #0a0a0a | #f8fafc | Display headlines |
+
+> The dark scale is a hand-tuned inversion, not a programmatic flip. `T.n50` lands on a slight cool-blue (#11161d) so cards read warmer; `T.n900`–`T.n950` skew warm-white so text doesn't glare.
+
+#### Brand + status
+
+| Token              | Light    | Dark     | Usage |
+|--------------------|----------|----------|-------|
+| `T.brand`          | #f05a22  | #f06b3a  | VNG Games orange · primary actions |
+| `T.brandHover`     | #f54a00  | #f7894e  | Hover variant of brand |
+| `T.brandSoft`      | #fff7ed  | #2a1810  | Brand-tinted backgrounds (active rows) |
+| `T.brandBorder`    | #fed7aa  | #5a3422  | Brand-tinted borders |
+| `T.red500/600`     | #ef4444 / #dc2626 | #ef4444 / #f87171 | Destructive, errors |
+| `T.redSoft`        | #fef2f2  | #2a1416  | Soft red backgrounds (danger zone) |
+| `T.blue500/600`    | #3b82f6 / #3f8dff | #60a5fa / #6ea3ff | Info |
+| `T.blueSoft`       | #eff6ff  | #14213a  | Info-tinted backgrounds |
+| `T.green600`       | #059669  | #34d399  | Positive (deltas, lift) |
+| `T.greenSoft`      | #ecfdf5  | #0f2a20  | Connected/active chips |
+| `T.amber500`       | #f59e0b  | #fbbf24  | Drift/anomaly warning |
+| `T.amberSoft`      | #fffbeb  | #2a1f0a  | Drift warning backgrounds |
+| `T.purple500`      | #a855f7  | #c084fc  | ML / agentic surfaces |
+| `T.purpleSoft`     | #faf5ff  | #1f1530  | Soft ML chips |
+
+#### Surfaces (use these instead of `'#fff'`)
+
+| Token          | Light                       | Dark                         | Where to use |
+|----------------|-----------------------------|------------------------------|--------------|
+| `T.surface`        | #ffffff                  | #161c25                      | Cards, popovers, modals — anything that was previously `'#fff'` |
+| `T.surfaceMuted`   | #fafaf6                  | #11161d                      | Soft inset panels |
+| `T.surfaceSubtle`  | #f9fafb                  | #1b232f                      | Subtle deeper inset (table stripes, code blocks) |
+| `T.shell`          | #efe9e0 (cream gap)      | #07090c                      | Outer App shell — visible in the gap around `<main>` |
+| `T.sidebar`        | #f9f6f2                  | #0d1117                      | Sidebar background, chat-rail aside |
+| `T.topbar`         | rgba(249,246,242,0.92)   | rgba(13,17,23,0.92)          | Sticky top chrome, sub-tab strips (with `backdrop-filter: blur(8px)`) |
+
+In dark mode the layered hierarchy is: `T.shell` (deepest) → `T.sidebar` → `T.surface` (lifted card). Honor that order or panels read flat.
+
+**No hex escapes in component code.** All colors via `T` tokens. No inline `'#fff'` / `'#000'` / `'rgba(...)'` for surfaces or text — those don't flip with `html.dark`.
+
+#### Dark-mode opt-in for inline-styled cards
+
+For panels that hardcode `'#fff'` and can't be migrated this round, opt them in by adding `data-hermes-surface="card"` (or `"muted"`) on the outermost element. CSS in `theme-tokens.css` flips just those nodes when `html.dark` engages:
+
+```tsx
+<section
+  data-hermes-surface="card"
+  style={{ background: '#fff', /* ... */ }}
+>
+```
+
+A broader CSS safety net under `html.dark` catches lingering `style="background:#fff"` / `rgb(255, 255, 255)` patterns automatically — but it's a backstop, not a substitute for migrating to `T.surface`.
+
+#### Charting
+
+`CHART` (also in `theme.tsx`) is an 8-color stable-order palette for series colouring:
+
+```ts
+['#f05a22', '#3f8dff', '#059669', '#f59e0b', '#a855f7', '#ef4444', '#0891b2', '#db2777']
+```
+
+These are kept identical in light and dark — they're data ink, not chrome.
 
 ### 1.2 Typography
 
@@ -286,16 +343,18 @@ Different from Segments. Emphasizes:
 
 ## 4. Color Usage
 
-| Context | Color | Reasoning |
+| Context | Token | Reasoning |
 |---------|-------|-----------|
-| Active campaign, segment save button, accent highlight | `#f05a22` (primary) | VNG Games brand; signals action |
-| Feature card hover, form input focus | `#f3f4f6` (gray-100) | Subtle elevation |
-| Anomaly badge, drift warning, threshold outlier | `var(--anomaly)` (amber) | High visibility for unexpected data |
-| Disabled button, placeholder text | `#9ca3af` (gray-400) | De-emphasized, not actionable |
-| Success state, checkmark | `#10b981` (success) | Positive feedback |
-| Error message, destructive action | `#ef4444` (error) | Alert state |
+| Active campaign, segment save button, accent highlight | `T.brand` | VNG Games brand; signals action |
+| Feature card hover, form input focus | `T.n100` | Subtle elevation |
+| Anomaly badge, drift warning, threshold outlier | `T.amber500` / `T.amberSoft` | High visibility for unexpected data |
+| Disabled button, placeholder text | `T.n400` | De-emphasized, not actionable |
+| Success state, checkmark | `T.green600` | Positive feedback |
+| Error message, destructive action | `T.red600` | Alert state |
+| Card / popover / modal background | `T.surface` | Flips light↔dark with theme |
+| Page chrome (shell / sidebar / topbar) | `T.shell` / `T.sidebar` / `T.topbar` | Layered chrome surfaces |
 
-**No new hex values.** All colors from token map.
+**No new hex values.** All colors from `T`. Inline `'#fff'` / `'#000'` for chrome is forbidden — see §1.1 dark-mode opt-in.
 
 ---
 
