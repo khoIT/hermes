@@ -47,6 +47,10 @@ export const T = {
   surface:       'var(--hermes-surface)',
   surfaceMuted:  'var(--hermes-surface-muted)',
   surfaceSubtle: 'var(--hermes-surface-subtle)',
+  // Chrome surfaces — shell (outer gap), sidebar, topbar
+  shell:    'var(--hermes-shell)',
+  sidebar:  'var(--hermes-sidebar)',
+  topbar:   'var(--hermes-topbar)',
   // Fonts
   fDisp: '"League Gothic", "Inter", sans-serif',
   fSans: '"Inter", ui-sans-serif, system-ui, sans-serif',
@@ -218,7 +222,7 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export const Card = React.memo<CardProps>(({ children, style, padding = 20, hoverable: _hoverable, ...rest }) => (
   <div style={{
-    background: '#fff', border: `1px solid ${T.n200}`, borderRadius: 10,
+    background: T.surface, border: `1px solid ${T.n200}`, borderRadius: 10,
     boxShadow: '0 1px 2px -1px rgba(0,0,0,0.05), 0 1px 3px 0 rgba(0,0,0,0.06)',
     padding, ...style,
   }} {...rest}>{children}</div>
@@ -243,7 +247,7 @@ export const Input = React.memo<InputProps>(({
       display: 'flex', alignItems: 'center', gap: 8,
       padding: '0 12px', height: h, boxSizing: 'border-box',
       border: `1px solid ${error ? T.red600 : focus ? T.n400 : T.n200}`, borderRadius: 8,
-      background: '#fff',
+      background: T.surface,
       boxShadow: focus ? '0 0 0 3px rgba(163,163,163,0.15)' : 'none',
       transition: 'border-color .12s, box-shadow .12s', ...style,
     }}>
@@ -282,7 +286,7 @@ export const Select = React.memo<SelectProps>(({ value, onChange, options, size 
     <label style={{
       display: 'inline-flex', alignItems: 'center', gap: 6, position: 'relative',
       padding: `0 28px 0 12px`, height: h, borderRadius: 8,
-      border: `1px solid ${T.n200}`, background: '#fff',
+      border: `1px solid ${T.n200}`, background: T.surface,
       fontFamily: T.fSans, fontSize: 13, color: T.n900,
       cursor: 'pointer', ...style,
     }}>
@@ -360,7 +364,7 @@ export const Tabs = React.memo<TabsProps>(({ tabs, value, onChange, style }) => 
         style={{
           fontFamily: T.fSans, fontWeight: 500, fontSize: 12, color: T.n950,
           padding: '5px 10px', borderRadius: 6, cursor: 'pointer',
-          background: value === t.value ? '#fff' : 'transparent',
+          background: value === t.value ? T.surface : 'transparent',
           boxShadow: value === t.value ? '0 1px 2px rgba(0,0,0,0.08)' : 'none',
           userSelect: 'none',
         }}

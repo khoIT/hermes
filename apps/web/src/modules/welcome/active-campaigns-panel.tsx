@@ -18,7 +18,7 @@ export function ActiveCampaignsPanel() {
 
   return (
     <div style={{
-      background: '#fff',
+      background: T.surface,
       border: `1px solid ${T.n200}`,
       borderRadius: 10,
       padding: '20px 24px 12px',

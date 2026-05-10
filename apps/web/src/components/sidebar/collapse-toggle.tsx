@@ -64,7 +64,7 @@ export function CollapseToggle({ collapsed }: SeamCollapseToggleProps) {
           height: BUTTON_SIZE,
           padding: 0,
           borderRadius: '50%',
-          background: '#fff',
+          background: T.surface,
           border: `1px solid ${T.n200}`,
           boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
           color: T.n700,

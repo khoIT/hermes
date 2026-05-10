@@ -47,7 +47,7 @@ export const RestartDemoChip = React.memo<RestartDemoChipProps>(
         title="Reset this demo to the beginning"
         aria-label="Restart demo thread"
         onMouseEnter={e => { e.currentTarget.style.background = T.n100; }}
-        onMouseLeave={e => { e.currentTarget.style.background = '#fff'; }}
+        onMouseLeave={e => { e.currentTarget.style.background = T.surface; }}
       >
         ↻ Restart demo
       </button>
@@ -59,7 +59,7 @@ const chipStyle: React.CSSProperties = {
   display: 'inline-flex',
   alignItems: 'center',
   gap: 4,
-  background: '#fff',
+  background: T.surface,
   border: `1px solid ${T.n200}`,
   color: T.n600,
   fontFamily: T.fSans,

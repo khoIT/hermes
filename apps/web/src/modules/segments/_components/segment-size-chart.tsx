@@ -64,7 +64,7 @@ export function SegmentSizeChart({ segment }: Props) {
 
   return (
     <div style={{
-      background: '#fff', border: `1px solid ${T.n200}`, borderRadius: 10,
+      background: T.surface, border: `1px solid ${T.n200}`, borderRadius: 10,
       padding: '14px 18px',
     }}>
       <div style={{
@@ -227,7 +227,7 @@ function DropdownChip({ label, options, value, onChange }: DropdownChipProps) {
         onClick={() => setOpen(o => !o)}
         style={{
           fontFamily: T.fSans, fontSize: 12, color: T.n700,
-          background: '#fff', border: `1px solid ${T.n200}`,
+          background: T.surface, border: `1px solid ${T.n200}`,
           borderRadius: 7, padding: '6px 10px',
           display: 'inline-flex', alignItems: 'center', gap: 4, cursor: 'pointer',
         }}
@@ -237,7 +237,7 @@ function DropdownChip({ label, options, value, onChange }: DropdownChipProps) {
       {open && (
         <div style={{
           position: 'absolute', top: 'calc(100% + 4px)', right: 0,
-          zIndex: 30, minWidth: 140, padding: 4, background: '#fff',
+          zIndex: 30, minWidth: 140, padding: 4, background: T.surface,
           border: `1px solid ${T.n200}`, borderRadius: 8,
           boxShadow: '0 8px 24px rgba(0,0,0,0.08)',
         }}>

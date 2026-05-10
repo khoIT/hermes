@@ -24,7 +24,7 @@ export const KpiTile = React.memo<KpiTileProps>(({
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       style={{
-        background: '#fff',
+        background: T.surface,
         border: `1px solid ${hover && onClick ? T.brand : T.n200}`,
         borderRadius: 10,
         padding: '18px 20px',

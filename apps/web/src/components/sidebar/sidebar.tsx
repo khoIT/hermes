@@ -42,7 +42,7 @@ function isCanonicalSegmentRecent(item: { id: string; title: string }): boolean 
 
 const SIDEBAR_WIDTH_EXPANDED = 260;
 const SIDEBAR_WIDTH_COLLAPSED = 60;
-const SIDEBAR_BG = '#F9F6F2';
+const SIDEBAR_BG = T.sidebar;
 
 export function Sidebar() {
   const t = useT();

@@ -73,7 +73,7 @@ export function ChatInputBox({
       width: '100%',
       maxWidth: compact ? '100%' : 820,
       margin: '0 auto',
-      background: '#fff',
+      background: T.surface,
       border: `1px solid ${T.n200}`,
       borderRadius: 14,
       boxShadow: '0 1px 2px rgba(0,0,0,0.04)',

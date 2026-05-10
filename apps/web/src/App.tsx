@@ -19,6 +19,7 @@ import {
 } from './utils/chat-rail-store';
 import { Topbar } from './components/topbar/topbar';
 import { TopbarTrailingProvider } from './utils/topbar-trailing-context';
+import { T } from './theme';
 
 function AppShell() {
   const [cmdKOpen, setCmdKOpen] = React.useState(false);
@@ -64,7 +65,7 @@ function AppShell() {
       <div style={{
         height: '100vh',
         overflow: 'hidden',
-        background: '#EFE9E0',
+        background: T.shell,
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'stretch',
@@ -76,7 +77,7 @@ function AppShell() {
         <main style={{
           flex: 1, minWidth: 0, minHeight: 0,
           display: 'flex', flexDirection: 'column',
-          background: '#fff',
+          background: T.surface,
           borderRadius: 18,
           overflow: 'hidden',
         }}>

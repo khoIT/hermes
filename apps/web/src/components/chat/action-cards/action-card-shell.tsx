@@ -142,7 +142,7 @@ const ghostBtn: React.CSSProperties = {
 
 const viewBtn: React.CSSProperties = {
   display: 'inline-flex', alignItems: 'center', gap: 4,
-  background: '#fff', color: T.brand,
+  background: T.surface, color: T.brand,
   border: `1px solid ${T.brandBorder}`,
   padding: '4px 10px', borderRadius: 6,
   fontFamily: T.fSans, fontSize: 12, fontWeight: 600,

@@ -33,7 +33,7 @@ export function ScriptedPromptsSection({ onPick }: ScriptedPromptsSectionProps) 
                 onClick={() => onPick(p)}
                 style={promptRowStyle}
                 onMouseEnter={e => { e.currentTarget.style.background = T.n100; }}
-                onMouseLeave={e => { e.currentTarget.style.background = '#fff'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = T.surface; }}
               >
                 <Icon icon={CornerDownRight} size={12} color={T.n400} />
                 <span style={{
@@ -68,7 +68,7 @@ const promptRowStyle: React.CSSProperties = {
   display: 'flex', alignItems: 'flex-start', gap: 8,
   width: '100%', boxSizing: 'border-box',
   padding: '8px 10px',
-  background: '#fff', border: `1px solid ${T.n200}`, borderRadius: 8,
+  background: T.surface, border: `1px solid ${T.n200}`, borderRadius: 8,
   cursor: 'pointer', textAlign: 'left',
   transition: 'background .12s',
 };

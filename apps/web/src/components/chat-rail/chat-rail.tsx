@@ -268,7 +268,7 @@ export function ChatRail({ open, onClose }: ChatRailProps) {
     <aside
       style={{
         width, flexShrink: 0,
-        background: '#F9F6F2',
+        background: T.sidebar,
         borderRadius: 18,
         overflow: 'hidden',
         display: 'flex', flexDirection: 'column',
@@ -306,7 +306,7 @@ export function ChatRail({ open, onClose }: ChatRailProps) {
       />
       <div
         key={tick}
-        style={{ flex: 1, minHeight: 0, overflowY: 'auto', background: '#F9F6F2' }}
+        style={{ flex: 1, minHeight: 0, overflowY: 'auto', background: T.sidebar }}
       >
         {!conversation
           ? (
@@ -324,7 +324,7 @@ export function ChatRail({ open, onClose }: ChatRailProps) {
           )}
       </div>
       <div style={{
-        padding: 10, background: '#fff',
+        padding: 10, background: T.surface,
         borderTop: `1px solid ${T.n200}`,
       }}>
         <ChatInputBox

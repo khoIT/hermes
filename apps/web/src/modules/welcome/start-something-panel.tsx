@@ -40,7 +40,7 @@ export function StartSomethingPanel() {
   const navigate = useNavigate();
   return (
     <div style={{
-      background: '#fff',
+      background: T.surface,
       border: `1px solid ${T.n200}`,
       borderRadius: 10,
       padding: '20px 20px 14px',

@@ -41,7 +41,7 @@ export function WidgetShell({ title, widget, onPin, children }: WidgetShellProps
 
   return (
     <div style={{
-      border: `1px solid ${T.n200}`, borderRadius: 10, background: '#fff',
+      border: `1px solid ${T.n200}`, borderRadius: 10, background: T.surface,
       margin: '12px 0',
     }}>
       {/* Header */}
@@ -97,7 +97,7 @@ const iconBtn: React.CSSProperties = {
 
 const dropdown: React.CSSProperties = {
   position: 'absolute', right: 0, top: '100%', marginTop: 4,
-  background: '#fff', border: `1px solid ${T.n200}`, borderRadius: 8,
+  background: T.surface, border: `1px solid ${T.n200}`, borderRadius: 8,
   boxShadow: '0 4px 14px rgba(0,0,0,0.08)',
   minWidth: 180, padding: '4px 0', zIndex: 50,
 };

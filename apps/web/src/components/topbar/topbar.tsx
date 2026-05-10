@@ -22,10 +22,10 @@ export function Topbar({ onSearchOpen }: TopbarProps) {
         position: 'sticky', top: 0, zIndex: 20,
         height: 56, padding: '0 24px',
         display: 'flex', alignItems: 'center', gap: 16,
-        background: 'rgba(249,246,242,0.92)',
+        background: T.topbar,
         backdropFilter: 'blur(8px)',
         WebkitBackdropFilter: 'blur(8px)',
-        borderBottom: `1px solid rgba(0,0,0,0.06)`,
+        borderBottom: `1px solid ${T.n200}`,
         fontFamily: T.fSans,
       }}
     >

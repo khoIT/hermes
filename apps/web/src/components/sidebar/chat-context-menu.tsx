@@ -83,7 +83,7 @@ export function ChatContextMenu({ threadId, threadTitle }: ChatContextMenuProps)
       {open && (
         <div style={{
           position: 'absolute', right: 0, top: '100%', marginTop: 4,
-          background: '#fff', border: `1px solid ${T.n200}`, borderRadius: 8,
+          background: T.surface, border: `1px solid ${T.n200}`, borderRadius: 8,
           boxShadow: '0 4px 14px rgba(0,0,0,0.1)',
           minWidth: 180, padding: '4px 0', zIndex: 200,
         }}>

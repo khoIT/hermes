@@ -59,7 +59,7 @@ export function AvatarMenu() {
           role="menu"
           style={{
             position: 'absolute', top: 'calc(100% + 6px)', right: 0,
-            width: 200, background: '#fff',
+            width: 200, background: T.surface,
             border: `1px solid ${T.n200}`, borderRadius: 10,
             boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
             padding: '4px 0', zIndex: 30,

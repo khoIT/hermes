@@ -26,7 +26,7 @@ export function ChatRailHeader({
       padding: '0 12px',
       height: 56, flexShrink: 0, boxSizing: 'border-box',
       borderBottom: `1px solid ${T.n200}`,
-      background: '#fff',
+      background: T.surface,
       fontFamily: T.fSans,
     }}>
       <div style={{

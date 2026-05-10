@@ -10,6 +10,7 @@ import { T, Badge, Sparkline } from '../../theme';
 import { allCampaigns } from '../../data/catalog/campaigns';
 import type { HermesCampaign } from '@hermes/contracts';
 import { Goal4RBadge } from './canvas/_blocks/goal-4r';
+import { useLocalizedCampaignName } from '../../i18n/use-localized-names';
 
 // ── Stat strip values (real from catalog + fixed demo)
 const ACTIVE    = allCampaigns.filter(c => c.status === 'active').length;
@@ -75,7 +76,7 @@ export default function CampaignsLibraryPage() {
   return (
     <div style={{ minHeight: '100vh', background: T.n50 }}>
       {/* Page header */}
-      <div style={{ padding: '28px 40px 0', background: '#fff', borderBottom: `1px solid ${T.n200}` }}>
+      <div style={{ padding: '28px 40px 0', background: T.surface, borderBottom: `1px solid ${T.n200}` }}>
         <div style={{ fontFamily: T.fSans, fontSize: 10, fontWeight: 600, color: T.n400, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>
           04 · Campaign
         </div>
@@ -111,7 +112,7 @@ export default function CampaignsLibraryPage() {
 
       {/* Filter rail */}
       <div style={{
-        padding: '12px 40px', background: '#fff',
+        padding: '12px 40px', background: T.surface,
         borderBottom: `1px solid ${T.n200}`,
         display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap',
       }}>
@@ -191,6 +192,7 @@ function CampaignRow({ campaign: c, onNavigate }: {
   onNavigate: ReturnType<typeof useNavigate>;
 }) {
   const [hovered, setHovered] = React.useState(false);
+  const localizedName = useLocalizedCampaignName(c);
   const authorStyle = (AUTHOR_COLORS[c.author] ?? AUTHOR_COLORS['hand-built'])!;
   const sparkline   = DEMO_SPARKLINES[c.id];
 
@@ -217,7 +219,7 @@ function CampaignRow({ campaign: c, onNavigate }: {
           fontStyle: 'italic', fontSize: 14, color: T.n900, fontWeight: 400,
           whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
         }}>
-          {c.displayName}
+          {localizedName}
         </div>
         <div style={{ fontFamily: T.fMono, fontSize: 10, color: T.n400, marginTop: 1 }}>{c.id}</div>
       </div>
@@ -326,5 +328,5 @@ function EntryBtn({ label, onClick, primary }: { label: string; onClick: () => v
 const selectStyle: React.CSSProperties = {
   fontFamily: T.fSans, fontSize: 12, color: T.n800,
   border: `1px solid ${T.n200}`, borderRadius: 6,
-  padding: '5px 8px', outline: 'none', background: '#fff', cursor: 'pointer',
+  padding: '5px 8px', outline: 'none', background: T.surface, cursor: 'pointer',
 };

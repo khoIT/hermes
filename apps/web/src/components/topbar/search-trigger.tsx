@@ -20,7 +20,7 @@ export function SearchTrigger({ onOpen }: SearchTriggerProps) {
         flex: '0 1 420px',
         display: 'flex', alignItems: 'center', gap: 8,
         height: 36, padding: '0 12px',
-        background: '#fff', border: `1px solid ${T.n200}`, borderRadius: 8,
+        background: T.surface, border: `1px solid ${T.n200}`, borderRadius: 8,
         cursor: 'pointer', textAlign: 'left',
         fontFamily: T.fSans,
       }}

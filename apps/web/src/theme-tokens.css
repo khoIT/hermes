@@ -52,6 +52,11 @@
   --hermes-surface-muted:  #fafaf6;
   --hermes-surface-subtle: #f9fafb;
 
+  /* Chrome surfaces — outer shell (gap), sidebar, topbar */
+  --hermes-shell:    #efe9e0;
+  --hermes-sidebar:  #f9f6f2;
+  --hermes-topbar:   rgba(249,246,242,0.92);
+
   /* Color scheme hint for native UI (scrollbars, form controls) */
   color-scheme: light;
 }
@@ -93,9 +98,17 @@ html.dark {
   --hermes-purple500:  #c084fc;
   --hermes-purple-soft: #1f1530;
 
-  --hermes-surface:        #0a0d12;
-  --hermes-surface-muted:  #0d1117;
-  --hermes-surface-subtle: #11161d;
+  /* In dark mode "card" surfaces lift slightly above the page so they read
+   * as elevated panels — pure black would flatten the layout. */
+  --hermes-surface:        #161c25;
+  --hermes-surface-muted:  #11161d;
+  --hermes-surface-subtle: #1b232f;
+
+  /* Chrome surfaces in dark — shell sits darkest (gap reads as void),
+   * sidebar slightly lifted, topbar matches sidebar with translucency. */
+  --hermes-shell:    #07090c;
+  --hermes-sidebar:  #0d1117;
+  --hermes-topbar:   rgba(13,17,23,0.92);
 
   color-scheme: dark;
 }
@@ -114,8 +127,24 @@ html, body {
  * hook: any element with `data-hermes-card` or `data-hermes-surface`. We use
  * this sparingly on the highest-traffic panels we know hardcode #fff. */
 html.dark [data-hermes-surface="card"] {
-  background: var(--hermes-surface-subtle) !important;
+  background: var(--hermes-surface) !important;
 }
 html.dark [data-hermes-surface="muted"] {
   background: var(--hermes-surface-muted) !important;
+}
+
+/* Safety net: catch React inline-style hardcoded whites that escaped the
+ * token migration. React serializes inline `style` objects to attribute
+ * strings — '#fff' typically lands as either '#fff' or 'rgb(255, 255, 255)'
+ * depending on the property. We match both. Scoped to elements that look
+ * like cards/panels (have border-radius OR border). */
+html.dark [style*="background:#fff"]:not([data-hermes-surface]),
+html.dark [style*="background: #fff"]:not([data-hermes-surface]),
+html.dark [style*="background:rgb(255, 255, 255)"]:not([data-hermes-surface]),
+html.dark [style*="background: rgb(255, 255, 255)"]:not([data-hermes-surface]),
+html.dark [style*="backgroundColor:#fff"]:not([data-hermes-surface]),
+html.dark [style*="backgroundColor: #fff"]:not([data-hermes-surface]),
+html.dark [style*="background-color:#fff"]:not([data-hermes-surface]),
+html.dark [style*="background-color: #fff"]:not([data-hermes-surface]) {
+  background-color: var(--hermes-surface) !important;
 }

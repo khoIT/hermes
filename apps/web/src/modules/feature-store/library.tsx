@@ -122,7 +122,7 @@ export default function FeatureStoreLibraryPage() {
       {/* ── Page header (compressed — breadcrumb owns title) ──────────────── */}
       <div style={{
         padding: '12px 40px 8px',
-        background: '#fff', borderBottom: `1px solid ${T.n200}`,
+        background: T.surface, borderBottom: `1px solid ${T.n200}`,
       }}>
         {/* Entry-points strip — 28px chip row */}
         <div style={{
@@ -275,7 +275,7 @@ const FeatureGroupSection: React.FC<FeatureGroupSectionProps> = ({
           style={{
             border: `1px solid ${T.n200}`,
             borderRadius: 10,
-            background: '#fff',
+            background: T.surface,
             overflow: 'hidden',
           }}
         >
