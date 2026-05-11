@@ -285,7 +285,7 @@ function AppearanceSection() {
                 }
                 onClick={() => {
                   if (opt.id === 'system') {
-                    const sys = window.matchMedia('(prefers-color-scheme: dark)').matches
+                    const sys = window.matchMedia('(prefers-color-scheme: light)').matches
                       ? 'dark' : 'light';
                     setMode(sys);
                   } else {

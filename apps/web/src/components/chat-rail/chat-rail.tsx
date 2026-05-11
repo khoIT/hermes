@@ -76,6 +76,11 @@ export function ChatRail({ open, onClose }: ChatRailProps) {
   const [width, setWidth] = React.useState<number>(() => getStoredWidth());
   const dragRef = React.useRef<{ startX: number; startW: number } | null>(null);
 
+  /** Scroll viewport — ref'd so we can pin to the most recent message. */
+  const scrollRef = React.useRef<HTMLDivElement | null>(null);
+  /** Tracks last-seen thread so thread-switches jump instantly (no smooth). */
+  const lastThreadIdRef = React.useRef<string | null>(null);
+
   const onHandleDown = (e: React.PointerEvent<HTMLDivElement>) => {
     (e.currentTarget as Element).setPointerCapture(e.pointerId);
     dragRef.current = { startX: e.clientX, startW: width };
@@ -171,6 +176,22 @@ export function ChatRail({ open, onClose }: ChatRailProps) {
       setPendingThreadId(null);
     }
   }, [open]);
+
+  // Auto-scroll to the most recent message (ChatGPT-style). Thread-switches
+  // jump instantly; new messages / typing-dot toggles within the same thread
+  // scroll smoothly. Runs after layout via useLayoutEffect so the user never
+  // sees the pre-scroll frame.
+  const messageCount = conversation?.messages.length ?? 0;
+  React.useLayoutEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const isThreadSwitch = lastThreadIdRef.current !== activeThreadId;
+    lastThreadIdRef.current = activeThreadId;
+    el.scrollTo({
+      top: el.scrollHeight,
+      behavior: isThreadSwitch ? 'auto' : 'smooth',
+    });
+  }, [activeThreadId, messageCount, pendingThreadId]);
 
   const onNew = () => {
     if (pendingTimerRef.current) {
@@ -305,7 +326,7 @@ export function ChatRail({ open, onClose }: ChatRailProps) {
         subtitle={headerSubtitle}
       />
       <div
-        key={tick}
+        ref={scrollRef}
         style={{ flex: 1, minHeight: 0, overflowY: 'auto', background: T.sidebar }}
       >
         {!conversation
