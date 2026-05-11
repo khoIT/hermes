@@ -464,7 +464,7 @@ export const threadDemoAgentWhaleRecall2026: Conversation = {
     {
       id: 'm-agent-c-u1',
       role: 'user',
-      text: 'Show me what you found.',
+      text: 'Why has top-1% recall fallen this month?',
       createdAt: '2026-05-08T09:00:00.000Z',
     },
   ],

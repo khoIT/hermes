@@ -448,9 +448,13 @@ const T4: ChatMessage = {
  * Slim conversation seed mirrors thread-demo-livops-2026 shape: only the
  * initial user prompt. T1 auto-plays on entry (chat-rail + thread-page).
  *
- * The user prompt frames the agent's pre-arrival posture: the user clicks the
- * "Hermes noticed" inbox card and lands here with the question already asked
- * by the agent (effectively, the user is reading what the agent flagged).
+ * Seed-message convention (agent-first threads):
+ *   The user message is a contextual investigative question grounded in the
+ *   detection's subject — NOT a generic "show me what you found." The user
+ *   is staged as a PM asking the agent to dig into the specific anomaly
+ *   surfaced on the /welcome inbox card. T1's answer then reads as a real
+ *   handoff response rather than the agent unloading on an empty prompt.
+ *   See docs/journals/260511-agent-first-seed-message-convention.md.
  */
 export const threadDemoAgentLivops2026: Conversation = {
   id: 'thread-demo-agent-livops-2026',
@@ -461,7 +465,7 @@ export const threadDemoAgentLivops2026: Conversation = {
     {
       id: 'm-agent-u1',
       role: 'user',
-      text: 'Show me what you found.',
+      text: 'What\'s behind the CFM ARPDAU drop?',
       createdAt: '2026-05-10T06:14:00.000Z',
     },
   ],

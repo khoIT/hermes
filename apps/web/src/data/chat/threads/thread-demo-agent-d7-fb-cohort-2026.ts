@@ -503,7 +503,7 @@ export const threadDemoAgentD7FbCohort2026: Conversation = {
     {
       id: 'm-agent-b-u1',
       role: 'user',
-      text: 'Show me what you found.',
+      text: 'Why is D7 down on the FB May cohort?',
       createdAt: '2026-05-09T14:20:00.000Z',
     },
   ],
