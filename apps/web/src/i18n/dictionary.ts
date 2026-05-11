@@ -37,7 +37,7 @@ export const en = {
 
   // ─── Sidebar ────────────────────────────────────────────────────────────
   'nav.welcome': 'Welcome',
-  'nav.chat': 'Chat',
+  'nav.chat': 'Ask Hermes',
   'nav.featureStore': 'Feature Store',
   'nav.segments': 'Segments',
   'nav.campaigns': 'Campaigns',
@@ -178,7 +178,7 @@ export const vi: Record<keyof typeof en, string> = {
 
   // ─── Sidebar ────────────────────────────────────────────────────────────
   'nav.welcome': 'Trang chủ',
-  'nav.chat': 'Trò chuyện',
+  'nav.chat': 'Ask Hermes',
   'nav.featureStore': 'Kho Feature',
   'nav.segments': 'Phân khúc',
   'nav.campaigns': 'Chiến dịch',
