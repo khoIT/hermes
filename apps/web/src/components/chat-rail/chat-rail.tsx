@@ -19,6 +19,8 @@ import { pushRecent } from '../../utils/recent-items-store';
 import { notifyRecentChanged } from '../sidebar/recent-items';
 import { threadDemoLivops2026Turns } from '../../data/chat/threads/thread-demo-livops-2026';
 import { threadDemoAgentLivops2026Turns } from '../../data/chat/threads/thread-demo-agent-livops-2026';
+import { threadDemoAgentD7FbCohort2026Turns } from '../../data/chat/threads/thread-demo-agent-d7-fb-cohort-2026';
+import { threadDemoAgentWhaleRecall2026Turns } from '../../data/chat/threads/thread-demo-agent-whale-recall-2026';
 import { resolvePageContext, type ContextGetters, type PageContext } from '../../utils/page-context-resolver';
 import { allFeatures, getFeatureByName } from '../../data/catalog/features';
 import { allSegments } from '../../data/catalog/segments';
@@ -130,8 +132,10 @@ export function ChatRail({ open, onClose }: ChatRailProps) {
   React.useEffect(() => {
     if (!activeThreadId) return;
     const t1 =
-      activeThreadId === 'thread-demo-livops-2026'       ? threadDemoLivops2026Turns.t1 :
-      activeThreadId === 'thread-demo-agent-livops-2026' ? threadDemoAgentLivops2026Turns.t1 :
+      activeThreadId === 'thread-demo-livops-2026'              ? threadDemoLivops2026Turns.t1 :
+      activeThreadId === 'thread-demo-agent-livops-2026'        ? threadDemoAgentLivops2026Turns.t1 :
+      activeThreadId === 'thread-demo-agent-d7-fb-cohort-2026'  ? threadDemoAgentD7FbCohort2026Turns.t1 :
+      activeThreadId === 'thread-demo-agent-whale-recall-2026'  ? threadDemoAgentWhaleRecall2026Turns.t1 :
       null;
     if (!t1) return;
     if (pendingThreadId === activeThreadId) return;

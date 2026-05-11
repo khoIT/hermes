@@ -28,9 +28,11 @@ import { thread007 } from '../data/chat/threads/thread-007-cfm-loss-streak-multi
 import { thread008 } from '../data/chat/threads/thread-008-pt-whale-recall';
 import { threadDemoLivops2026 } from '../data/chat/threads/thread-demo-livops-2026';
 import { threadDemoAgentLivops2026 } from '../data/chat/threads/thread-demo-agent-livops-2026';
+import { threadDemoAgentD7FbCohort2026 } from '../data/chat/threads/thread-demo-agent-d7-fb-cohort-2026';
+import { threadDemoAgentWhaleRecall2026 } from '../data/chat/threads/thread-demo-agent-whale-recall-2026';
 import { pushRecent, clearRecent, getRecent } from './recent-items-store';
 
-const BOOTSTRAP_VERSION = 'v12-260510-2330';
+const BOOTSTRAP_VERSION = 'v13-260511-1145';
 const VERSION_KEY = 'hermes.chat.bootstrap.version';
 
 // Stale segment-recent IDs to scrub on each bootstrap version bump.
@@ -53,6 +55,8 @@ const THREADS: Conversation[] = [
  *  HermesNoticedPanel on /welcome (agent-first demo path). */
 const HIDDEN_THREADS: Conversation[] = [
   threadDemoAgentLivops2026,
+  threadDemoAgentD7FbCohort2026,
+  threadDemoAgentWhaleRecall2026,
 ];
 
 const CANONICAL_IDS = new Set([

@@ -60,6 +60,8 @@ export const THREAD_TITLES_VI: Record<string, string> = {
   'thread-006':                     'ROI tier cuối năm CFM-11',
   'thread-007':                     'Người chơi gặp chuỗi thua xếp hạng liên tiếp',
   'thread-008':                     'Tìm whale PT đang có nguy cơ rời bỏ',
-  'thread-demo-livops-2026':        'ARPDAU CFM giảm trong quý vừa rồi vì sao?',
-  'thread-demo-agent-livops-2026':  'Hermes phát hiện: ARPDAU CFM giảm 7%',
+  'thread-demo-livops-2026':              'ARPDAU CFM giảm trong quý vừa rồi vì sao?',
+  'thread-demo-agent-livops-2026':        'Hermes phát hiện: ARPDAU CFM giảm 7%',
+  'thread-demo-agent-d7-fb-cohort-2026':  'Hermes phát hiện: D7 cohort FB giảm 4pp',
+  'thread-demo-agent-whale-recall-2026':  'Hermes phát hiện: Recall whale giảm còn 38%',
 };

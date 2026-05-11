@@ -73,11 +73,22 @@ export const en = {
 
   'welcome.hermesNoticed.title': 'Hermes noticed',
   'welcome.hermesNoticed.tag': 'AGENT-FIRST DEMO',
-  'welcome.hermesNoticed.cardHeadline': 'CFM ARPDAU is down 7% vs last 4 weeks.',
-  'welcome.hermesNoticed.cardBody':
+  'welcome.hermesNoticed.cta': 'Investigate',
+  // Card A — CFM ARPDAU drift (existing canonical agent-first arc).
+  'welcome.hermesNoticed.cardArpdauHeadline': 'CFM ARPDAU is down 7% vs last 4 weeks.',
+  'welcome.hermesNoticed.cardArpdauBody':
     'Traced to mid-skill ranked players hitting loss-streaks ≥ 5 — that bucket grew 3.2× this quarter. ' +
     'ARPPU is flat; this is a conversion problem, not a spend problem.',
-  'welcome.hermesNoticed.cta': 'Investigate',
+  // Card B — D7 retention drop on FB-acquired May cohort.
+  'welcome.hermesNoticed.cardD7Headline': 'D7 retention dropped 4pp for FB-acquired May cohort.',
+  'welcome.hermesNoticed.cardD7Body':
+    'Drop concentrated in users who saw the legacy onboarding tutorial. Blended D7 = 22.4%, FB cohort = 18.2%. ' +
+    'Ranked-tutorial completion correlates with the gap.',
+  // Card C — Top-1% spender recall decline.
+  'welcome.hermesNoticed.cardWhaleHeadline': 'Top-1% spender 30-day recall fell from 52% → 38%.',
+  'welcome.hermesNoticed.cardWhaleBody':
+    'Traced to 4 named whales going dormant after the Apr-21 ranked-season reset. ' +
+    'Estimated $14k MRR at risk if pattern persists into May ranked-end.',
 
   // ─── Chat ───────────────────────────────────────────────────────────────
   'chat.input.placeholder': 'Ask a follow-up…',
@@ -203,11 +214,22 @@ export const vi: Record<keyof typeof en, string> = {
 
   'welcome.hermesNoticed.title': 'Hermes phát hiện',
   'welcome.hermesNoticed.tag': 'DEMO AGENT-FIRST',
-  'welcome.hermesNoticed.cardHeadline': 'ARPDAU của CFM giảm 7% so với 4 tuần trước.',
-  'welcome.hermesNoticed.cardBody':
+  'welcome.hermesNoticed.cta': 'Khám phá',
+  // Card A — ARPDAU drift.
+  'welcome.hermesNoticed.cardArpdauHeadline': 'ARPDAU của CFM giảm 7% so với 4 tuần trước.',
+  'welcome.hermesNoticed.cardArpdauBody':
     'Nguyên nhân là người chơi rank tầm trung gặp chuỗi thua ≥ 5 — nhóm này tăng 3.2× trong quý này. ' +
     'ARPPU vẫn ổn định; đây là vấn đề chuyển đổi, không phải vấn đề chi tiêu.',
-  'welcome.hermesNoticed.cta': 'Khám phá',
+  // Card B — D7 cohort FB.
+  'welcome.hermesNoticed.cardD7Headline': 'D7 retention giảm 4pp ở cohort FB tháng 5.',
+  'welcome.hermesNoticed.cardD7Body':
+    'Tập trung ở người dùng xem onboarding cũ. D7 chung 22.4%, cohort FB 18.2%. ' +
+    'Liên quan đến tỉ lệ hoàn thành tutorial ranked.',
+  // Card C — Whale recall.
+  'welcome.hermesNoticed.cardWhaleHeadline': 'Recall 30 ngày của top-1% spender giảm từ 52% → 38%.',
+  'welcome.hermesNoticed.cardWhaleBody':
+    '4 whale dormant sau reset season ranked 21/4. ' +
+    'Khoảng $14k MRR rủi ro nếu kéo dài qua cuối tháng 5.',
 
   // ─── Chat ───────────────────────────────────────────────────────────────
   'chat.input.placeholder': 'Hỏi tiếp…',

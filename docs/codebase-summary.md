@@ -1,6 +1,6 @@
 # Codebase Summary — Entry Point for New Sessions
 
-**Last updated:** 2026-05-10 · Phase 12 (Chat ↔ Artifact Connectivity)
+**Last updated:** 2026-05-11 · Phase 13 (Welcome Inbox Promotion & Agent-First Threads)
 
 This document is your reference when onboarding to Hermes. Read this first when starting a new session.
 
@@ -108,7 +108,7 @@ pnpm refresh-cfm-data
 | 21 | Playbooks (stub) | `modules/playbooks/list-page.tsx` | playbooks | stub |
 | 22 | Explore (stub) | `modules/explore/stub.tsx` | explore | stub |
 
-**Navigation route structure:** Welcome (`/`) → Feature Store / Segments / Campaigns / Canvas / Chat. Chat-rail anchors the right gutter on detail pages. The `HermesNoticedPanel` on Welcome surfaces the agent-first demo entry (`/chat/thread-demo-agent-livops-2026`).
+**Navigation route structure:** Welcome (`/`) → Feature Store / Segments / Campaigns / Canvas / Chat. Chat-rail anchors the right gutter on detail pages. The `HermesNoticedPanel` (promoted to full-width row above Active Campaigns, plan 260511-1122) surfaces three agent-first demo entries with staggered timestamps (ARPDAU detection, D7 FB cohort, whale recall) across `/chat/thread-demo-agent-livops-2026` and two new agent-first threads.
 
 ---
 
@@ -126,10 +126,14 @@ apps/web/src/data/catalog/
 ### 4.2 Chat Threads
 ```
 apps/web/src/data/chat/threads/
-├── thread-001..008                     scripted research/segment-build threads
-├── thread-demo-livops-2026.ts          CANONICAL analyst arc (T1→T2→T3 + 6 alts)
-└── thread-demo-agent-livops-2026.ts    AGENT-FIRST arc (T1→T2→T3→T4 retro,
-                                        with tool-call chips + provenance)
+├── thread-001..008                           scripted research/segment-build threads
+├── thread-demo-livops-2026.ts                CANONICAL analyst arc (T1→T2→T3 + 6 alts)
+├── thread-demo-agent-livops-2026.ts          AGENT-FIRST arc (T1→T2→T3→T4 retro,
+│                                             with tool-call chips + provenance, ARPDAU focus)
+├── thread-demo-agent-d7-fb-cohort-2026.ts    AGENT-FIRST arc (D7 first-time payer cohort,
+│                                             T1→T2→T3→T4 diagnose→segment→campaign→retro)
+└── thread-demo-agent-whale-recall-2026.ts    AGENT-FIRST arc (whale retention recall,
+                                              T1→T2→T3→T4 diagnose→segment→campaign→retro)
 ```
 
 **How to add a new feature:**
@@ -192,21 +196,26 @@ T.transitions   // smooth, snappy for animations
 
 ---
 
-## 5.5 Chat ↔ Artifact Connectivity (May-12 Demo)
+## 5.5 Chat ↔ Artifact Connectivity & Agent-First Inbox (May 11–12)
 
-**New in Phase 12 (May 10–12):** Unified agent experience tying chat surface to segments, campaigns, and boards. Key surfaces:
+**Phase 12 (May 10–12):** Unified agent experience tying chat surface to segments, campaigns, and boards.
 
+**Phase 13 (May 11):** Welcome inbox promoted to full-width row; three agent-first cards with staggered timestamps (continuous monitoring UX). Key surfaces:
+
+- **Agent-first inbox (Phase 13):** `HermesNoticedPanel` on Welcome page stacks three agent-detected anomalies with staggered timestamps (06:14 today, yesterday 14:20, 2d ago) → routes to three full agent-first demo threads: ARPDAU, D7 FB cohort, whale recall. Each thread follows T1→T2→T3→T4 diagnose→segment→campaign→retrospective arc, mirroring analyst-led `thread-demo-livops-2026`.
 - **Reverse navigation:** Every segment/campaign detail displays `<SourceThreadPill>` (if `sourceThreadId` persisted) linking back to originating chat thread. Pill shows avatar + thread title.
 - **Universal CTAs:** Every `<AssistantResponse>` renders `<UniversalCtaRow>` with 🎯 Save as segment · 📊 Pin to board · 📣 Build campaign. Smart-hides when payload already includes matching `action_card_*` sections.
 - **Quick dialogs:** `<QuickSegmentDialog>` and `<QuickCampaignDialog>` spawn inline from CTAs for rapid creation without leaving chat.
 - **Active thread context:** `useActiveThreadId()` hook via `apps/web/src/utils/active-thread-context.tsx` lets action cards access current thread and persist `sourceThreadId` on segment/campaign POST.
-- **Demo arc thread:** Pre-seeded `thread-demo-livops-2026` chains Board pin → Segment confirm → Campaign activate in ≤90s with `<RestartDemoChip>` for re-seeding.
+- **Demo arc threads:** Three agent-first arcs: `thread-demo-agent-livops-2026` (ARPDAU), `thread-demo-agent-d7-fb-cohort-2026`, `thread-demo-agent-whale-recall-2026`. Each chains artifact creation (segment → campaign) with T1→T2→T3→T4 auto-play structure.
 - **Demo polish:** Campaign action card Confirm navigates to `/campaigns/{id}`; off-script chat routes through `genericFallbackResponse()`; user messages/headers prefixed with HelpCircle icon.
 
 **Implementation notes:**
 - `sourceThreadId?: string` added to `HermesSegment` and `HermesCampaign` contracts.
 - DB migration `0012_add_source_thread_id.sql` adds nullable `source_thread_id` columns to segments + campaigns tables.
 - Warmup script `scripts/pre-demo-warmup.ps1` pre-caches loader + audience-count + segments-list before live demo.
+- BOOTSTRAP_VERSION bumped (`v12-260510-2330` → `v13-260511-1145`) to auto-seed new agent-first threads on next page load.
+- Vietnamese localization parity: `dictionary.ts` + `entity-names.ts` updated for thread names (ARPDAU, D7, whale recall).
 
 ---
 

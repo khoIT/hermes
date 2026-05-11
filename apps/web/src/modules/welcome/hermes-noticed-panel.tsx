@@ -1,26 +1,25 @@
 /**
- * HermesNoticedPanel — agent-first demo entry on /welcome.
+ * HermesNoticedPanel — agent-first inbox on /welcome.
  *
- * Single observation card surfacing the agent-detected ARPDAU drift. Voice is
- * Variant A · analyst observation-led (locked in plan 260510-2300). Click
- * routes to the agent-first demo thread (thread-demo-agent-livops-2026), which
- * is sibling to the canonical analyst arc and lives on its own demo path.
+ * Three agent-detected anomaly cards, stacked. Each card routes to a sibling
+ * agent-first chat thread (T1 auto-plays). Card timestamps are staggered to
+ * imply continuous monitoring. Variant A · analyst observation-led voice
+ * (locked in plan 260510-2300).
  *
- * Sits above RecentThreadsPanel — additive surface, does not modify the
- * existing /welcome layout or panels.
+ * Promoted to full-width row above ActiveCampaignsPanel (plan
+ * 260511-1122) — see page.tsx for layout placement.
  */
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronRight, Activity } from 'lucide-react';
 import { T, Icon } from '../../theme';
 import { useT } from '../../i18n/i18n-provider';
-
-const AGENT_THREAD_ID = 'thread-demo-agent-livops-2026';
+import type { TranslationKey } from '../../i18n/dictionary';
 
 interface NoticedCard {
   detectedAt: string;
-  headlineKey: 'welcome.hermesNoticed.cardHeadline';
-  bodyKey: 'welcome.hermesNoticed.cardBody';
+  headlineKey: TranslationKey;
+  bodyKey: TranslationKey;
   ctaKey: 'welcome.hermesNoticed.cta';
   threadId: string;
 }
@@ -28,10 +27,24 @@ interface NoticedCard {
 const CARDS: NoticedCard[] = [
   {
     detectedAt: '06:14 today',
-    headlineKey: 'welcome.hermesNoticed.cardHeadline',
-    bodyKey:     'welcome.hermesNoticed.cardBody',
+    headlineKey: 'welcome.hermesNoticed.cardArpdauHeadline',
+    bodyKey:     'welcome.hermesNoticed.cardArpdauBody',
     ctaKey:      'welcome.hermesNoticed.cta',
-    threadId:    AGENT_THREAD_ID,
+    threadId:    'thread-demo-agent-livops-2026',
+  },
+  {
+    detectedAt: 'yesterday 14:20',
+    headlineKey: 'welcome.hermesNoticed.cardD7Headline',
+    bodyKey:     'welcome.hermesNoticed.cardD7Body',
+    ctaKey:      'welcome.hermesNoticed.cta',
+    threadId:    'thread-demo-agent-d7-fb-cohort-2026',
+  },
+  {
+    detectedAt: '2d ago, ongoing',
+    headlineKey: 'welcome.hermesNoticed.cardWhaleHeadline',
+    bodyKey:     'welcome.hermesNoticed.cardWhaleBody',
+    ctaKey:      'welcome.hermesNoticed.cta',
+    threadId:    'thread-demo-agent-whale-recall-2026',
   },
 ];
 
@@ -77,9 +90,9 @@ export function HermesNoticedPanel() {
         </span>
       </div>
 
-      {CARDS.map((c, i) => (
+      {CARDS.map((c) => (
         <NoticedRow
-          key={i}
+          key={c.threadId}
           card={c}
           headline={t(c.headlineKey)}
           body={t(c.bodyKey)}
@@ -104,7 +117,7 @@ function NoticedRow({
         width: '100%',
         display: 'block',
         textAlign: 'left',
-        padding: '12px 12px',
+        padding: '10px 12px',
         background: hover ? T.n50 : 'transparent',
         border: `1px solid ${hover ? T.brandBorder : T.n100}`,
         borderRadius: 8,

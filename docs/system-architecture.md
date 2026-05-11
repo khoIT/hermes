@@ -1,6 +1,6 @@
 # System Architecture
 
-**Last updated:** 2026-05-10 · Phase 12 (Chat ↔ Artifact Connectivity)
+**Last updated:** 2026-05-11 · Phase 13 (Welcome Inbox Promotion & Agent-First Threads)
 
 ---
 

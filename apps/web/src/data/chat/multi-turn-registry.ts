@@ -12,6 +12,8 @@ import { thread007Turns } from './threads/thread-007-cfm-loss-streak-multi';
 import { thread008Turns } from './threads/thread-008-pt-whale-recall';
 import { threadDemoLivops2026Turns } from './threads/thread-demo-livops-2026';
 import { threadDemoAgentLivops2026Turns } from './threads/thread-demo-agent-livops-2026';
+import { threadDemoAgentD7FbCohort2026Turns } from './threads/thread-demo-agent-d7-fb-cohort-2026';
+import { threadDemoAgentWhaleRecall2026Turns } from './threads/thread-demo-agent-whale-recall-2026';
 
 
 export interface RegistryEntry {
@@ -50,6 +52,18 @@ const ENTRIES: Array<[string, string, RegistryEntry]> = [
   ['thread-demo-agent-livops-2026', 'Build a rescue segment',          { assistantMsg: threadDemoAgentLivops2026Turns.segment }],
   ['thread-demo-agent-livops-2026', 'Launch the rescue campaign',      { assistantMsg: threadDemoAgentLivops2026Turns.campaign }],
   ['thread-demo-agent-livops-2026', 'Show me the 2-week retrospective', { assistantMsg: threadDemoAgentLivops2026Turns.retrospective, isTerminal: true }],
+
+  // ─── thread-demo-agent-d7-fb-cohort-2026: AGENT-FIRST arc — D7 FB cohort
+  //     rescue. T4 variant B (forecast exceeded + D14 carryover surprise).
+  ['thread-demo-agent-d7-fb-cohort-2026', 'Build a rescue segment',          { assistantMsg: threadDemoAgentD7FbCohort2026Turns.segment }],
+  ['thread-demo-agent-d7-fb-cohort-2026', 'Launch the rescue campaign',      { assistantMsg: threadDemoAgentD7FbCohort2026Turns.campaign }],
+  ['thread-demo-agent-d7-fb-cohort-2026', 'Show me the 2-week retrospective', { assistantMsg: threadDemoAgentD7FbCohort2026Turns.retrospective, isTerminal: true }],
+
+  // ─── thread-demo-agent-whale-recall-2026: AGENT-FIRST arc — whale recall
+  //     rescue. T4 variant B (partial confirmation + endogenous recovery).
+  ['thread-demo-agent-whale-recall-2026', 'Build a rescue segment',          { assistantMsg: threadDemoAgentWhaleRecall2026Turns.segment }],
+  ['thread-demo-agent-whale-recall-2026', 'Launch the rescue campaign',      { assistantMsg: threadDemoAgentWhaleRecall2026Turns.campaign }],
+  ['thread-demo-agent-whale-recall-2026', 'Show me the 2-week retrospective', { assistantMsg: threadDemoAgentWhaleRecall2026Turns.retrospective, isTerminal: true }],
 
   // ─── thread-demo-livops-2026: full arc Board → Segment → Campaign ────────
   // Canonical path

@@ -13,10 +13,14 @@ import { T } from '../../theme';
 import { deleteThread, putThread, type Conversation } from '../../utils/chat-store';
 import { threadDemoLivops2026 } from '../../data/chat/threads/thread-demo-livops-2026';
 import { threadDemoAgentLivops2026 } from '../../data/chat/threads/thread-demo-agent-livops-2026';
+import { threadDemoAgentD7FbCohort2026 } from '../../data/chat/threads/thread-demo-agent-d7-fb-cohort-2026';
+import { threadDemoAgentWhaleRecall2026 } from '../../data/chat/threads/thread-demo-agent-whale-recall-2026';
 
 const DEMO_FIXTURES: Record<string, Conversation> = {
-  'thread-demo-livops-2026':       threadDemoLivops2026,
-  'thread-demo-agent-livops-2026': threadDemoAgentLivops2026,
+  'thread-demo-livops-2026':              threadDemoLivops2026,
+  'thread-demo-agent-livops-2026':        threadDemoAgentLivops2026,
+  'thread-demo-agent-d7-fb-cohort-2026':  threadDemoAgentD7FbCohort2026,
+  'thread-demo-agent-whale-recall-2026':  threadDemoAgentWhaleRecall2026,
 };
 
 interface RestartDemoChipProps {

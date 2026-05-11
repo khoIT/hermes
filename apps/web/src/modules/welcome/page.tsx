@@ -1,8 +1,15 @@
 /**
- * Welcome — LiveOps cockpit. Hybrid hero + KPI strip + 8/4 body
- * (Active campaigns left, Start something + Recent threads right).
+ * Welcome — LiveOps cockpit. Hero + KPI strip + full-width Hermes inbox
+ * (agent-first detections) + 2-col body (Active campaigns left, Start
+ * something + Recent threads right).
  *
- * Brainstorm: plans/reports/brainstorm-260510-1233-welcome-page-cockpit.md
+ * Hermes inbox was promoted from the right rail to a main column above
+ * Active Campaigns in plan 260511-1122 to make agent-first detections the
+ * dominant entry point and surface 3 staggered anomalies.
+ *
+ * Brainstorms:
+ *   plans/reports/brainstorm-260510-1233-welcome-page-cockpit.md
+ *   plans/reports/brainstorm-260511-1122-welcome-inbox-promote-plus-flows.md
  */
 import React from 'react';
 import { T } from '../../theme';
@@ -25,6 +32,9 @@ export default function WelcomePage() {
       <div style={{ marginBottom: 20 }}>
         <KpiStrip />
       </div>
+      <div style={{ marginBottom: 20 }}>
+        <HermesNoticedPanel />
+      </div>
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'minmax(0, 2fr) minmax(280px, 1fr)',
@@ -34,7 +44,6 @@ export default function WelcomePage() {
         <ActiveCampaignsPanel />
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           <StartSomethingPanel />
-          <HermesNoticedPanel />
           <RecentThreadsPanel />
         </div>
       </div>

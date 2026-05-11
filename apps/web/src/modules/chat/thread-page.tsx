@@ -23,6 +23,8 @@ import { TypingDots } from '../../components/chat-rail/typing-dots';
 import { ActiveThreadProvider } from '../../utils/active-thread-context';
 import { threadDemoLivops2026Turns } from '../../data/chat/threads/thread-demo-livops-2026';
 import { threadDemoAgentLivops2026Turns } from '../../data/chat/threads/thread-demo-agent-livops-2026';
+import { threadDemoAgentD7FbCohort2026Turns } from '../../data/chat/threads/thread-demo-agent-d7-fb-cohort-2026';
+import { threadDemoAgentWhaleRecall2026Turns } from '../../data/chat/threads/thread-demo-agent-whale-recall-2026';
 import type {
   ActionCardSegmentPayload, ActionCardCampaignPayload,
 } from '../../data/chat/response-types';
@@ -30,13 +32,17 @@ import type {
 /** Threads that hard-reset to slim shape on entry and auto-play T1. The
  *  canonical analyst arc + the agent-first arc both follow this pattern. */
 const DEMO_THREAD_T1: Record<string, typeof threadDemoLivops2026Turns.t1> = {
-  'thread-demo-livops-2026':       threadDemoLivops2026Turns.t1,
-  'thread-demo-agent-livops-2026': threadDemoAgentLivops2026Turns.t1,
+  'thread-demo-livops-2026':              threadDemoLivops2026Turns.t1,
+  'thread-demo-agent-livops-2026':        threadDemoAgentLivops2026Turns.t1,
+  'thread-demo-agent-d7-fb-cohort-2026':  threadDemoAgentD7FbCohort2026Turns.t1,
+  'thread-demo-agent-whale-recall-2026':  threadDemoAgentWhaleRecall2026Turns.t1,
 };
 /** First-user-message id used as the hard-reset anchor, per-thread. */
 const DEMO_FIRST_USER_MSG_ID: Record<string, string> = {
-  'thread-demo-livops-2026':       'm-demo-u1',
-  'thread-demo-agent-livops-2026': 'm-agent-u1',
+  'thread-demo-livops-2026':              'm-demo-u1',
+  'thread-demo-agent-livops-2026':        'm-agent-u1',
+  'thread-demo-agent-d7-fb-cohort-2026':  'm-agent-b-u1',
+  'thread-demo-agent-whale-recall-2026':  'm-agent-c-u1',
 };
 
 function useThread(id: string | undefined): [Conversation | null, () => void] {
