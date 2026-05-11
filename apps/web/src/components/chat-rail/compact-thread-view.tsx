@@ -52,6 +52,7 @@ export function CompactThreadView({ conversation, onFollowUp, pending }: Compact
           <AssistantResponse
             key={m.id}
             message={m}
+            threadId={conversation.id}
             threadMessages={conversation.messages}
             onFollowUp={onFollowUp}
             renderActionCard={(type, payload) =>

@@ -13,6 +13,7 @@ import type {
   ActionCardSegmentPayload, ActionCardCampaignPayload,
   FeatureChipPayload, PinToBoardPayload, SoftHintPayload,
   ToolCallPayload, ProvenancePayload,
+  WorkingStatusPayload, TaskProgressPayload, SubagentPanelPayload,
 } from '../../data/chat/response-types';
 import { NarrativePara } from './narrative-para';
 import { ResponseSection } from './response-section';
@@ -24,7 +25,12 @@ import { FollowUps } from './follow-ups';
 import { PinToBoardSection } from './sections/pin-to-board-section';
 import { SoftHint } from './sections/soft-hint';
 import { ToolCallChip, ProvenanceCaption } from './tool-call-chip';
+import { WorkingStatusBlock } from './sections/working-status-block';
+import { TaskProgressPanel } from './sections/task-progress-panel';
+import { SubagentList } from './sections/subagent-list';
 import { UniversalCtaRow } from './universal-cta-row';
+import { useDeepResearch } from './deep-research-toggle';
+import { isAgentFirstThread } from '../../utils/agent-first-thread-ids';
 
 interface AssistantResponseProps {
   message: ChatMessage;
@@ -40,11 +46,20 @@ interface AssistantResponseProps {
   ) => React.ReactNode;
   /** Full thread message list — used by pin_to_board to look up upstream widget snapshots. */
   threadMessages?: ChatMessage[];
+  /** Owning thread id — drives the deep-research render gate. Optional;
+   *  when absent the gate falls through to OFF-state (tool_call) rendering. */
+  threadId?: string;
 }
 
 export function AssistantResponse({
-  message, onFollowUp, onPin, renderActionCard, threadMessages,
+  message, onFollowUp, onPin, renderActionCard, threadMessages, threadId,
 }: AssistantResponseProps) {
+  // Deep-research render gate. ON in agent-first threads + toggle ON →
+  // render working_status / task_progress / subagent_panel and skip
+  // tool_call. Otherwise render tool_call as today and skip the new
+  // deep-trace sections.
+  const [deepResearchOn] = useDeepResearch();
+  const showDeepTrace = deepResearchOn && isAgentFirstThread(threadId);
   // Compute which universal CTAs are already covered by explicit sections
   const hiddenCtas = React.useMemo(() => {
     const hidden = new Set<'segment' | 'board' | 'campaign'>();
@@ -122,9 +137,19 @@ export function AssistantResponse({
           case 'soft_hint':
             return <SoftHint key={i} text={(s.payload as SoftHintPayload).text} />;
           case 'tool_call':
+            if (showDeepTrace) return null;
             return <ToolCallChip key={i} {...(s.payload as ToolCallPayload)} />;
           case 'provenance':
             return <ProvenanceCaption key={i} text={(s.payload as ProvenancePayload).text} />;
+          case 'working_status':
+            if (!showDeepTrace) return null;
+            return <WorkingStatusBlock key={i} payload={s.payload as WorkingStatusPayload} />;
+          case 'task_progress':
+            if (!showDeepTrace) return null;
+            return <TaskProgressPanel key={i} payload={s.payload as TaskProgressPayload} />;
+          case 'subagent_panel':
+            if (!showDeepTrace) return null;
+            return <SubagentList key={i} payload={s.payload as SubagentPanelPayload} />;
           default:
             return null;
         }

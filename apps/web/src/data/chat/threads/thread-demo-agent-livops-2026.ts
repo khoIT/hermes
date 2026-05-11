@@ -22,8 +22,89 @@
  * Slim shape: only the user prompt seeded; T1 auto-plays on entry.
  */
 import type { Conversation, ChatMessage } from '../../../utils/chat-store';
+import type {
+  WorkingStatusPayload, TaskProgressPayload, SubagentPanelPayload,
+} from '../response-types';
 
 const TARGET_SEGMENT_ID = 'seg-cfm-loss-streak-non-paying-2026-0508-a3f9';
+
+// ─── Deep-research trace consts (rendered when toggle ON) ───────────────────
+
+const WORKING_STATUS_ARPDAU: WorkingStatusPayload = {
+  intent: 'I will analyze CFM ARPDAU drift across ARPPU vs Paying-DAU% decomposition, segment loss-streak cliffs by skill tier, and surface the cohort most at risk of churning unconverted.',
+  state: 'working',
+};
+
+const TASK_PROGRESS_ARPDAU: TaskProgressPayload = {
+  percent: 57,
+  steps: [
+    { label: 'Read schema and understand available data structure',                state: 'done' },
+    { label: 'Gather initial data from specialized agents in parallel',            state: 'done' },
+    { label: 'Build and validate hypotheses from initial findings',                state: 'done' },
+    { label: 'Conduct statistical significance tests on top insights',             state: 'done' },
+    { label: 'Synthesize findings and create comprehensive report with visualizations', state: 'in_progress' },
+    { label: 'Get critique and refine report',                                     state: 'pending' },
+    { label: 'Send final report to client',                                        state: 'pending' },
+  ],
+};
+
+const SUBAGENTS_ARPDAU: SubagentPanelPayload['agents'] = [
+  {
+    name: 'Acquisition Analysis Agent',
+    summary: 'Analyzed 13 weeks of CFM acquisition data — channel mix stable across Q1 (Facebook 41%, Admob 27%, Organic 18%, Moloco 9%, Vungle 5%). No channel-level drift; the ARPDAU regression is downstream of acquisition.',
+    tasks: [
+      'Pull channel-attribution table from cfm_vn (Jan 25 → May 9)',
+      'Compute weekly D0/D1/D7 retention by channel',
+      'Rank channels by ARPDAU contribution',
+      'Compare channel mix Q1 vs Q2 (so far)',
+      'Conclude: no channel-level drift explains the ARPDAU drop',
+    ],
+  },
+  {
+    name: 'LTV Projections Agent',
+    summary: 'Modeled forward LTV by paying-tier. Whale and mid-spender LTVs unchanged ($840 / $112). Drop is concentrated in the F2P→first-purchase conversion rate, not paying user spend.',
+    tasks: [
+      'Load 90-day paying-user spend histories',
+      'Segment users into 4 spend tiers (F2P / micro / mid / whale)',
+      'Fit Pareto-NBD model per tier',
+      'Project 90d LTV per tier under current behavior',
+      'Surface conversion-rate compression as the deltas-driver',
+    ],
+  },
+  {
+    name: 'Period vs Cohort Agent',
+    summary: 'Confirmed the regression is period-driven, not cohort-driven. April-acquired cohort behaves like Q1 cohorts at matched tenure — the drop is a behavior shift in the active player base, not a quality drop in new players.',
+    tasks: [
+      'Build 8 weekly cohorts of new players Jan 25 → Apr 27',
+      'Track ARPDAU per cohort at days 7/14/30',
+      'Compare cohort curves; flag deviations',
+      'Calendar-period vs cohort-period decomposition',
+      'Conclude: drop is period-driven (active base behavior shift)',
+    ],
+  },
+  {
+    name: 'Spend Scenario Agent',
+    summary: 'Simulated 5 rescue scenarios: targeted IAM, ranked-protect grant, daily-bonus boost, store-discount push, and the stacked 3-touch rescue. Stacked rescue projects highest D7 lift (+24pp) per $1 spent.',
+    tasks: [
+      'Define candidate-rescue inventory (5 mechanics)',
+      'Pull historical lift from Jan 2026 A/B tests',
+      'Model audience reach and cost per mechanic',
+      'Rank by ROI = (projected D7 lift × cohort size) / cost',
+      'Recommend stacked 3-touch IAM grant',
+    ],
+  },
+  {
+    name: 'Research Agent',
+    summary: 'Cross-referenced internal anomaly patterns with industry literature on ranked-PvP fatigue. Confirms loss-streak cliffs at 5+ are a known industry pattern (cf. Riot 2023 ranked-MMR analysis); rescue mechanics from Riot and Supercell informed our intervention list.',
+    tasks: [
+      'Search internal anomaly archive for prior loss-streak patterns',
+      'Pull comparable industry case studies (Riot, Supercell, Krafton)',
+      'Extract historical rescue-mechanic outcomes',
+      'Validate hypotheses against industry baselines',
+      'Cite 3 sources in the final recommendation',
+    ],
+  },
+];
 
 // ─── T1: ARPDAU diagnosis (analyst observation, tool calls, provenance) ─────
 
@@ -34,7 +115,14 @@ const T1: ChatMessage = {
   createdAt: '2026-05-10T06:14:00.000Z',
   suppressUniversalCtas: true,
   sections: [
+    // Deep-research trace (rendered when Deep Research toggle ON; gated in
+    // assistant-response.tsx). Sits above the existing tool_call chain.
+    { type: 'working_status', payload: WORKING_STATUS_ARPDAU },
+    { type: 'task_progress',  payload: TASK_PROGRESS_ARPDAU },
+    { type: 'subagent_panel', payload: { agents: SUBAGENTS_ARPDAU } },
+
     // Tool-call chain — what the agent did before posting this opportunity.
+    // Rendered when toggle OFF (same gate).
     { type: 'tool_call', payload: {
       fn: 'query_trino',
       args: [

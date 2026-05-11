@@ -36,6 +36,7 @@ import {
   getStoredWidth, setStoredWidth, clampWidth,
 } from '../../utils/chat-rail-store';
 import type { MessageArtifact } from '../../utils/chat-store';
+import { isAgentFirstThread } from '../../utils/agent-first-thread-ids';
 
 interface ChatRailProps {
   open: boolean;
@@ -356,7 +357,7 @@ export function ChatRail({ open, onClose }: ChatRailProps) {
           onSubmit={submit}
           compact
           placeholder="Ask Hermes..."
-          showDeepResearch={false}
+          showDeepResearch={isAgentFirstThread(activeThreadId)}
         />
       </div>
     </aside>

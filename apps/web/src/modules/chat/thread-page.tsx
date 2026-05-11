@@ -28,6 +28,7 @@ import { threadDemoAgentWhaleRecall2026Turns } from '../../data/chat/threads/thr
 import type {
   ActionCardSegmentPayload, ActionCardCampaignPayload,
 } from '../../data/chat/response-types';
+import { isAgentFirstThread } from '../../utils/agent-first-thread-ids';
 
 /** Threads that hard-reset to slim shape on entry and auto-play T1. The
  *  canonical analyst arc + the agent-first arc both follow this pattern. */
@@ -196,6 +197,7 @@ export default function ChatThreadPage() {
               <AssistantResponse
                 key={m.id}
                 message={m}
+                threadId={id}
                 threadMessages={conv.messages}
                 onFollowUp={handleSubmit}
                 renderActionCard={(type, payload) =>
@@ -217,7 +219,7 @@ export default function ChatThreadPage() {
       }}>
         <ChatInputBox
           onSubmit={handleSubmit}
-          showDeepResearch={false}
+          showDeepResearch={isAgentFirstThread(id)}
           placeholder="Ask a follow-up..."
         />
       </div>

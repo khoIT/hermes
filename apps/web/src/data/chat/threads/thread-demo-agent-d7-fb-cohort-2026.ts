@@ -21,8 +21,89 @@
  *   D21 carryover       = +3.4pp
  */
 import type { Conversation, ChatMessage } from '../../../utils/chat-store';
+import type {
+  WorkingStatusPayload, TaskProgressPayload, SubagentPanelPayload,
+} from '../response-types';
 
 const TARGET_SEGMENT_ID = 'seg-cfm-d7-fb-cohort-engaged-2026-0510-b4e2';
+
+// ─── Deep-research trace consts (rendered when toggle ON) ───────────────────
+
+const WORKING_STATUS_D7_FB: WorkingStatusPayload = {
+  intent: 'I will analyze D7 retention drop on the FB-acquired May 2026 cohort, isolate the funnel stage where retention diverges from baseline, and identify the in-cohort sub-segment most responsive to rescue.',
+  state: 'working',
+};
+
+const TASK_PROGRESS_D7_FB: TaskProgressPayload = {
+  percent: 57,
+  steps: [
+    { label: 'Read schema and understand available data structure',                state: 'done' },
+    { label: 'Gather initial data from specialized agents in parallel',            state: 'done' },
+    { label: 'Build and validate hypotheses from initial findings',                state: 'done' },
+    { label: 'Conduct statistical significance tests on top insights',             state: 'done' },
+    { label: 'Synthesize findings and create comprehensive report with visualizations', state: 'in_progress' },
+    { label: 'Get critique and refine report',                                     state: 'pending' },
+    { label: 'Send final report to client',                                        state: 'pending' },
+  ],
+};
+
+const SUBAGENTS_D7_FB: SubagentPanelPayload['agents'] = [
+  {
+    name: 'Acquisition Analysis Agent',
+    summary: 'Compared D7 retention across acquisition channels for the May 2026 cohort. Facebook = 18.2% vs blended 22.4% — a 4.2pp gap. Google, Organic, and Referral cohorts at parity with baseline.',
+    tasks: [
+      'Pull May 2026 install attribution from cfm_vn',
+      'Segment by acquisition channel (FB / Google / Organic / Referral)',
+      'Compute D1/D3/D7 retention curves per channel',
+      'Flag channels deviating > 2pp from blended baseline',
+      'Conclude: FB cohort isolated for further analysis',
+    ],
+  },
+  {
+    name: 'Onboarding Funnel Agent',
+    summary: 'Decomposed the FB cohort funnel D0→D1→D3→D7. Drop opens between D3 and D7. D0/D1/D3 retention matches baseline within 1pt; gap concentrates at D7.',
+    tasks: [
+      'Load D0-D7 retention snapshots for FB May cohort',
+      'Compute per-day retention deltas vs blended baseline',
+      'Identify the day-window where the gap opens',
+      'Cross-check against tutorial-completion timestamps',
+      'Conclude: D3→D7 transition is the leak point',
+    ],
+  },
+  {
+    name: 'Cohort Comparison Agent',
+    summary: 'Compared April 2026 and May 2026 FB cohorts. April FB cohort behaved like baseline; May FB cohort regressed. Onset of the regression aligns with the May 2 onboarding A/B mishap that exposed legacy variant to all FB users.',
+    tasks: [
+      'Build paired FB cohorts: Apr 1-30 vs May 1-9',
+      'Run two-sample test on D7 retention',
+      'Cross-reference with deployment-history table',
+      'Identify May 2 onboarding-variant rollback as inflection point',
+      'Confirm regression is variant-driven, not seasonal',
+    ],
+  },
+  {
+    name: 'Tutorial Completion Agent',
+    summary: 'Measured tutorial-completion% across onboarding variants. Legacy v1 completion = 58%; new v2 (the rolled-back one) = 81%. Users who saw legacy and partially completed (40-60%) drive the D7 gap.',
+    tasks: [
+      'Pull tutorial-completion percentages by variant',
+      'Bucket users by completion % (0-25 / 25-60 / 60-90 / 90+)',
+      'Compute D7 retention per bucket',
+      'Identify the 25-60% bucket as the lift target',
+      'Confirm legacy variant correlates with low completion',
+    ],
+  },
+  {
+    name: 'Research Agent',
+    summary: 'Cross-referenced internal cohort archive for prior onboarding regressions. Found 2 comparable cases (Q3 2024, Q1 2025) where tutorial-rollback caused D7 drops of 3-5pp; both recovered with re-trigger campaigns.',
+    tasks: [
+      'Search anomaly archive for "tutorial rollback" + "D7 drop"',
+      'Pull 2024-Q3 and 2025-Q1 case studies',
+      'Compare regression magnitudes (3-5pp range)',
+      'Extract historical rescue mechanic (tutorial re-trigger)',
+      'Validate +6pp lift forecast against prior case outcomes',
+    ],
+  },
+];
 
 // ─── T1: D7 retention diagnosis (tool calls + channel breakdown + funnel) ────
 
@@ -33,6 +114,11 @@ const T1: ChatMessage = {
   createdAt: '2026-05-09T14:20:00.000Z',
   suppressUniversalCtas: true,
   sections: [
+    // Deep-research trace (rendered when toggle ON; gated in assistant-response).
+    { type: 'working_status', payload: WORKING_STATUS_D7_FB },
+    { type: 'task_progress',  payload: TASK_PROGRESS_D7_FB },
+    { type: 'subagent_panel', payload: { agents: SUBAGENTS_D7_FB } },
+
     // Tool-call chain: query raw data → split by channel → compare funnels
     { type: 'tool_call', payload: {
       fn: 'query_trino',

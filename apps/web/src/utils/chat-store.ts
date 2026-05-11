@@ -41,7 +41,13 @@ export interface ResponseSection {
     // Phase 3 (260510-2300): agent-first demo path — tool-call chips +
     // provenance footers ground "agent doing work" claims.
     | 'tool_call'
-    | 'provenance';
+    | 'provenance'
+    // Phase 4 (260511-1209): deep-research trace — gated by toggle on
+    // agent-first threads. Renders working-status + task-progress checklist +
+    // named subagent panels with expandable task lists.
+    | 'working_status'
+    | 'task_progress'
+    | 'subagent_panel';
   /** Free-form payload — concrete schemas defined in data/chat/response-types.ts. */
   payload?: unknown;
 }

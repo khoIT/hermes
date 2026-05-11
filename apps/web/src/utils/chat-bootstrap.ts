@@ -32,7 +32,7 @@ import { threadDemoAgentD7FbCohort2026 } from '../data/chat/threads/thread-demo-
 import { threadDemoAgentWhaleRecall2026 } from '../data/chat/threads/thread-demo-agent-whale-recall-2026';
 import { pushRecent, clearRecent, getRecent } from './recent-items-store';
 
-const BOOTSTRAP_VERSION = 'v13-260511-1145';
+const BOOTSTRAP_VERSION = 'v14-260511-1209';
 const VERSION_KEY = 'hermes.chat.bootstrap.version';
 
 // Stale segment-recent IDs to scrub on each bootstrap version bump.
@@ -104,7 +104,24 @@ export function bootstrapChatThreads(): void {
   // 4. Prune stale segment-recent entries (legacy `s_<timestamp>` ids).
   pruneStaleSegmentRecents();
 
+  // 5. Default-ON for Deep Research toggle on first install / version bump.
+  //    Preserves an existing user preference if they previously interacted
+  //    with the toggle.
+  seedDeepResearchDefault();
+
   writeVersion(BOOTSTRAP_VERSION);
+}
+
+/** One-time seed: enable Deep Research toggle on first install or bootstrap
+ *  version bump. Preserves an existing user preference (key === '0' from a
+ *  deliberate OFF) — only seeds when the key is absent. */
+function seedDeepResearchDefault(): void {
+  try {
+    const KEY = 'hermes.chat.deepResearch';
+    if (localStorage.getItem(KEY) === null) {
+      localStorage.setItem(KEY, '1');
+    }
+  } catch { /* localStorage unavailable */ }
 }
 
 function pruneStaleSegmentRecents(): void {

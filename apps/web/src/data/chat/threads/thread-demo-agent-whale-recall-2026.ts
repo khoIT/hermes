@@ -18,8 +18,89 @@
  *   - Honest revised attribution: +30pp outreach-driven, +8pp endogenous
  */
 import type { Conversation, ChatMessage } from '../../../utils/chat-store';
+import type {
+  WorkingStatusPayload, TaskProgressPayload, SubagentPanelPayload,
+} from '../response-types';
 
 const TARGET_SEGMENT_ID = 'seg-cfm-whale-dormant-postseason-2026-0509-c7a1';
+
+// ─── Deep-research trace consts (rendered when toggle ON) ───────────────────
+
+const WORKING_STATUS_WHALE: WorkingStatusPayload = {
+  intent: 'I will analyze top-1% spender recall decline, isolate the precipitating event behind the post-April-21 dormancy spike, and identify a recoverable cohort for concierge intervention.',
+  state: 'working',
+};
+
+const TASK_PROGRESS_WHALE: TaskProgressPayload = {
+  percent: 57,
+  steps: [
+    { label: 'Read schema and understand available data structure',                state: 'done' },
+    { label: 'Gather initial data from specialized agents in parallel',            state: 'done' },
+    { label: 'Build and validate hypotheses from initial findings',                state: 'done' },
+    { label: 'Conduct statistical significance tests on top insights',             state: 'done' },
+    { label: 'Synthesize findings and create comprehensive report with visualizations', state: 'in_progress' },
+    { label: 'Get critique and refine report',                                     state: 'pending' },
+    { label: 'Send final report to client',                                        state: 'pending' },
+  ],
+};
+
+const SUBAGENTS_WHALE: SubagentPanelPayload['agents'] = [
+  {
+    name: 'LTV Model Health Agent',
+    summary: 'Audited Pareto-NBD LTV model fit on top-1% spenders. Model fit healthy (RMSE 0.18, no drift in residuals) — the recall drop is a real behavior change, not a model artifact.',
+    tasks: [
+      'Pull 90-day spend histories for top-1% cohort (1,240 users)',
+      'Refit Pareto-NBD model on April vs March data',
+      'Compare predicted vs actual recall rates',
+      'Compute residuals; check for systematic bias',
+      'Conclude: model healthy, drop is behavioral',
+    ],
+  },
+  {
+    name: 'Spend Distribution Agent',
+    summary: 'Surfaced bimodal dormancy across spend tiers. Mid-whale tiers ($100-300/30d) dormancy stable at ~30%; $500+ tier spiked to 61% post-April 21. The "named whales" account for the spike.',
+    tasks: [
+      'Bucket top-1% cohort into 4 spend tiers',
+      'Compute 14-day dormancy per tier',
+      'Identify bimodal distribution ($500+ spike)',
+      'Cross-reference with named-whale registry',
+      'Conclude: 4 of 12 named whales drive the $500+ spike',
+    ],
+  },
+  {
+    name: 'Season Reset Impact Agent',
+    summary: 'Correlated dormancy onset with April 21 ranked-season reset. Whales who dropped 2+ tiers post-reset have 4.3× higher dormancy than tier-stable peers. Season reset is the strongest precipitating event.',
+    tasks: [
+      'Pull ranked-tier histories around the April 21 reset',
+      'Compute per-user tier-change deltas',
+      'Segment by tier-drop magnitude (0 / 1 / 2+)',
+      'Compute dormancy rate per segment',
+      'Conclude: 2+ tier drop is the dormancy precipitator',
+    ],
+  },
+  {
+    name: 'Concierge Outreach Agent',
+    summary: 'Modeled concierge-outreach capacity for the CFM team. 50 weekly outreach slots available. Recommends prioritizing the 4 named whales + 50 highest-LTV lookalikes in week 1, remaining 39 in week 2.',
+    tasks: [
+      'Survey CFM concierge team capacity (50 slots/week)',
+      'Rank 89-UID cohort by historical LTV',
+      'Allocate week-1 slots to top-50 LTV',
+      'Schedule week-2 slots for remaining 39',
+      'Define appreciation-drop inventory (skin / currency / ranked-protect)',
+    ],
+  },
+  {
+    name: 'Research Agent',
+    summary: 'Cross-referenced industry case studies on top-spender recovery via concierge outreach. Found 3 comparable cases (Supercell whales, mobile MMO post-season churns) with 55-70% recovery rates. Our 76% recovery outcome lands at the high end.',
+    tasks: [
+      'Search internal archive for whale-recovery cases',
+      'Pull comparable industry studies (Supercell, MMO post-season)',
+      'Extract historical recovery rate range (55-70%)',
+      'Validate forecast against industry baseline',
+      'Note: outcome exceeded benchmark (76% vs 55-70%)',
+    ],
+  },
+];
 
 // ─── T1: Whale recall diagnosis ────────────────────────────────────────────
 
@@ -30,6 +111,11 @@ const T1: ChatMessage = {
   createdAt: '2026-05-08T09:00:00.000Z',
   suppressUniversalCtas: true,
   sections: [
+    // Deep-research trace (rendered when toggle ON; gated in assistant-response).
+    { type: 'working_status', payload: WORKING_STATUS_WHALE },
+    { type: 'task_progress',  payload: TASK_PROGRESS_WHALE },
+    { type: 'subagent_panel', payload: { agents: SUBAGENTS_WHALE } },
+
     // Tool-call chain — 3 rotated functions vs arcs A and B
     { type: 'tool_call', payload: {
       fn: 'query_trino',

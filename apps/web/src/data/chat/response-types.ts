@@ -161,3 +161,50 @@ export interface ToolCallPayload {
 export interface ProvenancePayload {
   text: string;
 }
+
+// ─── 260511-1209: deep-research trace sections ──────────────────────────────
+
+/**
+ * Working-status block — header for a deep-research trace.
+ *
+ * Renders "Working.." (or "Done") with the agent's intent statement beneath.
+ * Drives the visual that signals "this is a deep research turn, not a
+ * one-shot answer." Gated by the Deep Research toggle on agent-first threads.
+ */
+export interface WorkingStatusPayload {
+  /** 1-2 sentence intent statement, e.g. "I will analyze CFM ARPDAU drift…" */
+  intent: string;
+  /** 'working' shows a pulsing dot; 'done' shows a filled circle. Default 'working'. */
+  state?: 'working' | 'done';
+}
+
+/**
+ * Task-progress panel — vertical checklist of canonical pipeline steps with
+ * per-step state + percent header. Steps are rendered in given order; the
+ * connecting rail visually links them. Used as the second section of a deep
+ * trace, after working_status, before subagent_panel.
+ */
+export interface TaskProgressPayload {
+  /** 0–100 progress percent. Drives the badge in the panel header. */
+  percent: number;
+  steps: Array<{
+    label: string;
+    state: 'done' | 'in_progress' | 'pending';
+  }>;
+}
+
+/**
+ * Subagent-panel section — list of named specialized agents, each with a
+ * 1-line summary and an expandable task list. Visually echoes the reference
+ * deep-research UI pattern.
+ */
+export interface SubagentPanelPayload {
+  agents: Array<{
+    /** Display name. e.g. "Acquisition Analysis Agent". */
+    name: string;
+    /** 1-line summary of what the agent analyzed (past tense). */
+    summary: string;
+    /** Short task strings (typically 5), rendered when the panel expands. */
+    tasks: string[];
+  }>;
+}
