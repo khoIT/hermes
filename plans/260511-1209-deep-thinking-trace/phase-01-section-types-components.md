@@ -1,7 +1,7 @@
 ---
 phase: 1
 title: "Section types & components"
-status: pending
+status: completed
 priority: P2
 effort: "3h"
 dependencies: []
@@ -405,23 +405,23 @@ Or define it once in `theme.tsx` if a global stylesheet exists. Check first; def
 
 ## Todo list
 
-- [ ] 3 new payload interfaces appended to response-types.ts
-- [ ] `ResponseSection.type` union extended with 3 new strings
-- [ ] `agent-first-thread-ids.ts` helper created
-- [ ] `working-status-block.tsx` created (state working/done, pulse animation)
-- [ ] `task-progress-panel.tsx` created (vertical rail + 3 step states + percent header)
-- [ ] `subagent-panel.tsx` created (expandable single agent)
-- [ ] `subagent-list.tsx` created (iterates agents)
-- [ ] `hermesPulse` keyframes available (one location, not duplicated)
-- [ ] `pnpm typecheck` passes (no consumers, just shape validation)
+- [x] 3 new payload interfaces appended to response-types.ts
+- [x] `ResponseSection.type` union extended with 3 new strings
+- [x] `agent-first-thread-ids.ts` helper created
+- [x] `working-status-block.tsx` created (state working/done, pulse animation)
+- [x] `task-progress-panel.tsx` created (vertical rail + 3 step states + percent header)
+- [x] `subagent-panel.tsx` created (expandable single agent)
+- [x] `subagent-list.tsx` created (iterates agents)
+- [x] `hermesPulse` keyframes available (one location, not duplicated)
+- [x] `pnpm typecheck` passes (no consumers, just shape validation)
 
 ## Success criteria
 
-- [ ] All 4 new components compile and render in isolation (verified via temp dev playground or React DevTools)
-- [ ] Type safety: any consumer providing a malformed payload fails typecheck
-- [ ] Components don't import thread fixtures (purity)
-- [ ] No regression in existing chat rendering (other section types unaffected)
-- [ ] `pnpm typecheck && pnpm build` passes
+- [x] All 4 new components compile and render in isolation (verified via temp dev playground or React DevTools)
+- [x] Type safety: any consumer providing a malformed payload fails typecheck
+- [x] Components don't import thread fixtures (purity)
+- [x] No regression in existing chat rendering (other section types unaffected)
+- [x] `pnpm typecheck && pnpm build` passes
 
 ## Risk assessment
 

@@ -1,7 +1,7 @@
 ---
 phase: 6
 title: "Renderer gate & verify"
-status: pending
+status: completed
 priority: P2
 effort: "2h"
 dependencies: [1, 2, 3, 4, 5]
@@ -127,30 +127,30 @@ Both files already have these IDs in scope — single-prop addition each.
 
 ## Todo list
 
-- [ ] `AssistantResponseProps.threadId` added (optional)
-- [ ] `useDeepResearch` + `isAgentFirstThread` imported
-- [ ] 3 new component imports added
-- [ ] 3 new payload type imports added
-- [ ] `showDeepTrace` computed from hook + thread id
-- [ ] `case 'tool_call':` returns null when `showDeepTrace`
-- [ ] `case 'working_status':` added with gate
-- [ ] `case 'task_progress':` added with gate
-- [ ] `case 'subagent_panel':` added with gate
-- [ ] `chat-rail.tsx` passes `threadId` prop
-- [ ] `thread-page.tsx` passes `threadId` prop
-- [ ] `pnpm typecheck` passes
-- [ ] `pnpm build` passes
-- [ ] Manual smoke: all 3 threads toggle ON/OFF correctly
-- [ ] Manual smoke: subagent expand works
-- [ ] Manual smoke: non-agent-first threads unaffected
+- [x] `AssistantResponseProps.threadId` added (optional)
+- [x] `useDeepResearch` + `isAgentFirstThread` imported
+- [x] 3 new component imports added
+- [x] 3 new payload type imports added
+- [x] `showDeepTrace` computed from hook + thread id
+- [x] `case 'tool_call':` returns null when `showDeepTrace`
+- [x] `case 'working_status':` added with gate
+- [x] `case 'task_progress':` added with gate
+- [x] `case 'subagent_panel':` added with gate
+- [x] `chat-rail.tsx` passes `threadId` prop
+- [x] `thread-page.tsx` passes `threadId` prop
+- [x] `pnpm typecheck` passes
+- [x] `pnpm build` passes
+- [x] Manual smoke: all 3 threads toggle ON/OFF correctly
+- [x] Manual smoke: subagent expand works
+- [x] Manual smoke: non-agent-first threads unaffected
 
 ## Success criteria
 
-- [ ] All top-level plan success criteria met
-- [ ] Live toggle flip re-renders the trace instantly
-- [ ] No regression on canonical analyst arcs (`thread-001..008`, `thread-demo-livops-2026`)
-- [ ] No regression on arc A's existing tool_call display when toggle OFF
-- [ ] Subagent expand chevron works, 5 tasks revealed
+- [x] All top-level plan success criteria met
+- [x] Live toggle flip re-renders the trace instantly
+- [x] No regression on canonical analyst arcs (`thread-001..008`, `thread-demo-livops-2026`)
+- [x] No regression on arc A's existing tool_call display when toggle OFF
+- [x] Subagent expand chevron works, 5 tasks revealed
 
 ## Risk assessment
 

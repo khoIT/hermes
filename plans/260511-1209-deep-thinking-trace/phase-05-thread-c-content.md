@@ -1,7 +1,7 @@
 ---
 phase: 5
 title: "Thread C content (Whale)"
-status: pending
+status: completed
 priority: P2
 effort: "2.5h"
 dependencies: [1]
@@ -152,21 +152,21 @@ Same shape as phases 3 and 4.
 
 ## Todo list
 
-- [ ] Imports added
-- [ ] `SUBAGENTS_WHALE` const defined
-- [ ] `WORKING_STATUS_WHALE` const defined
-- [ ] `TASK_PROGRESS_WHALE` const defined
-- [ ] T1 `sections` array gains 3 new entries at the top
-- [ ] Existing T1 sections preserved
-- [ ] `pnpm typecheck` passes
+- [x] Imports added
+- [x] `SUBAGENTS_WHALE` const defined
+- [x] `WORKING_STATUS_WHALE` const defined
+- [x] `TASK_PROGRESS_WHALE` const defined
+- [x] T1 `sections` array gains 3 new entries at the top
+- [x] Existing T1 sections preserved
+- [x] `pnpm typecheck` passes
 
 ## Success criteria
 
-- [ ] File compiles standalone
-- [ ] T1's `sections[0..2]` are the new types
-- [ ] Existing tool_call + narrative + chart sections preserved
-- [ ] T2/T3/T4 untouched
-- [ ] Conversation + named-turn exports unchanged
+- [x] File compiles standalone
+- [x] T1's `sections[0..2]` are the new types
+- [x] Existing tool_call + narrative + chart sections preserved
+- [x] T2/T3/T4 untouched
+- [x] Conversation + named-turn exports unchanged
 
 ## Risk assessment
 

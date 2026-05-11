@@ -413,6 +413,10 @@ transition: all 150ms var(--transition-smooth);
 | HandoffModal | `modules/*/handoff-modal.tsx` | Substrate A/B handoff confirmation |
 | Histogram | `modules/_shared/components/Histogram.tsx` | 28-bin distribution chart |
 | Sparkline | `modules/_shared/components/Sparkline.tsx` | Compact trend line |
+| WorkingStatusBlock | `components/chat/sections/working-status-block.tsx` | Deep-research section: "Working.." / "Done" header + intent (gated by DeepResearchToggle) |
+| TaskProgressPanel | `components/chat/sections/task-progress-panel.tsx` | Deep-research section: step-by-step task checklist (gated by DeepResearchToggle) |
+| SubagentPanel | `components/chat/sections/subagent-panel.tsx` | Deep-research section: subagent roster + provenance (gated by DeepResearchToggle) |
+| SubagentList | `components/chat/sections/subagent-list.tsx` | Subagent roster child (renders agent avatars + names + metadata) |
 
 ---
 

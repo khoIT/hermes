@@ -1,7 +1,7 @@
 ---
 title: "Deep-thinking Trace + Functional Deep Research Toggle"
 description: "Add 3 new ResponseSection types (working_status, task_progress, subagent_panel) and corresponding React components. Promote the cosmetic DeepResearchToggle to functional — gating T1 trace shape in the 3 agent-first threads. 5 customized subagent panels per thread × 3 threads with expandable 5-task lists."
-status: pending
+status: completed
 priority: P2
 branch: "agent_demo"
 tags: [chat, agent-first, deep-research, sections, may-12]
@@ -25,12 +25,12 @@ Faithful reproduction of the reference deep-research UI: Working.. block + task-
 
 | Phase | Name | Status |
 |-------|------|--------|
-| 1 | [Section types & components](./phase-01-section-types-components.md) | Pending |
-| 2 | [Toggle wiring & default-on](./phase-02-toggle-wiring-default-on.md) | Pending |
-| 3 | [Thread A content (ARPDAU)](./phase-03-thread-a-content.md) | Pending |
-| 4 | [Thread B content (D7 FB)](./phase-04-thread-b-content.md) | Pending |
-| 5 | [Thread C content (Whale)](./phase-05-thread-c-content.md) | Pending |
-| 6 | [Renderer gate & verify](./phase-06-renderer-gate-verify.md) | Pending |
+| 1 | [Section types & components](./phase-01-section-types-components.md) | Completed |
+| 2 | [Toggle wiring & default-on](./phase-02-toggle-wiring-default-on.md) | Completed |
+| 3 | [Thread A content (ARPDAU)](./phase-03-thread-a-content.md) | Completed |
+| 4 | [Thread B content (D7 FB)](./phase-04-thread-b-content.md) | Completed |
+| 5 | [Thread C content (Whale)](./phase-05-thread-c-content.md) | Completed |
+| 6 | [Renderer gate & verify](./phase-06-renderer-gate-verify.md) | Completed |
 
 **Strict order:** `1 → 2 → (3 ∥ 4 ∥ 5) → 6`
 
@@ -51,10 +51,10 @@ No active cross-plan blockers. The prior plan `260511-1122-welcome-inbox-promote
 
 ## Success criteria (top-level)
 
-- [ ] Agent-first thread chat inputs show Deep Research toggle; non-agent-first threads do NOT
-- [ ] Toggle ON → deep trace renders in T1 (working_status + task_progress + 5 subagent panels)
-- [ ] Toggle OFF → existing tool_call chips render in T1
-- [ ] Each thread renders 5 customized subagent panels with expandable 5-task lists
-- [ ] Task-progress checklist renders with vertical rail visual per screenshot
-- [ ] First-visit agent-first thread defaults to toggle ON (bootstrap v14 seed)
-- [ ] `pnpm typecheck && pnpm build` passes
+- [x] Agent-first thread chat inputs show Deep Research toggle; non-agent-first threads do NOT
+- [x] Toggle ON → deep trace renders in T1 (working_status + task_progress + 5 subagent panels)
+- [x] Toggle OFF → existing tool_call chips render in T1
+- [x] Each thread renders 5 customized subagent panels with expandable 5-task lists
+- [x] Task-progress checklist renders with vertical rail visual per screenshot
+- [x] First-visit agent-first thread defaults to toggle ON (bootstrap v14 seed)
+- [x] `pnpm typecheck && pnpm build` passes

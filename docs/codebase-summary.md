@@ -216,6 +216,12 @@ T.transitions   // smooth, snappy for animations
 - Warmup script `scripts/pre-demo-warmup.ps1` pre-caches loader + audience-count + segments-list before live demo.
 - BOOTSTRAP_VERSION bumped (`v12-260510-2330` → `v13-260511-1145`) to auto-seed new agent-first threads on next page load.
 - Vietnamese localization parity: `dictionary.ts` + `entity-names.ts` updated for thread names (ARPDAU, D7, whale recall).
+- **Deep-research section types** (May 11): Three new `AssistantResponse` section types gate behind `DeepResearchToggle` in agent-first threads (`AGENT_FIRST_THREAD_IDS`):
+  - `working_status` — `<WorkingStatusBlock>` renders header with pulsing/filled dot + intent statement + optional collapse toggle.
+  - `task_progress` — `<TaskProgressPanel>` shows step-by-step task checklist (e.g., "Find users," "Build segment," "Launch campaign").
+  - `subagent_panel` — `<SubagentPanel>` wraps `<SubagentList>` to display subagent roster + provenance metadata.
+  - **Render gate:** In `assistant-response.tsx`, when `useDeepResearch()` is ON and thread is agent-first, these sections render; when OFF, section falls through to default chip-based tool-call rendering.
+  - **Components:** `apps/web/src/components/chat/sections/{working-status-block, task-progress-panel, subagent-panel, subagent-list}.tsx` (4 new files).
 
 ---
 

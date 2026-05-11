@@ -1,7 +1,7 @@
 ---
 phase: 2
 title: "Toggle wiring & default-on"
-status: pending
+status: completed
 priority: P2
 effort: "1.5h"
 dependencies: [1]
@@ -125,21 +125,21 @@ No regression in the prior plan's behavior — agent-first threads stay in `HIDD
 
 ## Todo list
 
-- [ ] `chat-rail.tsx` imports + visibility flag swapped
-- [ ] `thread-page.tsx` imports + visibility flag swapped
-- [ ] `chat-bootstrap.ts` BOOTSTRAP_VERSION bumped to v14
-- [ ] `seedDeepResearchDefault()` helper added + called in version-changed branch
-- [ ] Manual smoke: toggle appears on agent-first threads, hidden on others
-- [ ] Manual smoke: localStorage default-ON works for first-time visitors
-- [ ] `pnpm typecheck` passes
+- [x] `chat-rail.tsx` imports + visibility flag swapped
+- [x] `thread-page.tsx` imports + visibility flag swapped
+- [x] `chat-bootstrap.ts` BOOTSTRAP_VERSION bumped to v14
+- [x] `seedDeepResearchDefault()` helper added + called in version-changed branch
+- [x] Manual smoke: toggle appears on agent-first threads, hidden on others
+- [x] Manual smoke: localStorage default-ON works for first-time visitors
+- [x] `pnpm typecheck` passes
 
 ## Success criteria
 
-- [ ] Toggle renders in chat input on the 3 agent-first threads
-- [ ] Toggle does NOT render on non-agent-first threads (regression check on `thread-001`, `thread-demo-livops-2026`)
-- [ ] Fresh localStorage → toggle defaults to ON
-- [ ] User-set preference (toggle OFF, then reload) survives next bootstrap version bump
-- [ ] `pnpm typecheck && pnpm build` passes
+- [x] Toggle renders in chat input on the 3 agent-first threads
+- [x] Toggle does NOT render on non-agent-first threads (regression check on `thread-001`, `thread-demo-livops-2026`)
+- [x] Fresh localStorage → toggle defaults to ON
+- [x] User-set preference (toggle OFF, then reload) survives next bootstrap version bump
+- [x] `pnpm typecheck && pnpm build` passes
 
 ## Risk assessment
 

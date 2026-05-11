@@ -1,7 +1,7 @@
 ---
 phase: 3
 title: "Thread A content (ARPDAU)"
-status: pending
+status: completed
 priority: P2
 effort: "2.5h"
 dependencies: [1]
@@ -193,22 +193,22 @@ import type {
 
 ## Todo list
 
-- [ ] Imports added
-- [ ] `SUBAGENTS_ARPDAU` const defined (5 agents × 5 tasks × full summaries)
-- [ ] `WORKING_STATUS_ARPDAU` const defined
-- [ ] `TASK_PROGRESS_ARPDAU` const defined
-- [ ] T1 `sections` array gains 3 new entries at the top
-- [ ] Existing T1 tool_call + narrative + chart sections unchanged
-- [ ] `pnpm typecheck` passes
+- [x] Imports added
+- [x] `SUBAGENTS_ARPDAU` const defined (5 agents × 5 tasks × full summaries)
+- [x] `WORKING_STATUS_ARPDAU` const defined
+- [x] `TASK_PROGRESS_ARPDAU` const defined
+- [x] T1 `sections` array gains 3 new entries at the top
+- [x] Existing T1 tool_call + narrative + chart sections unchanged
+- [x] `pnpm typecheck` passes
 
 ## Success criteria
 
-- [ ] File compiles standalone
-- [ ] T1's `sections[0..2]` are the new types
-- [ ] T1's existing sections preserved at original positions (now shifted by 3)
-- [ ] T2/T3/T4 untouched
-- [ ] Conversation export + named-turn exports unchanged
-- [ ] No new imports beyond the 3 payload types
+- [x] File compiles standalone
+- [x] T1's `sections[0..2]` are the new types
+- [x] T1's existing sections preserved at original positions (now shifted by 3)
+- [x] T2/T3/T4 untouched
+- [x] Conversation export + named-turn exports unchanged
+- [x] No new imports beyond the 3 payload types
 
 ## Risk assessment
 
